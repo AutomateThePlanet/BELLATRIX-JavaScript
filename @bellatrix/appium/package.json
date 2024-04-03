@@ -1,0 +1,26 @@
+{
+  "name": "@bellatrix/appium",
+  "version": "0.0.1",
+  "type": "module",
+  "exports": {
+    "./core": "./src/core/index.ts",
+    "./android": "./src/android/index.ts",
+    "./ios": "./src/ios/index.ts",
+    "./windows": "./src/windows/index.ts",
+    "./common/commands": "./src/common/commands/index.ts",
+    "./core/contracts": "./src/core/contracts/index.ts",
+    "./common/http": "./src/common/http/index.ts",
+    "./types": "./src/types/index.ts",
+    "./common/http/contracts": "./src/common/http/contracts/index.ts"
+  },
+  "devDependencies": {
+    "@types/selenium-webdriver": "^4.1.21"
+  },
+  "dependencies": {
+    "@bellatrix/core": "file:../core",
+    "selenium-webdriver": "^4.16.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

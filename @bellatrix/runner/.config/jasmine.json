@@ -1,0 +1,12 @@
+{
+    "spec_dir": ".",
+    "spec_files": [
+      "**/*.test.?(m){ts,js}"
+    ],
+    "env": {
+      "failSpecWithNoExpectations": false,
+      "stopSpecOnExpectationFailure": false,
+      "stopOnSpecFailure": false,
+      "random": false
+    }
+}

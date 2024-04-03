@@ -1,0 +1,28 @@
+{
+  "name": "@bellatrix/runner",
+  "version": "0.0.1",
+  "type": "module",
+  "bin": {
+    "bellatrix": "./bellatrix.js"
+  },
+  "dependencies": {
+    "esm": "^3.2.25",
+    "import-single-ts": "^1.0.3",
+    "jasmine": "^5.1.0",
+    "jest-cli": "^29.7.0",
+    "minimist": "^1.2.8",
+    "mocha": "^10.2.0",
+    "playwright": "^1.41.0",
+    "ts-import": "^5.0.0-beta.0",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.2",
+    "ts-paths-esm-loader": "^1.4.3",
+    "tsconfig-paths": "^4.2.0",
+    "vite-tsconfig-paths": "^4.3.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.11",
+    "@types/jest-cli": "^24.3.0",
+    "@types/mocha": "^10.0.6"
+  }
+}

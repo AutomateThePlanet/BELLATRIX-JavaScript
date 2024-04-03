@@ -1,0 +1,31 @@
+{
+  "name": "@bellatrix/web",
+  "version": "0.0.1",
+  "type": "module",
+  "exports": {
+    "./components": "./src/components/index.ts",
+    "./components/decorators": "./src/components/decorators/index.ts",
+    "./findstrategies": "./src/findstrategies/index.ts",
+    "./infrastructure": "./src/infrastructure/index.ts",
+    "./pages": "./src/pages/index.ts",
+    "./pages/decorators": "./src/pages/decorators/index.ts",
+    "./infrastructure/browserautomationtools/core": "./src/infrastructure/browserautomationtools/core/index.ts",
+    "./infrastructure/browserautomationtools/playwright": "./src/infrastructure/browserautomationtools/playwright/index.ts",
+    "./infrastructure/browserautomationtools/selenium": "./src/infrastructure/browserautomationtools/selenium/index.ts",
+    "./services": "./src/services/index.ts",
+    "./test": "./src/test/index.ts",
+    "./types": "./src/types/index.ts",
+    "./waitstrategies": "./src/waitstrategies/index.ts",
+    "./validators": "./src/validators/index.ts"
+  },
+  "devDependencies": {
+    "@types/selenium-webdriver": "^4.1.21"
+  },
+  "dependencies": {
+    "@bellatrix/core": "file:../core",
+    "selenium-webdriver": "^4.16.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
