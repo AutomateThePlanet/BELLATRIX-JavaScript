@@ -30,6 +30,10 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
         return await this._page.url();
     }
 
+    override async getTitle(): Promise<string> {
+        return await this._page.title();
+    }
+
     override async close(): Promise<void> {
         await this._page.close();
     }
