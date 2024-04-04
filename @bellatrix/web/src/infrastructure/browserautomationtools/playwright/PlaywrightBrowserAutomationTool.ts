@@ -34,6 +34,18 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
         return await this._page.title();
     }
 
+    override async back(): Promise<void> {
+        await this._page.goBack();
+    }
+
+    override async forward(): Promise<void> {
+        await this._page.goForward();
+    }
+
+    override async refresh(): Promise<void> {
+        await this._page.reload();
+    }
+
     override async close(): Promise<void> {
         await this._page.close();
     }
