@@ -29,6 +29,10 @@ export class SeleniumBrowserAutomationTool extends BrowserAutomationTool {
         return await this.wrappedDriver.getTitle();
     }
 
+    override async getPageSource(): Promise<string> {
+        return await this.wrappedDriver.getPageSource();
+    }
+
     override async back(): Promise<void> {
         await this.wrappedDriver.navigate().back();
     }

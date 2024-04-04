@@ -14,6 +14,10 @@ export class BrowserService extends WebService {
     async getTitle(): Promise<string> {
         return await this.driver.getTitle();
     }
+    
+    async getPageSource(): Promise<string> {
+        return await this.driver.getPageSource();
+    }
 
     async back(): Promise<void> {
         return await this.driver.back();

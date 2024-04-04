@@ -16,6 +16,7 @@ export abstract class BrowserAutomationTool {
 
     abstract getUrl(): Promise<string>;
     abstract getTitle(): Promise<string>;
+    abstract getPageSource(): Promise<string>;
     abstract back(): Promise<void>;
     abstract forward(): Promise<void>;
     abstract refresh(): Promise<void>;
