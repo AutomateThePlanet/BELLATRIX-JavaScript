@@ -1,5 +1,6 @@
 import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
+import { TextAreaWrap } from 'types';
 
 @BellatrixComponent
 export class TextArea extends WebComponent {
@@ -59,5 +60,3 @@ export class TextArea extends WebComponent {
         return await this.wrappedElement.getAttribute('wrap') as TextAreaWrap;
     }
 }
-
-export type TextAreaWrap = "soft" | "hard";

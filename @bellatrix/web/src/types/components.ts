@@ -14,3 +14,5 @@ export type HtmlAttribute = "accept" | "accept-charset" | "accesskey" | "action"
     | "popover" | "popovertarget" | "popovertargetaction" | "poster" | "preload" | "readonly" | "rel" | "required" | "reversed" | "rows" | "rowspan"
     | "sandbox" | "scope" | "selected" | "shape" | "size" | "sizes" | "span" | "spellcheck" | "src" | "srcdoc" | "srclang" | "srcset" | "start"
     | "step" | "style" | "tabindex" | "target" | "title" | "translate" | "type" | "usemap" | "value" | "width" | "wrap";
+
+export type TextAreaWrap = "soft" | "hard";
