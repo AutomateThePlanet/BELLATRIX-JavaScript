@@ -27,6 +27,6 @@
   "references": [
     { "path": "../core" }
   ],
-  "include": ["**/*.ts", "../core/src/types/number.ts"],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules"]
 }
