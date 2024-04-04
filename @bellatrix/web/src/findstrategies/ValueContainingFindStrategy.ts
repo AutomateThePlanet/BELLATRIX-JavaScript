@@ -1,5 +1,5 @@
 import { Locator } from '@bellatrix/web/infrastructure/browserautomationtools/core';
-import { CssFindStrategy, FindStrategy } from '.';
+import { FindStrategy } from '.';
 
 export class ValueContainingFindStrategy extends FindStrategy {
     private _valueContaining: string;

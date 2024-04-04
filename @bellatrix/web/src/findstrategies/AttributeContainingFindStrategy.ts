@@ -1,11 +1,11 @@
 import { Locator } from '@bellatrix/web/infrastructure/browserautomationtools/core';
-import { CssFindStrategy, FindStrategy } from '.';
+import { FindStrategy } from '.';
 
 export class AttributeContainingFindStrategy extends FindStrategy {
     private _value: string;
     private _attribute: string;
 
-    constructor(attribute: string,valueContaining: string) {
+    constructor(attribute: string, valueContaining: string) {
         super();
         this._value = valueContaining;
         this._attribute = attribute;
@@ -18,9 +18,3 @@ export class AttributeContainingFindStrategy extends FindStrategy {
         return `${this._attribute} containing ${this._value}`;
     }
 }
-
-// TODO attributeContaining function
-// export function attributeContaining(strings: TemplateStringsArray, ...values: any[]): AttributeContainingStrategy {
-//     const idExpression = FindStrategy.interpolate(strings, values);
-//     return new AttributeContainingStrategy(idExpression);
-// }

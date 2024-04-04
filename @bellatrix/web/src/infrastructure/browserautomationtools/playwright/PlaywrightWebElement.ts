@@ -49,8 +49,8 @@ export class PlaywrightWebElement extends WebElement {
         await this._locator.setChecked(checked);
     }
 
-    override async setInputFile(file: string): Promise<void> {
-        await this._locator.setInputFiles(file);
+    override async setInputFile(filePath: string): Promise<void> {
+        await this._locator.setInputFiles(filePath);
     }
 
     override async findElement(locator: Locator): Promise<WebElement> {

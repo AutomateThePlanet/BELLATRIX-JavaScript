@@ -3,8 +3,8 @@ import { WebComponent } from '@bellatrix/web/components';
 
 @BellatrixComponent
 export class FileInput extends WebComponent {
-    async upload(file: string): Promise<void> {
-        await this.wrappedElement.setInputFile(file);
+    async upload(filePath: string): Promise<void> {
+        await this.wrappedElement.setInputFile(filePath);
     }
     
     async isRequired(): Promise<boolean> {

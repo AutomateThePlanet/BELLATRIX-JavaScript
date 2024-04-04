@@ -3,22 +3,24 @@ import { BellatrixComponent } from "components/decorators";
 
 @BellatrixComponent
 export class DateTimeInput extends WebComponent {
-    async getTime(): Promise<string> {
-        return await this.getValue();
+    async getTime(): Promise<Date> {
+        // TODO: TEST
+        const dateString = await this.getValue();
+        return new Date(dateString);
     }
 
     async setTime(dateTime: Date): Promise<void> {
-        // TODO: Test dateTime.toString()
-        ////defaultSetValue(SETTING_TIME, TIME_SET, String.format("%d-%d-%dT%d:%d", time.getYear(), time.getMonthValue(), time.getDayOfMonth(), time.getHour(), time.getMinute()));
         await this.defaultSetValue(dateTime.toString());
     }
 
-    async getMax(): Promise<string> {
-        return await this.wrappedElement.getAttribute('max');
+    async getMax(): Promise<Date> {
+        const dateString = await this.wrappedElement.getAttribute('max');
+        return new Date(dateString);
     }
 
-    async getMin(): Promise<string> {
-        return await this.wrappedElement.getAttribute('min');
+    async getMin(): Promise<Date> {
+        const dateString = await this.wrappedElement.getAttribute('min');
+        return new Date(dateString);
     }
 
     async isAutoComplete(): Promise<boolean> {
@@ -28,7 +30,6 @@ export class DateTimeInput extends WebComponent {
     async isReadonly(): Promise<boolean> {
         return (await this.wrappedElement.getAttribute('readonly')).toLowerCase() === 'true';
     }
-
 
     async isDisabled(): Promise<boolean> {
         return (await this.wrappedElement.getAttribute('disabled')).toLowerCase() === 'true';

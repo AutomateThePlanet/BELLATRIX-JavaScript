@@ -27,7 +27,6 @@ export class MonthInput extends WebComponent {
         return (await this.wrappedElement.getAttribute('readonly')).toLowerCase() === 'true';
     }
 
-
     async isDisabled(): Promise<boolean> {
         return (await this.wrappedElement.getAttribute('disabled')).toLowerCase() === 'true';
     }  

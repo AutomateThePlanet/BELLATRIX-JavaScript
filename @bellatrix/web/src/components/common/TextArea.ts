@@ -55,7 +55,9 @@ export class TextArea extends WebComponent {
         return await this.wrappedElement.getAttribute('spellcheck');
     }
 
-    async getWrap(): Promise<string> {
-        return await this.wrappedElement.getAttribute('wrap');
+    async getWrap(): Promise<TextAreaWrap> {
+        return await this.wrappedElement.getAttribute('wrap') as TextAreaWrap;
     }
 }
+
+export type TextAreaWrap = "soft" | "hard";

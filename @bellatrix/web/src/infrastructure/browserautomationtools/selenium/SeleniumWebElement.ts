@@ -59,8 +59,8 @@ export class SeleniumWebElement extends WebElement {
         }
     }
 
-    override async setInputFile(file: string): Promise<void> {
-        return await this._element.sendKeys(file);
+    override async setInputFile(filePath: string): Promise<void> {
+        return await this._element.sendKeys(filePath);
     }
 
     override async findElement(locator: Locator): Promise<WebElement> {

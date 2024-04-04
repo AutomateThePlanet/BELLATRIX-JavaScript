@@ -11,7 +11,7 @@ export abstract class WebElement {
     abstract getInnerHtml(): Promise<string>;
     abstract isChecked(): Promise<boolean>;
     abstract setChecked(checked: boolean): Promise<void>;
-    abstract setInputFile(file: string): Promise<void>;
+    abstract setInputFile(filePath: string): Promise<void>;
     
     abstract evaluate<R>(script: string | Function, ...args: any[]): Promise<R>;
 

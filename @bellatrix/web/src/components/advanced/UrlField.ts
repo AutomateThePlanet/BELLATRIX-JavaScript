@@ -27,6 +27,10 @@ export class UrlField extends WebComponent {
         return await this.wrappedElement.getAttribute('placeholder');
     }
 
+    async getPattern(): Promise<string> {
+        return await this.wrappedElement.getAttribute('pattern');
+    }
+
     async isReadonly(): Promise<boolean> {
         return (await this.wrappedElement.getAttribute('readonly')).toLowerCase() === 'true';
     }

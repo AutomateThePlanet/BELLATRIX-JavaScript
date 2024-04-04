@@ -3,10 +3,6 @@ import { WebComponent } from '@bellatrix/web/components';
 
 @BellatrixComponent
 export class Image extends WebComponent {
-    async click(): Promise<void> {
-        await this.wrappedElement.click();
-    }
-
     async getSrc(): Promise<string> {
         return await this.wrappedElement.getAttribute('src');
     }
@@ -28,10 +24,10 @@ export class Image extends WebComponent {
     }
 
     async getHeight(): Promise<number> {
-        return parseInt(await this.wrappedElement.getAttribute('height'));
+        return parseFloat(await this.wrappedElement.getAttribute('height'));
     }
 
     async getWidth(): Promise<number> {
-        return parseInt(await this.wrappedElement.getAttribute('width'));
+        return parseFloat(await this.wrappedElement.getAttribute('width'));
     }
 }

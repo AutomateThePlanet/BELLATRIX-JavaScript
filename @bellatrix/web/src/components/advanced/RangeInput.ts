@@ -7,7 +7,7 @@ export class RangeInput extends WebComponent {
         return parseFloat(await this.getValue());
     }
 
-    async setColor(range: number): Promise<void> {
+    async setRange(range: number): Promise<void> {
         await this.defaultSetValue(range);
     }
 
@@ -24,11 +24,11 @@ export class RangeInput extends WebComponent {
     }
 
     async getMin(): Promise<number> {
-        return parseInt(await this.wrappedElement.getAttribute('min'));
+        return parseFloat(await this.wrappedElement.getAttribute('min'));
     }
 
     async getMax(): Promise<number> {
-        return parseInt(await this.wrappedElement.getAttribute('max'));
+        return parseFloat(await this.wrappedElement.getAttribute('max'));
     }
 
     async isRequired(): Promise<boolean> {
