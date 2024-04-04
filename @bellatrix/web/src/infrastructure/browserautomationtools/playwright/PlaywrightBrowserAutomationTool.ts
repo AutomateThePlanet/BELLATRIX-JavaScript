@@ -3,11 +3,13 @@ import { Browser, BrowserContext, Page, Locator as NativeLocator } from '@playwr
 import { Cookie, BrowserAutomationTool, WebElement, Locator } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 import { PlaywrightWebElement } from '@bellatrix/web/infrastructure/browserautomationtools/playwright';
 import { BellatrixSettings } from '@bellatrix/core/settings';
+import { HttpClient } from '@bellatrix/core/http';
 
 export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
     private _browser: Browser;
     private _context: BrowserContext;
     private _page: Page;
+    private _gridSessionId: string | undefined;
 
     constructor(browser: Browser, context: BrowserContext, page: Page) {
         super();
@@ -30,6 +32,14 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
 
     override async quit(): Promise<void> {
         await this.browser.close();
+        const webSettings = BellatrixSettings.get().webSettings;
+
+        if (webSettings.executionSettings.executionType === 'remote'
+            && (webSettings.remoteExecutionSettings?.provider === 'Selenium Grid'
+             || webSettings.remoteExecutionSettings?.provider === 'Selenoid')
+        ) { // @ts-ignore
+            await new HttpClient(new URL(BellatrixSettings.get().webSettings.remoteExecutionSettings.remoteUrl)).sendRequest({ path: `/session/${this._gridSessionId}`, method: 'DELETE' });
+        }
     }
 
     override async open(url: string): Promise<void> {
@@ -104,6 +114,10 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
 
         error ??= Error('Condition failed');
         throw error;
+    }
+
+    setGridSessionId(sessionId?: string) {
+        this._gridSessionId = sessionId;
     }
 
     private fixJavascript(script: string): string {

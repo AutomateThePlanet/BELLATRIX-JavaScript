@@ -1,5 +1,6 @@
 // import type { Ctor } from '@bellatrix/core/types';
 // import { WebComponent, Button, TextField } from '..';
+// import { Image } from 'components/common/Image';
 
 export * from './ComponentsList';
 export * from './WebComponent';
@@ -21,4 +22,4 @@ export * from './WebComponent';
 //     // impl
 // }
 
-// addListener(Button, '')
+// addListener(Image, 'beforeClick')

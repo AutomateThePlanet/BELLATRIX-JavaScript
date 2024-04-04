@@ -14,7 +14,7 @@ export class IdFindStrategy extends FindStrategy {
     }
 
     override toString(): string {
-        return `id = ${this._id}`;
+        return `id is ${this._id}`;
     }
 }
 

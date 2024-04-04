@@ -1,21 +1,17 @@
-import { BellatrixComponent } from '@bellatrix/web/components/decorators';
-import { WebComponent } from '@bellatrix/web/components';
+import { WebComponent } from "components";
+import { BellatrixComponent } from "components/decorators";
 
 @BellatrixComponent
-export class TextField extends WebComponent {
+export class TextArea extends WebComponent {
     async getInnerText(): Promise<string> {
         return await this.wrappedElement.getInnerText();
-    }
-
-    async getInnerHtml(): Promise<string> {
-        return await this.wrappedElement.getInnerHtml();
     }
 
     async setText(text: string): Promise<void> {
         await this.wrappedElement.setText(text);
     }
 
-    async isReadonly(): Promise<boolean> {
+    async isReadOnly(): Promise<boolean> {
         return (await this.wrappedElement.getAttribute('readonly')).toLowerCase() === 'true';
     }
 
@@ -25,6 +21,10 @@ export class TextField extends WebComponent {
 
     async isRequired(): Promise<boolean> {
         return (await this.wrappedElement.getAttribute('required')).toLowerCase() === 'true';
+    }
+
+    async isAutoComplete(): Promise<boolean> {
+        return (await this.wrappedElement.getAttribute('autocomplete')).toLowerCase() === 'true';
     }
 
     async getValue(): Promise<string> {
@@ -39,15 +39,23 @@ export class TextField extends WebComponent {
         return parseInt(await this.wrappedElement.getAttribute('max'));
     }
 
-    async isAutoComplete(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('autocomplete')).toLowerCase() === 'true';
-    }
-
     async getPlaceholder(): Promise<string> {
         return await this.wrappedElement.getAttribute('placeholder');
     }
 
-    async getSize(): Promise<number> {
-        return parseInt(await this.wrappedElement.getAttribute('size'));
+    async getRows(): Promise<number> {
+        return parseInt(await this.wrappedElement.getAttribute('rows'));
+    }
+    
+    async getCols(): Promise<number> {
+        return parseInt(await this.wrappedElement.getAttribute('cols'));
+    }
+
+    async getSpellCheck(): Promise<string> {
+        return await this.wrappedElement.getAttribute('spellcheck');
+    }
+
+    async getWrap(): Promise<string> {
+        return await this.wrappedElement.getAttribute('wrap');
     }
 }

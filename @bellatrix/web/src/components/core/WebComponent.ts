@@ -56,4 +56,16 @@ export class WebComponent {
     {
         await new Validator((this[`get${attribute.charAt(0).toUpperCase() + attribute.slice(1)}` as keyof this] as Function).bind(this, ...args as any[]), attribute).isFalse();
     }
+
+    async evaluate<R>(script: string | Function, ...args: any[]) : Promise<R> {
+        return await this.wrappedElement.evaluate(script, args) as R;
+    }
+
+    protected async defaultSetValue(value: string | number | boolean): Promise<string> {
+        return await this.wrappedElement.evaluate(`el => el.value = "${value}"`);
+    }
+
+    protected async defaultSetAttribute(attribute: string, value: string | number | boolean): Promise<string> {
+        return await this.wrappedElement.evaluate(`el => el.setAttribute('${attribute}', "${value}")`);
+    }
 }

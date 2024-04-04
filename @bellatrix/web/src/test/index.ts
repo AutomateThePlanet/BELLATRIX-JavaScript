@@ -3,6 +3,8 @@ import { ServiceLocator } from '@bellatrix/core/utilities';
 import { BellatrixTest } from '@bellatrix/core/infrastructure';
 import { App, WebTest } from '@bellatrix/web/infrastructure';
 
+import type { ubyte } from '@bellatrix/core/types';
+
 import type { BrowserAutomationToolType, BrowserType, ExecutionType } from '@bellatrix/web/types';
 
 class WebTestProps extends TestProps {
@@ -27,7 +29,7 @@ interface WebSettings {
     timeoutSettings: TimeoutSettings;
     actionSettings: ActionSettings;
     executionSettings: ExecutionSettings;
-    remoteExecutionSettings: RemoteExecutionSettings;
+    remoteExecutionSettings?: RemoteExecutionSettings;
 }
 
 interface TimeoutSettings {
@@ -48,13 +50,50 @@ interface ExecutionSettings {
     browser: BrowserType,
     headless: boolean,
     viewport?: { width: number, height: number },
-    startMaximized: boolean,
+    startMaximized?: boolean,
     executionType: ExecutionType,
     baseUrl: string
 }
 
-interface RemoteExecutionSettings {
+type RemoteExecutionSettings = {
+    provider: 'Selenium Grid' | 'Selenoid',
     remoteUrl: string,
-    user: string, // rename
-    key: string // rename
+    capabilities: Capabilities,
+    headers?: object,
+} | {
+    provider: 'LambdaTest' | 'BrowserStack',
+    capabilities: Capabilities,
+    username: string,
+    accessKey: string,
+}
+
+type VendorSpecificKeys = Record<`${string}.${string}` | `${string}:${string}`, any>;
+
+type Capabilities = VendorSpecificKeys & {
+    browserName: string,
+    browserVersion?: string,
+    platformName?: string,
+    acceptInsecureCerts?: boolean,
+    pageLoadStrategy?: 'none' | 'eager' | 'normal',
+    proxy?: Proxy,
+    setWindowRect?: string,
+    timeouts?: Timeouts,
+    unhandledPromptBehavior?: 'dismiss' | 'accept' | 'dismiss and notify' | 'accept and notify' | 'ignore',
+};
+
+type Proxy = {
+    proxyType?: 'pac' | 'direct' | 'autodetect' | 'system' | 'manual',
+    proxyAutoconfigUrl?: string,
+    ftpProxy?: string,
+    httpProxy?: string,
+    noProxy?: string[],
+    sslProxy?: string,
+    socksProxy?: string,
+    socksVersion?: ubyte,
+}
+
+type Timeouts = {
+    script: number,
+    pageLoad: number,
+    implicit: number,
 }
