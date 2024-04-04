@@ -1,5 +1,5 @@
-import { WebComponent } from "components";
-import { BellatrixComponent } from "components/decorators";
+import { BellatrixComponent } from '@bellatrix/web/components/decorators';
+import { WebComponent } from '@bellatrix/web/components';
 
 @BellatrixComponent
 export class PhoneField extends WebComponent {

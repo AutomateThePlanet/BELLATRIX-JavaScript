@@ -1,7 +1,5 @@
-import { Option, WebComponent } from "components";
-import { BellatrixComponent } from "components/decorators";
-import { FindStrategy, XpathFindStrategy, xpath } from "findstrategies";
-import { BrowserAutomationTool, Locator, WebElement } from "infrastructure/browserautomationtools/core";
+import { BellatrixComponent } from '@bellatrix/web/components/decorators';
+import { WebComponent } from '@bellatrix/web/components';
 
 @BellatrixComponent
 export class Select extends WebComponent {
