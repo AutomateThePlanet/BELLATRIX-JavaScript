@@ -65,9 +65,4 @@ export class WebComponent {
     protected async defaultSetValue(value: string | number | boolean): Promise<string> {
         return await this.wrappedElement.evaluate(`el => el.value = "${value}"`);
     }
-
-    // TODO: Remove
-    protected async defaultSetAttribute(attribute: string, value: string | number | boolean): Promise<string> {
-        return await this.wrappedElement.evaluate(`el => el.setAttribute("${attribute}", "${value}")`);
-    }
 }

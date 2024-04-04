@@ -15,6 +15,6 @@ export class AttributeFindStrategy extends FindStrategy {
     }
 
     override toString(): string {
-        return `${this._attribute} is ${this._value}`;
+        return `${this._attribute} = ${this._value}`;
     }
 }
