@@ -1,5 +1,5 @@
 
-import { ComponentService, CookiesService, NavigationService, BrowserService } from '@bellatrix/web/services';
+import { ComponentService, CookiesService, NavigationService, BrowserService, ScriptService } from '@bellatrix/web/services';
 import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 import { ServiceLocator, SingletonFactory } from '@bellatrix/core/utilities';
 import { WebPage } from '@bellatrix/web/pages';
@@ -22,6 +22,8 @@ export class App {
     get cookies() { return ServiceLocator.resolve(CookiesService) };
     
     get browser() { return ServiceLocator.resolve(BrowserService) };
+
+    get script() { return ServiceLocator.resolve(ScriptService) };
 
     create<T extends WebPage<any, any>>(page: ParameterlessCtor<T>) {
         return SingletonFactory.getInstance(page)
