@@ -14,6 +14,7 @@ export type Cookie = {
 export abstract class BrowserAutomationTool {
     abstract get type(): string;
 
+    abstract getUrl(): Promise<string>;
     abstract close(): Promise<void>;
     abstract quit(): Promise<void>;
     abstract open(url: string): Promise<void>;

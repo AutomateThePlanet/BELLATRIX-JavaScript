@@ -7,6 +7,10 @@ export class BrowserService extends WebService {
         super(driver);
     }
 
+    async getUrl(): Promise<string> {
+        return await this.driver.getUrl();
+    }
+
     async waitForAjax() {
         const ajaxTimeout = BellatrixSettings.get().webSettings.timeoutSettings.waitForAjaxTimeout;
         const sleepInterval = BellatrixSettings.get().webSettings.timeoutSettings.sleepInterval;

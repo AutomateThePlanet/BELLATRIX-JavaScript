@@ -26,6 +26,10 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
         return this._browser;
     }
 
+    override async getUrl(): Promise<string> {
+        return await this._page.url();
+    }
+
     override async close(): Promise<void> {
         await this._page.close();
     }
