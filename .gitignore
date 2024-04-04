@@ -1,6 +1,6 @@
 node_modules
 lib
-tet-results
+test-results
 npm-debug.log
 .nyc
 .env
