@@ -1,148 +1,148 @@
 import { CssFindStrategy, XpathFindStrategy, NameFindStrategy, IdFindStrategy, ClassFindStrategy, FindStrategy, AttributeContainingFindStrategy, AttributeFindStrategy, ClassContainingFindStrategy, IdContainingFindStrategy, IdEndingWithFindStrategy, InnerTextContainingFindStrategy, LinkTextContainingFindStrategy, LinkTextFindStrategy, ValueContainingFindStrategy, TagFindStrategy, NameEndingWithFindStrategy } from "@bellatrix/web/findstrategies";
 import { ComponentsList, WebComponent } from "@bellatrix/web/components";
-import { BrowserAutomationTool } from "@bellatrix/web/infrastructure/browserautomationtools/core";
+import { BrowserAutomationTool, WebElement } from "@bellatrix/web/infrastructure/browserautomationtools/core";
 import { WebService } from ".";
 
 import type { Ctor } from "@bellatrix/core/types";
 
-export class ComponentService extends WebService {
-    constructor(driver: BrowserAutomationTool) {
+export class ComponentService<T extends WebComponent> extends WebService {
+    constructor(driver: BrowserAutomationTool, private _type: Ctor<T>, private _parentElement?: WebElement) {
         super(driver);
     }
 
-    createBy<T extends WebComponent>(type: Ctor<T>, findStrategy: FindStrategy): T {
-        return new type(findStrategy, this.driver);
+    by(findStrategy: FindStrategy): T {
+        return new this._type(findStrategy, this.driver, this._parentElement);
     }
 
-    createAllBy<T extends WebComponent>(type: Ctor<T>, findStrategy: FindStrategy): ComponentsList<T> {
-        return new ComponentsList<T>(type, findStrategy, this.driver)
+    allBy(findStrategy: FindStrategy): ComponentsList<T> {
+        return new ComponentsList<T>(this._type, findStrategy, this.driver, this._parentElement);
     }
 
-    createByAttributeContaining<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, attribute: string, value: string): T {
-        return new type(new AttributeContainingFindStrategy(attribute, value), this.driver);
+    byAttributeContaining(attribute: string, value: string): T {
+        return new this._type(new AttributeContainingFindStrategy(attribute, value), this.driver, this._parentElement);
     }
 
-    createAllByAttributeContaining<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, attribute: string, value: string): ComponentsList<T> {
-        return new ComponentsList<T>(type, new AttributeContainingFindStrategy(attribute, value), this.driver);
+    allByAttributeContaining(attribute: string, value: string): ComponentsList<T> {
+        return new ComponentsList<T>(this._type, new AttributeContainingFindStrategy(attribute, value), this.driver, this._parentElement);
     }
 
-    createByAttribute<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, attribute: string, value: string): T {
-        return new type(new AttributeFindStrategy(attribute, value), this.driver);
+    byAttribute(attribute: string, value: string): T {
+        return new this._type(new AttributeFindStrategy(attribute, value), this.driver, this._parentElement);
     }
 
-    createAllByAttribute<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, attribute: string, value: string): ComponentsList<T> {
-        return new ComponentsList<T>(type, new AttributeFindStrategy(attribute, value), this.driver);
+    allByAttribute(attribute: string, value: string): ComponentsList<T> {
+        return new ComponentsList<T>(this._type, new AttributeFindStrategy(attribute, value), this.driver, this._parentElement);
     }
 
-    createByClassContaining<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): T {
-        return new type(new ClassContainingFindStrategy(name), this.driver);
+    byClassContaining(name: string): T {
+        return new this._type(new ClassContainingFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createAllByClassContaining<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): ComponentsList<T> {
-        return new ComponentsList<T>(type, new ClassContainingFindStrategy(name), this.driver);
+    allByClassContaining(name: string): ComponentsList<T> {
+        return new ComponentsList<T>(this._type, new ClassContainingFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createByClass<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): T {
-        return new type(new ClassFindStrategy(name), this.driver);
+    byClass(name: string): T {
+        return new this._type(new ClassFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createAllByClass<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): ComponentsList<T> {
-        return new ComponentsList<T>(type, new ClassFindStrategy(name), this.driver);
+    allByClass(name: string): ComponentsList<T> {
+        return new ComponentsList<T>(this._type, new ClassFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createByCss<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): T {
-        return new type(new CssFindStrategy(name), this.driver);
+    byCss(name: string): T {
+        return new this._type(new CssFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createAllByCss<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): ComponentsList<T> {
-        return new ComponentsList<T>(type, new CssFindStrategy(name), this.driver);
+    allByCss(name: string): ComponentsList<T> {
+        return new ComponentsList<T>(this._type, new CssFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createByIdContaining<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): T {
-        return new type(new IdContainingFindStrategy(name), this.driver);
+    byIdContaining(name: string): T {
+        return new this._type(new IdContainingFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createAllByIdContaining<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): ComponentsList<T> {
-        return new ComponentsList<T>(type, new IdContainingFindStrategy(name), this.driver);
+    allByIdContaining(name: string): ComponentsList<T> {
+        return new ComponentsList<T>(this._type, new IdContainingFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createByIdEndingWith<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): T {
-        return new type(new IdEndingWithFindStrategy(name), this.driver);
+    byIdEndingWith(name: string): T {
+        return new this._type(new IdEndingWithFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createAllByIdEndingWith<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): ComponentsList<T> {
-        return new ComponentsList<T>(type, new IdEndingWithFindStrategy(name), this.driver);
+    allByIdEndingWith(name: string): ComponentsList<T> {
+        return new ComponentsList<T>(this._type, new IdEndingWithFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createById<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): T {
-        return new type(new IdFindStrategy(name), this.driver);
+    byId(name: string): T {
+        return new this._type(new IdFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createAllById<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): ComponentsList<T> {
-        return new ComponentsList<T>(type, new IdFindStrategy(name), this.driver);
+    allById(name: string): ComponentsList<T> {
+        return new ComponentsList<T>(this._type, new IdFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createByInnerTextContaining<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): T {
-        return new type(new InnerTextContainingFindStrategy(name), this.driver);
+    byInnerTextContaining(name: string): T {
+        return new this._type(new InnerTextContainingFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createAllByInnerTextContaining<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): ComponentsList<T> {
-        return new ComponentsList<T>(type, new InnerTextContainingFindStrategy(name), this.driver);
+    allByInnerTextContaining(name: string): ComponentsList<T> {
+        return new ComponentsList<T>(this._type, new InnerTextContainingFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createByLinkTextContaining<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): T {
-        return new type(new LinkTextContainingFindStrategy(name), this.driver);
+    byLinkTextContaining(name: string): T {
+        return new this._type(new LinkTextContainingFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createAllByLinkTextContaining<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): ComponentsList<T> {
-        return new ComponentsList<T>(type, new LinkTextContainingFindStrategy(name), this.driver);
+    allByLinkTextContaining(name: string): ComponentsList<T> {
+        return new ComponentsList<T>(this._type, new LinkTextContainingFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createByLinkText<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): T {
-        return new type(new LinkTextFindStrategy(name), this.driver);
+    byLinkText(name: string): T {
+        return new this._type(new LinkTextFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createAllByLinkText<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): ComponentsList<T> {
-        return new ComponentsList<T>(type, new LinkTextFindStrategy(name), this.driver);
+    allByLinkText(name: string): ComponentsList<T> {
+        return new ComponentsList<T>(this._type, new LinkTextFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createByName<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): T {
-        return new type(new NameFindStrategy(name), this.driver);
+    byName(name: string): T {
+        return new this._type(new NameFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createAllByName<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): ComponentsList<T> {
-        return new ComponentsList<T>(type, new NameFindStrategy(name), this.driver);
+    allByName(name: string): ComponentsList<T> {
+        return new ComponentsList<T>(this._type, new NameFindStrategy(name), this.driver, this._parentElement);
     }
     
-    createByNameEndingWith<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): T {
-        return new type(new NameEndingWithFindStrategy(name), this.driver);
+    byNameEndingWith(name: string): T {
+        return new this._type(new NameEndingWithFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createAllByNameEndingWith<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): ComponentsList<T> {
-        return new ComponentsList<T>(type, new NameEndingWithFindStrategy(name), this.driver);
+    allByNameEndingWith(name: string): ComponentsList<T> {
+        return new ComponentsList<T>(this._type, new NameEndingWithFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createByTag<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): T {
-        return new type(new TagFindStrategy(name), this.driver);
+    byTag(name: string): T {
+        return new this._type(new TagFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createAllByTag<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): ComponentsList<T> {
-        return new ComponentsList<T>(type, new TagFindStrategy(name), this.driver);
+    allByTag(name: string): ComponentsList<T> {
+        return new ComponentsList<T>(this._type, new TagFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createByValue<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): T {
-        return new type(new ValueContainingFindStrategy(name), this.driver);
+    byValueContaining(name: string): T {
+        return new this._type(new ValueContainingFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createAllByValue<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, name: string): ComponentsList<T> {
-        return new ComponentsList<T>(type, new ValueContainingFindStrategy(name), this.driver);
+    allByValueContaining(name: string): ComponentsList<T> {
+        return new ComponentsList<T>(this._type, new ValueContainingFindStrategy(name), this.driver, this._parentElement);
     }
 
-    createByXpath<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, xpath: string): T {
-        return new type(new XpathFindStrategy(xpath), this.driver);
+    byXpath(xpath: string): T {
+        return new this._type(new XpathFindStrategy(xpath), this.driver, this._parentElement);
     }
 
-    createAllByXpath<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, xpath: string): ComponentsList<T> {
-        return new ComponentsList<T>(type, new XpathFindStrategy(xpath), this.driver)
+    allByXpath(xpath: string): ComponentsList<T> {
+        return new ComponentsList<T>(this._type, new XpathFindStrategy(xpath), this.driver, this._parentElement)
     }
 }

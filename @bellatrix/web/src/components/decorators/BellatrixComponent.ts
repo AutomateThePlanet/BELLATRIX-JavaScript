@@ -1,5 +1,6 @@
 import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 import { ServiceLocator } from '@bellatrix/core/utilities';
+import { WebElement } from 'selenium-webdriver';
 
 export function BellatrixComponent(target: any) {
     const originalMethods = Object.getOwnPropertyNames(target.prototype);
@@ -14,8 +15,10 @@ export function BellatrixComponent(target: any) {
                     const startTime = Date.now();
                     let totalWaitTime = 10_000; // milliseconds // TODO: get from timeout
                     let retryCount = 0;
-                    const driver = ServiceLocator.resolve(BrowserAutomationTool);
-                    this._cachedElement ??= await driver.findElement(this._findStrategy.convert());
+                    
+                    const searchContext = this._parentElement ?? ServiceLocator.resolve(BrowserAutomationTool);
+
+                    this._cachedElement ??= await searchContext.findElement(this._findStrategy.convert());
                     // TODO: beforemethod plugins
                     while (Date.now() - startTime < totalWaitTime) {
                         try {
@@ -24,7 +27,7 @@ export function BellatrixComponent(target: any) {
                             // TODO: aftermethod plugins
                             return result;
                         } catch {
-                            this._cachedElement = await driver.findElement(this._findStrategy.convert());
+                            this._cachedElement = await searchContext.findElement(this._findStrategy.convert());
                             await new Promise(resolve => setTimeout(resolve, 50));
                         }
                     }

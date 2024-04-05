@@ -4,20 +4,20 @@ import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserauto
 import { ServiceLocator, SingletonFactory } from '@bellatrix/core/utilities';
 import { WebPage } from '@bellatrix/web/pages';
 
-import type { ParameterlessCtor } from '@bellatrix/core/types';
+import type { Ctor, ParameterlessCtor } from '@bellatrix/core/types';
+import { WebComponent } from 'components';
 
 export class App {
+    private _driver: BrowserAutomationTool;
+
     constructor() { // make them in named container, to be context aware? and dispose method to unregister all with that name?
-        const driver = ServiceLocator.resolve(BrowserAutomationTool);
-        ServiceLocator.registerSingleton(NavigationService, new NavigationService(driver));
-        ServiceLocator.registerSingleton(ComponentService, new ComponentService(driver));
-        ServiceLocator.registerSingleton(CookiesService, new CookiesService(driver));
-        ServiceLocator.registerSingleton(BrowserService, new BrowserService(driver));
+        this._driver = ServiceLocator.resolve(BrowserAutomationTool);
+        ServiceLocator.registerSingleton(NavigationService, new NavigationService(this._driver));
+        ServiceLocator.registerSingleton(CookiesService, new CookiesService(this._driver));
+        ServiceLocator.registerSingleton(BrowserService, new BrowserService(this._driver));
     }
 
     get navigation() { return ServiceLocator.resolve(NavigationService) };
-
-    get components() { return ServiceLocator.resolve(ComponentService) };
     
     get cookies() { return ServiceLocator.resolve(CookiesService) };
     
@@ -25,7 +25,11 @@ export class App {
 
     get script() { return ServiceLocator.resolve(ScriptService) };
 
-    create<T extends WebPage<any, any>>(page: ParameterlessCtor<T>) {
+    create<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>) {
+        return new ComponentService(this._driver, type);
+    }
+
+    createPage<T extends WebPage<any, any>>(page: ParameterlessCtor<T>) {
         return SingletonFactory.getInstance(page)
     };
 

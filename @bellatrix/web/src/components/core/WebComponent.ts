@@ -2,17 +2,16 @@ import { BrowserAutomationTool, WebElement } from '@bellatrix/web/infrastructure
 import { Validator, StringValidator, NumberValidator, UnknownValidator, BooleanValidator } from '@bellatrix/web/validators';
 import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { FindStrategy } from '@bellatrix/web/findstrategies';
-import { WaitStrategy } from '@bellatrix/web/waitstrategies';
 
 import type { Ctor, MethodNamesStartingWith } from '@bellatrix/core/types';
 import type { HtmlAttribute } from '@bellatrix/web/types';
+import { ComponentService } from 'services';
 
 @BellatrixComponent
 export class WebComponent {
     private _cachedElement!: WebElement;
-    private _waitStrategies: WaitStrategy = []; // TODO: implement wait stragegies
 
-    constructor(private _findStrategy: FindStrategy, private _driver: BrowserAutomationTool, cachedElement?: WebElement) {
+    constructor(private _findStrategy: FindStrategy, private _driver: BrowserAutomationTool, private _parentElement?: WebElement, cachedElement?: WebElement) {
         this._cachedElement = cachedElement!;
     };
 
@@ -64,5 +63,9 @@ export class WebComponent {
     // TODO: Remove
     protected async defaultSetValue(value: string | number | boolean): Promise<string> {
         return await this.wrappedElement.evaluate(`el => el.value = "${value}"`);
+    }
+
+    create<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>) {
+        return new ComponentService(this._driver, type, this.wrappedElement);
     }
 }
