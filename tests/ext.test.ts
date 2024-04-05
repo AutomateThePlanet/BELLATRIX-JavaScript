@@ -1,6 +1,6 @@
 import { PluginExecutionEngine } from "@bellatrix/core/infrastructure";
 import { WebTest } from "@bellatrix/web/infrastructure";
-import { Test, TestClass, describe, test } from "@bellatrix/web/test";
+import { Test, TestClass } from "@bellatrix/web/test";
 import { BrowserWorkflowPlugin } from "./base";
 import { Button } from "@bellatrix/web/components";
 import { CheckoutPage } from "./pages/checkoutpage/CheckoutPage";
@@ -21,8 +21,8 @@ class ProductPurchaseTests extends WebTest {
     @Test
     async completePurchaseSuccessfully_first() {
         await this.app.navigation.navigate('https://demos.bellatrix.solutions/');
-        const addToCartFalcon9 = this.app.components.createByCss(Button, '[data-product_id*="28"]');
-        const blogLink = this.app.components.createByInnerTextContaining(Button, 'Blog');
+        const addToCartFalcon9 = this.app.create(Button).byCss('[data-product_id*="28"]');
+        const blogLink = this.app.create(Button).byInnerTextContaining('Blog');
         await addToCartFalcon9.click();
         // blogLink.above(addToCartFalcon9).validate(); // layout assert
         await new MainPage().asserts.productBoxLink('Falcon 9', 'https://demos.bellatrix.solutions/product/falcon-9/');
@@ -31,7 +31,7 @@ class ProductPurchaseTests extends WebTest {
     @Test
     async completePurchaseSuccessfully_second() {
         await this.app.navigation.navigate('https://demos.bellatrix.solutions/');
-        const addToCartFalcon9 = this.app.components.createByCss(Button, "[data-product_id*='28']");
+        const addToCartFalcon9 = this.app.create(Button).byCss("[data-product_id*='28']");
         await addToCartFalcon9.click();
     }
 
@@ -53,7 +53,7 @@ class ProductPurchaseTests extends WebTest {
         const mainPage = await this.app.goTo(MainPage);
         await mainPage.addRocketToShoppingCart("Falcon 9");
 
-        const cartPage = this.app.create(CartPage);
+        const cartPage = this.app.createPage(CartPage);
         await cartPage.applyCoupon("happybirthday");
         await cartPage.asserts.couponAppliedSuccessfully();
         await cartPage.increaseProductQuantity(2);
@@ -73,7 +73,7 @@ class ProductPurchaseTests extends WebTest {
             phone: "+498888999281",
         };
 
-        const checkoutPage = this.app.create(CheckoutPage);
+        const checkoutPage = this.app.createPage(CheckoutPage);
         await checkoutPage.fillBillingInfo(purchaseInfo);
         await checkoutPage.asserts.orderReceived();
     }
@@ -83,7 +83,7 @@ class ProductPurchaseTests extends WebTest {
         const mainPage = await this.app.goTo(MainPage);
         await mainPage.addRocketToShoppingCart("Saturn V");
 
-        const cartPage = this.app.create(CartPage);
+        const cartPage = this.app.createPage(CartPage);
         await cartPage.applyCoupon("happybirthday");
         await cartPage.asserts.couponAppliedSuccessfully();
         await cartPage.increaseProductQuantity(3);
@@ -103,7 +103,7 @@ class ProductPurchaseTests extends WebTest {
             phone: "+498888999281",
         };
 
-        const checkoutPage = this.app.create(CheckoutPage);
+        const checkoutPage = this.app.createPage(CheckoutPage);
         await checkoutPage.fillBillingInfo(purchaseInfo);
         await checkoutPage.asserts.orderReceived();
     }
