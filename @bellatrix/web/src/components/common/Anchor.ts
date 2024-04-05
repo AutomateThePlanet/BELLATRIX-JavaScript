@@ -18,4 +18,12 @@ export class Anchor extends WebComponent {
     async getInnerHtml(): Promise<string> {
         return await this.wrappedElement.getInnerHtml();
     }
+
+    async getTarget(): Promise<string> {
+        return await this.wrappedElement.getAttribute('target');
+    }
+
+    async getRel(): Promise<string> {
+        return await this.wrappedElement.getAttribute('rel');
+    }
 }
