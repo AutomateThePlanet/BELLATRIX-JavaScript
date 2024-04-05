@@ -3,7 +3,6 @@ import { By, WebDriver as NativeWebDriver, until } from 'selenium-webdriver';
 import { Cookie, BrowserAutomationTool, WebElement, Locator } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 import { SeleniumWebElement } from '@bellatrix/web/infrastructure/browserautomationtools/selenium';
 import { BellatrixSettings } from '@bellatrix/core/settings';
-import { HttpClient } from '@bellatrix/core/http';
 
 export class SeleniumBrowserAutomationTool extends BrowserAutomationTool {
     private _driver: NativeWebDriver;

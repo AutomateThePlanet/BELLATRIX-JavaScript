@@ -10,6 +10,7 @@ export class LinkTextFindStrategy extends FindStrategy {
     }
 
     override convert(): Locator {
+        // TODO: It may not work for relative finding in selenium, because for relative finding the xpath must start with './/'
         return Locator.byXpath(`//a[normalize-space()='${this._linkText}']`, this.index);
     }
 
