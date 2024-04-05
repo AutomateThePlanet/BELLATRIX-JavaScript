@@ -7,7 +7,7 @@ export class Frame extends WebComponent {
         return await this.wrappedElement.getAttribute('name');
     }
 
-    async getLink(): Promise<string> {
+    async getHref(): Promise<string> {
         return await this.wrappedElement.getAttribute('href');
     }
 }
