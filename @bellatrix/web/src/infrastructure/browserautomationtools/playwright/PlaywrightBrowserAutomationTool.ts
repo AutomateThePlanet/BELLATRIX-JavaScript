@@ -1,4 +1,4 @@
-import { Browser, BrowserContext, Page, Locator as NativeLocator } from '@playwright/test';
+import { Browser, BrowserContext, Page, Locator as NativeLocator, Dialog } from '@playwright/test';
 
 import { Cookie, BrowserAutomationTool, WebElement, Locator } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 import { PlaywrightWebElement } from '@bellatrix/web/infrastructure/browserautomationtools/playwright';
@@ -113,7 +113,7 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
         await this._context.clearCookies();
         await this._context.addCookies(updatedCookies);
     }
-    
+
     override async executeJavascript<T, VarArgs extends any[]>(script: string | ((...args: VarArgs) => T), ...args: VarArgs): Promise<T> {
         return await this._page.evaluate<T, VarArgs>(typeof script === 'string' ? this.fixJavascript(script) : () => script(...args), args);
     }
@@ -138,6 +138,39 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
 
         error ??= Error('Condition failed');
         throw error;
+    }
+
+    // TODO: NEEDS TESTING
+    override async acceptDialog(promptText?: string | undefined): Promise<void> {
+        const dialogHandler = async (dialog: Dialog) => {
+            await dialog.accept(promptText);
+
+            this._page.off('dialog', dialogHandler);
+        }
+
+        await this._page.waitForEvent('dialog').then(dialogHandler);
+    }
+
+    // TODO: NEEDS TESTING
+    override async dismissDialog(): Promise<void> {
+        const dialogHandler = async (dialog: Dialog) => {
+            await dialog.dismiss();
+
+            this._page.off('dialog', dialogHandler);
+        }
+
+        await this._page.waitForEvent('dialog').then(dialogHandler);
+    }
+
+    // TODO: NEEDS TESTING
+    override async getDialogMessage(): Promise<string> {
+        const dialogHandler = async (dialog: Dialog) => {
+            this._page.off('dialog', dialogHandler);
+
+            return dialog.message();
+        }
+
+        return await this._page.waitForEvent('dialog').then(dialogHandler);
     }
 
     setGridSessionId(sessionId?: string) {

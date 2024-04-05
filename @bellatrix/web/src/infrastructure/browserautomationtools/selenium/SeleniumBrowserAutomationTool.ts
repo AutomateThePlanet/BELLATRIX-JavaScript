@@ -122,6 +122,23 @@ export class SeleniumBrowserAutomationTool extends BrowserAutomationTool {
         await this.wrappedDriver.wait(condition.bind(this, driver), timeout, 'Condition failed.' /* TODO: better message */, pollingInterval);
     }
 
+    override async acceptDialog(promptText?: string | undefined): Promise<void> {
+        if (promptText === undefined) {
+            await this.wrappedDriver.switchTo().alert().accept();
+        } else {
+            await this.wrappedDriver.switchTo().alert().sendKeys(promptText);
+            await this.wrappedDriver.switchTo().alert().accept();
+        }
+    }
+
+    override async dismissDialog(): Promise<void> {
+        await this.wrappedDriver.switchTo().alert().dismiss();
+    }
+
+    override async getDialogMessage(): Promise<string> {
+        return await this.wrappedDriver.switchTo().alert().getText();
+    }
+
     private async isPageFullyLoaded() {
         const driver = this.wrappedDriver;
         await driver.wait(async () => {

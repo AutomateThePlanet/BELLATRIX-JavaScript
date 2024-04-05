@@ -1,5 +1,5 @@
 
-import { ComponentService, CookiesService, NavigationService, BrowserService, ScriptService } from '@bellatrix/web/services';
+import { ComponentService, CookiesService, NavigationService, BrowserService, ScriptService, DialogService } from '@bellatrix/web/services';
 import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 import { ServiceLocator, SingletonFactory } from '@bellatrix/core/utilities';
 import { WebPage } from '@bellatrix/web/pages';
@@ -24,6 +24,8 @@ export class App {
     get browser() { return ServiceLocator.resolve(BrowserService) };
 
     get script() { return ServiceLocator.resolve(ScriptService) };
+
+    get dialog() { return ServiceLocator.resolve(DialogService) };
 
     create<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>) {
         return new ComponentService(this._driver, type);
