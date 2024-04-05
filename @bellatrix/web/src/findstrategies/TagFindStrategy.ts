@@ -10,7 +10,7 @@ export class TagFindStrategy extends FindStrategy {
     }
 
     override convert(): Locator {
-        return Locator.byXpath(`//${this._tag}`, this.index);
+        return Locator.byCss(`${this._tag}`, this.index);
     }
 
     override toString(): string {
