@@ -7,6 +7,6 @@ export class CartPageAsserts extends WebPageAsserts<CartPageMap> {
     }
 
     async totalPrice(expectedPrice: string) {
-        await this.map.totalSpan.validate('innerText').is(expectedPrice);
+        await this.map.totalSpan.validate('innerText').is(`${expectedPrice}€`);
     }
 }

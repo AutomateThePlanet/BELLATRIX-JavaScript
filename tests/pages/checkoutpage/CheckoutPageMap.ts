@@ -3,66 +3,66 @@ import { WebPageMap } from '@bellatrix/web/pages';
 
 export class CheckoutPageMap extends WebPageMap {
     get billingFirstName() {
-        return this.components.createById(TextField, 'billing_first_name');
+        return this.create(TextField).byId('billing_first_name');
     }
 
     get billingLastName() {
-        return this.components.createById(TextField, 'billing_last_name');
+        return this.create(TextField).byId('billing_last_name');
     }
 
     get billingCompany() {
-        return this.components.createById(TextField, 'billing_company');
+        return this.create(TextField).byId('billing_company');
     }
 
     get billingCountryWrapper() {
-        return this.components.createById(Button, 'select2-billing_country-container');
+        return this.create(Button).byId('select2-billing_country-container');
     }
 
     get billingCountryFilter() {
-        return this.components.createByClass(TextField, 'select2-search__field');
+        return this.create(TextField).byClass('select2-search__field');
     }
 
     get billingAddress1() {
-        return this.components.createById(TextField, 'billing_address_1');
+        return this.create(TextField).byId('billing_address_1');
     }
 
     get billingAddress2() {
-        return this.components.createById(TextField, 'billing_address_2');
+        return this.create(TextField).byId('billing_address_2');
     }
 
     get billingCity() {
-        return this.components.createById(TextField, 'billing_city');
+        return this.create(TextField).byId('billing_city');
     }
 
     get billingZip() {
-        return this.components.createById(TextField, 'billing_postcode');
+        return this.create(TextField).byId('billing_postcode');
     }
 
     get billingPhone() {
-        return this.components.createById(TextField, 'billing_phone');
+        return this.create(TextField).byId('billing_phone');
     }
 
     get billingEmail() {
-        return this.components.createById(TextField, 'billing_email');
+        return this.create(TextField).byId('billing_email');
     }
 
     get createAccountCheckBox() {
-        return this.components.createById(CheckBox, 'createaccount');
+        return this.create(CheckBox).byId('createaccount');
     }
 
     get checkPaymentsRadioButton() {
-        return this.components.createByCss(RadioButton, '[for*="payment_method_cheque"]');
+        return this.create(RadioButton).byCss('[for*="payment_method_cheque"]');
     }
 
     get placeOrderButton() {
-        return this.components.createById(Button, 'place_order');
+        return this.create(Button).byId('place_order');
     }
 
     get receivedMessage() {
-        return this.components.createByXpath(Heading, '//h1');
+        return this.create(Heading).byXpath('//h1');
     }
 
     getCountryOptionByName(countryName: string) {
-        return this.components.createByXpath(Button, `//li[contains(text(),'${countryName}')]`);
+        return this.create(Button).byXpath(`//li[contains(text(),'${countryName}')]`);
     }
 }
