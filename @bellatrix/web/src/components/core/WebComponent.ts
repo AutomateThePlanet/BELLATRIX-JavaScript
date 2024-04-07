@@ -3,10 +3,10 @@ import { Validator, StringValidator, NumberValidator, UnknownValidator, BooleanV
 import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { FindStrategy } from '@bellatrix/web/findstrategies';
 import { ComponentService } from '@bellatrix/web/services';
+import { ComponentWaitService } from './ComponentWaitService';
 
 import type { Ctor, MethodNamesStartingWith } from '@bellatrix/core/types';
 import type { HtmlAttribute } from '@bellatrix/web/types';
-import { ComponentWaitService } from './ComponentWaitService';
 
 @BellatrixComponent
 export class WebComponent {

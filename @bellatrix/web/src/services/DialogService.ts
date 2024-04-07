@@ -1,4 +1,4 @@
-import { WebService } from "./WebService";
+import { WebService } from ".";
 
 export class DialogService extends WebService {
     async accept(promptText?: string | undefined): Promise<void> {
