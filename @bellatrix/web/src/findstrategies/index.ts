@@ -1,9 +1,10 @@
+export * from './FindStrategy';
+
 export * from './AttributeContainingFindStrategy';
 export * from './AttributeFindStrategy';
 export * from './ClassContainingFindStrategy';
 export * from './ClassFindStrategy';
 export * from './CssFindStrategy';
-export * from './FindStrategy';
 export * from './IdContainingFindStrategy';
 export * from './IdEndingWithFindStrategy';
 export * from './IdFindStrategy';
