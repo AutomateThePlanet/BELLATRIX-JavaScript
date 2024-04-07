@@ -6,11 +6,7 @@ export class ClassContainingFindStrategy extends FindStrategy {
 
     constructor(classContaining: string) {
         super();
-
-        if (/.*\s.*/.test(classContaining)) {
-            throw Error('Compound class names not permitted');
-        }
-
+        
         this._classContaining = classContaining;
     }
 
