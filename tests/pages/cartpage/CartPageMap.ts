@@ -3,30 +3,30 @@ import { WebPageMap } from '@bellatrix/web/pages';
 
 export class CartPageMap extends WebPageMap {
     get couponCodeTextField() {
-        return this.components.createById(TextField, 'coupon_code');
+        return this.create(TextField).byId('coupon_code');
     }
 
     get applyCouponButton() {
-        return this.components.createByCss(Button, '[value*="Apply coupon"]');
+        return this.create(Button).byCss('[value*="Apply coupon"]');
     }
 
-    get quantityBox() {
-        return this.components.createByCss(TextField, '[class*="input-text qty text"]');
+    get quantityBoxes() {
+        return this.create(TextField).allByClassContaining('input-text qty text');
     }
 
     get updateCart() {
-        return this.components.createByCss(Button, '[value*="Update cart"]');
+        return this.create(Button).byCss('[value*="Update cart"]');
     }
 
     get messageAlert() {
-        return this.components.createByCss(Div, '[class*="woocommerce-message"]');
+        return this.create(Div).byCss('[class*="woocommerce-message"]');
     }
 
     get totalSpan() {
-        return this.components.createByXpath(Span, '//*[@class="order-total"]//span');
+        return this.create(Span).byXpath('//*[@class="order-total"]//span');
     }
 
     get proceedToCheckout() {
-        return this.components.createByCss(Button, '[class*="checkout-button button alt wc-forward"]');
+        return this.create(Button).byCss('[class*="checkout-button button alt wc-forward"]');
     }
 }

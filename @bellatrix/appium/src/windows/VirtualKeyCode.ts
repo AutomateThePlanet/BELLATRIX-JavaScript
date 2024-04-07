@@ -1,4 +1,4 @@
-import { ubyte } from '@bellatrix/appium/types';
+import { ubyte } from '@bellatrix/core/types';
 
 export class VirtualKeyCode {
     static readonly LBUTTON: ubyte = 0x01 // Left mouse button

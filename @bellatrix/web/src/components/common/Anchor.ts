@@ -11,16 +11,19 @@ export class Anchor extends WebComponent {
         return await this.wrappedElement.getAttribute('href');
     }
 
-
-    async getTest123(name: string, age: number): Promise<number> {
-        return 123;
-    }
-
     async getInnerText(): Promise<string> {
         return await this.wrappedElement.getInnerText();
     }
 
     async getInnerHtml(): Promise<string> {
         return await this.wrappedElement.getInnerHtml();
+    }
+
+    async getTarget(): Promise<string> {
+        return await this.wrappedElement.getAttribute('target');
+    }
+
+    async getRel(): Promise<string> {
+        return await this.wrappedElement.getAttribute('rel');
     }
 }

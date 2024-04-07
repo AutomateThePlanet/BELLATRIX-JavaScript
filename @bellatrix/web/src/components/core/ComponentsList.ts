@@ -1,4 +1,4 @@
-import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { BrowserAutomationTool, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 import { FindStrategy } from '@bellatrix/web/findstrategies';
 import { ServiceLocator } from '@bellatrix/core/utilities';
 import { WebComponent } from '.';
@@ -9,8 +9,13 @@ export class ComponentsList<T extends WebComponent> {
     private _cachedComponents?: T[];
     private _foundAll: boolean = false;
 
-    constructor(private _type: Ctor<T, ConstructorParameters<typeof WebComponent>>, private _findStrategy: FindStrategy, private _driver: BrowserAutomationTool) {
+    constructor(private _type: Ctor<T, ConstructorParameters<typeof WebComponent>>, private _findStrategy: FindStrategy, private _driver: BrowserAutomationTool, private _parentElement?: WebElement) {
     };
+
+    async count(): Promise<number> {
+        const components = await this.get();
+        return components.length;
+    }
 
     async get(): Promise<T[]>;
     async get(index: number): Promise<T>;
@@ -19,9 +24,8 @@ export class ComponentsList<T extends WebComponent> {
             const elements = await ServiceLocator.resolve(BrowserAutomationTool).findElements(this._findStrategy.convert());
             const components = elements.map((element, index) => {
                 const findStrategy = this.cloneFindStrategyWithUpdatedIndex(this._findStrategy, index);
-                const component = new this._type(findStrategy, this._driver);
-                // @ts-ignore 
-                component._cachedElement = element;
+                const component = new this._type(findStrategy, this._driver, this._parentElement, element);
+
                 return component;
             })
 

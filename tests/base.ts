@@ -9,7 +9,7 @@ export class BrowserWorkflowPlugin extends Plugin {
         if (this.isStarted) {
             throw Error('Browser session already started.');
         }
-        await TestExecutionEngine.startBrowser({ type: BellatrixSettings.get().webSettings.executionSettings.browserAutomationTool, browser: BellatrixSettings.get().webSettings.executionSettings.browser });
+        await TestExecutionEngine.startBrowser();
         this.isStarted = true;
     }
 

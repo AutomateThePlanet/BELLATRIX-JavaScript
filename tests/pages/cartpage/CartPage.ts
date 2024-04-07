@@ -10,7 +10,7 @@ export class CartPage extends WebPage<CartPageMap, CartPageAsserts> {
     }
 
     protected override async waitForPageLoad() {
-        // await this.map.couponCodeTextField.validateIsNot('disabled'); // TODO: BE VISIBLE???
+        await this.map.couponCodeTextField.wait().toExist();
     }
 
     async applyCoupon(coupon: string) {
@@ -19,15 +19,21 @@ export class CartPage extends WebPage<CartPageMap, CartPageAsserts> {
         await this.app.browser.waitForAjax();
     }
 
-    async increaseProductQuantity(newQuantity: number) {
-        await this.map.quantityBox.setText(newQuantity.toString());
+    async increaseProductQuantity(productNumber: number, newQuantity: number) {
+        if (productNumber > await this.map.quantityBoxes.count()) {
+            throw new Error('There are less added items in the cart. Please specify smaller product number.');
+        }
+        
+        const quantityBox = await this.map.quantityBoxes.get(productNumber - 1);
+
+        await quantityBox.setText(newQuantity.toString());
         await this.map.updateCart.click();
         await this.app.browser.waitForAjax();
     }
 
     async clickProceedToCheckout() {
         await this.map.proceedToCheckout.click();
-        await this.app.browser.waitUntilPageLoadsCompletely(); // TODO: implement
+        await this.app.browser.waitUntilPageLoadsCompletely();
     }
 
     async getTotal() {

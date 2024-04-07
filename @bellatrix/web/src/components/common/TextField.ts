@@ -3,11 +3,19 @@ import { WebComponent } from '@bellatrix/web/components';
 
 @BellatrixComponent
 export class TextField extends WebComponent {
+    async getInnerText(): Promise<string> {
+        return await this.wrappedElement.getInnerText();
+    }
+
+    async getInnerHtml(): Promise<string> {
+        return await this.wrappedElement.getInnerHtml();
+    }
+
     async setText(text: string): Promise<void> {
         await this.wrappedElement.setText(text);
     }
 
-    async isReadOnly(): Promise<boolean> {
+    async isReadonly(): Promise<boolean> {
         return (await this.wrappedElement.getAttribute('readonly')).toLowerCase() === 'true';
     }
 
@@ -29,5 +37,17 @@ export class TextField extends WebComponent {
 
     async getMaxLength(): Promise<number> {
         return parseInt(await this.wrappedElement.getAttribute('max'));
+    }
+
+    async isAutoComplete(): Promise<boolean> {
+        return (await this.wrappedElement.getAttribute('autocomplete')).toLowerCase() === 'true';
+    }
+
+    async getPlaceholder(): Promise<string> {
+        return await this.wrappedElement.getAttribute('placeholder');
+    }
+
+    async getSize(): Promise<number> {
+        return parseInt(await this.wrappedElement.getAttribute('size'));
     }
 }

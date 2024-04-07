@@ -1,13 +1,15 @@
-import { Browser, BrowserContext, Page, Locator as NativeLocator } from '@playwright/test';
+import { Browser, BrowserContext, Page, Locator as NativeLocator, Dialog } from '@playwright/test';
 
 import { Cookie, BrowserAutomationTool, WebElement, Locator } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 import { PlaywrightWebElement } from '@bellatrix/web/infrastructure/browserautomationtools/playwright';
 import { BellatrixSettings } from '@bellatrix/core/settings';
+import { HttpClient } from '@bellatrix/core/http';
 
 export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
     private _browser: Browser;
     private _context: BrowserContext;
     private _page: Page;
+    private _gridSessionId: string | undefined;
 
     constructor(browser: Browser, context: BrowserContext, page: Page) {
         super();
@@ -24,12 +26,44 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
         return this._browser;
     }
 
+    override async getUrl(): Promise<string> {
+        return await this._page.url();
+    }
+
+    override async getTitle(): Promise<string> {
+        return await this._page.title();
+    }
+
+    override async getPageSource(): Promise<string> {
+        return await this._page.content();
+    }
+
+    override async back(): Promise<void> {
+        await this._page.goBack();
+    }
+
+    override async forward(): Promise<void> {
+        await this._page.goForward();
+    }
+
+    override async refresh(): Promise<void> {
+        await this._page.reload();
+    }
+
     override async close(): Promise<void> {
         await this._page.close();
     }
 
     override async quit(): Promise<void> {
         await this.browser.close();
+        const webSettings = BellatrixSettings.get().webSettings;
+
+        if (webSettings.executionSettings.executionType === 'remote'
+            && (webSettings.remoteExecutionSettings?.provider === 'Selenium Grid'
+             || webSettings.remoteExecutionSettings?.provider === 'Selenoid')
+        ) { // @ts-ignore
+            await new HttpClient(new URL(BellatrixSettings.get().webSettings.remoteExecutionSettings.remoteUrl)).sendRequest({ path: `/session/${this._gridSessionId}`, method: 'DELETE' });
+        }
     }
 
     override async open(url: string): Promise<void> {
@@ -79,7 +113,7 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
         await this._context.clearCookies();
         await this._context.addCookies(updatedCookies);
     }
-    
+
     override async executeJavascript<T, VarArgs extends any[]>(script: string | ((...args: VarArgs) => T), ...args: VarArgs): Promise<T> {
         return await this._page.evaluate<T, VarArgs>(typeof script === 'string' ? this.fixJavascript(script) : () => script(...args), args);
     }
@@ -104,6 +138,43 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
 
         error ??= Error('Condition failed');
         throw error;
+    }
+
+    // TODO: NEEDS TESTING
+    override async acceptDialog(promptText?: string | undefined): Promise<void> {
+        const dialogHandler = async (dialog: Dialog) => {
+            await dialog.accept(promptText);
+
+            this._page.off('dialog', dialogHandler);
+        }
+
+        await this._page.waitForEvent('dialog').then(dialogHandler);
+    }
+
+    // TODO: NEEDS TESTING
+    override async dismissDialog(): Promise<void> {
+        const dialogHandler = async (dialog: Dialog) => {
+            await dialog.dismiss();
+
+            this._page.off('dialog', dialogHandler);
+        }
+
+        await this._page.waitForEvent('dialog').then(dialogHandler);
+    }
+
+    // TODO: NEEDS TESTING
+    override async getDialogMessage(): Promise<string> {
+        const dialogHandler = async (dialog: Dialog) => {
+            this._page.off('dialog', dialogHandler);
+
+            return dialog.message();
+        }
+
+        return await this._page.waitForEvent('dialog').then(dialogHandler);
+    }
+
+    setGridSessionId(sessionId?: string) {
+        this._gridSessionId = sessionId;
     }
 
     private fixJavascript(script: string): string {

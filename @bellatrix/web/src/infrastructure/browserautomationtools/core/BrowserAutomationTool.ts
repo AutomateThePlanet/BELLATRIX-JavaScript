@@ -14,6 +14,12 @@ export type Cookie = {
 export abstract class BrowserAutomationTool {
     abstract get type(): string;
 
+    abstract getUrl(): Promise<string>;
+    abstract getTitle(): Promise<string>;
+    abstract getPageSource(): Promise<string>;
+    abstract back(): Promise<void>;
+    abstract forward(): Promise<void>;
+    abstract refresh(): Promise<void>;
     abstract close(): Promise<void>;
     abstract quit(): Promise<void>;
     abstract open(url: string): Promise<void>;
@@ -26,4 +32,8 @@ export abstract class BrowserAutomationTool {
     abstract clearCookies(): Promise<void>;
     abstract executeJavascript<T, VarArgs extends any[] = []>(script: string | ((...args: VarArgs) => T), ...args: VarArgs): Promise<T>;
     abstract waitUntil(condition: (browserAutomationTool: Omit<BrowserAutomationTool, 'waitUntil'>) => boolean | Promise<boolean>, timeout: number, pollingInterval: number): Promise<void>
+    
+    abstract acceptDialog(promptText?: string): Promise<void>;
+    abstract dismissDialog(): Promise<void>;
+    abstract getDialogMessage(): Promise<string>;
 };

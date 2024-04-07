@@ -19,7 +19,6 @@ export class Label extends WebComponent {
     }
 
     async getRelatedComponent<T extends WebComponent>(type?: Ctor<T, ConstructorParameters<typeof WebComponent>>): Promise<T> {
-        const componentService = ServiceLocator.resolve(ComponentService);
-        return componentService.createById(type ?? WebComponent, await this.getFor()) as T;
+        return this.create(type ?? WebComponent).byId(await this.getFor()) as T;
     }
 }

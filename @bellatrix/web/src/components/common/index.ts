@@ -2,9 +2,14 @@ export * from './Anchor';
 export * from './Button';
 export * from './CheckBox';
 export * from './Div';
+export * from './FileInput';
 export * from './Heading';
+export * from './Image';
 export * from './Label';
 export * from './Option';
-export * from './RadioButton'
+export * from './RadioButton';
+export * from './Reset';
+export * from './Select';
 export * from './Span';
+export * from './TextArea';
 export * from './TextField';

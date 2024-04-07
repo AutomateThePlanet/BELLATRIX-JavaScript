@@ -1,8 +1,9 @@
 import { Locator as NativeLocator } from '@playwright/test';
 
-import { WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { Locator, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 
 import type { HtmlAttribute } from '@bellatrix/web/types';
+import { BellatrixSettings } from '@bellatrix/core/settings';
 
 export class PlaywrightWebElement extends WebElement {
     private _locator: NativeLocator;
@@ -46,5 +47,65 @@ export class PlaywrightWebElement extends WebElement {
 
     override async setChecked(checked: boolean): Promise<void> {
         await this._locator.setChecked(checked);
+    }
+
+    override async setInputFile(filePath: string): Promise<void> {
+        await this._locator.setInputFiles(filePath);
+    }
+
+    override async findElement(locator: Locator): Promise<WebElement> {
+        const nativeLocator: NativeLocator = this._locator.locator(locator.value).first();
+
+        try {
+            nativeLocator.waitFor({ timeout: BellatrixSettings.get().webSettings.timeoutSettings.findElementTimeout });
+        } catch {
+            throw Error(`Element at ${locator.value} not found.`); // TODO: better error handling?
+        }
+
+        return new PlaywrightWebElement(nativeLocator);
+    }
+
+    override async findElements(locator: Locator): Promise<WebElement[]> {
+        const nativeLocators: NativeLocator[] = await this._locator.locator(locator.value).all();
+
+        return nativeLocators.map(locator => new PlaywrightWebElement(locator));
+    }
+
+    override async evaluate<R>(script: string, ...args: any[]): Promise<R> {
+        return await this._locator.evaluate(new Function("a", script) as any, args); // remove any
+        // TODO: needs testing
+        // TODO: script to be the same between selenium and playwright
+    }
+
+    override async selectByText(text: string): Promise<void> {
+        await this._locator.selectOption({ label: text });
+    }
+
+    override async selectByIndex(index: number): Promise<void> {
+        await this._locator.selectOption({ index: index });
+    }
+
+    override async selectByValue(value: string): Promise<void> {
+        await this._locator.selectOption({ value: value });
+    }
+
+    override async isPresent(): Promise<boolean> {
+        try {
+            return await this._locator.elementHandle() != null;
+        } catch {
+            return false;
+        }
+    }
+
+    override async isVisible(): Promise<boolean> {
+        return await this._locator.isVisible();
+    }
+
+    override async isClickable(): Promise<boolean> {
+        return await this._locator.isEnabled();
+    }
+
+    override async scrollToVisible(): Promise<void> {
+        await this._locator.scrollIntoViewIfNeeded();
     }
 }

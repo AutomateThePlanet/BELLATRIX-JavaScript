@@ -7,6 +7,30 @@ export class BrowserService extends WebService {
         super(driver);
     }
 
+    async getUrl(): Promise<string> {
+        return await this.driver.getUrl();
+    }
+
+    async getTitle(): Promise<string> {
+        return await this.driver.getTitle();
+    }
+    
+    async getPageSource(): Promise<string> {
+        return await this.driver.getPageSource();
+    }
+
+    async back(): Promise<void> {
+        return await this.driver.back();
+    }
+
+    async forward(): Promise<void> {
+        return await this.driver.forward();
+    }
+
+    async refresh(): Promise<void> {
+        return await this.driver.refresh();
+    }
+
     async waitForAjax() {
         const ajaxTimeout = BellatrixSettings.get().webSettings.timeoutSettings.waitForAjaxTimeout;
         const sleepInterval = BellatrixSettings.get().webSettings.timeoutSettings.sleepInterval;

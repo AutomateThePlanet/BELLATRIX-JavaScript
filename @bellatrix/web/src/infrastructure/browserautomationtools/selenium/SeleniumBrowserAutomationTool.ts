@@ -20,6 +20,30 @@ export class SeleniumBrowserAutomationTool extends BrowserAutomationTool {
         return this._driver;
     }
 
+    override async getUrl(): Promise<string> {
+        return await this.wrappedDriver.getCurrentUrl();
+    }
+
+    override async getTitle(): Promise<string> {
+        return await this.wrappedDriver.getTitle();
+    }
+
+    override async getPageSource(): Promise<string> {
+        return await this.wrappedDriver.getPageSource();
+    }
+
+    override async back(): Promise<void> {
+        await this.wrappedDriver.navigate().back();
+    }
+
+    override async forward(): Promise<void> {
+        await this.wrappedDriver.navigate().forward();
+    }
+
+    override async refresh(): Promise<void> {
+        await this.wrappedDriver.navigate().refresh();
+    }
+
     override async close(): Promise<void> {
         await this.wrappedDriver.close();
     }
@@ -96,6 +120,31 @@ export class SeleniumBrowserAutomationTool extends BrowserAutomationTool {
     override async waitUntil(condition: (browserAutomationTool: Omit<BrowserAutomationTool, 'waitUntil'>) => boolean | Promise<boolean>, timeout: number, pollingInterval: number): Promise<void> {
         const driver = this;
         await this.wrappedDriver.wait(condition.bind(this, driver), timeout, 'Condition failed.' /* TODO: better message */, pollingInterval);
+    }
+
+    override async acceptDialog(promptText?: string | undefined): Promise<void> {
+        if (promptText === undefined) {
+            await this.wrappedDriver.switchTo().alert().accept();
+        } else {
+            await this.wrappedDriver.switchTo().alert().sendKeys(promptText);
+            await this.wrappedDriver.switchTo().alert().accept();
+        }
+
+        await this.wrappedDriver.switchTo().defaultContent();
+    }
+
+    override async dismissDialog(): Promise<void> {
+        await this.wrappedDriver.switchTo().alert().dismiss();
+
+        await this.wrappedDriver.switchTo().defaultContent();
+    }
+
+    override async getDialogMessage(): Promise<string> {
+        const message = await this.wrappedDriver.switchTo().alert().getText()
+        
+        await this.wrappedDriver.switchTo().defaultContent();
+
+        return message;
     }
 
     private async isPageFullyLoaded() {

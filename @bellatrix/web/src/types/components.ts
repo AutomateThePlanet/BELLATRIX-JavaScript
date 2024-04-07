@@ -3,7 +3,7 @@ export type HtmlAttribute = "accept" | "accept-charset" | "accesskey" | "action"
     | "contenteditable" | "controls" | "coords" | "data" | `data-${string}` | "datetime" | "default" | "defer" | "dir" | "dirname" | "disabled"
     | "download" | "draggable" | "enctype" | "enterkeyhint" | "for" | "form" | "formaction" | "headers" | "height" | "hidden" | "high" | "href"
     | "hreflang" | "http-equiv" | "id" | "inert" | "inputmode" | "ismap" | "kind" | "label" | "lang" | "list" | "longdesc" | "loop" | "low" | "max"
-    | "maxlength" | "media" | "method" | "min" | "multiple" | "muted" | "name" | "novalidate" | "onabort" | "onafterprint" | "onbeforeprint"
+    | "maxlength" | "media" | "method" | "min" | "minlength" | "multiple" | "muted" | "name" | "novalidate" | "onabort" | "onafterprint" | "onbeforeprint"
     | "onbeforeunload" | "onblur" | "oncanplay" | "oncanplaythrough" | "onchange" | "onclick" | "oncontextmenu" | "oncopy" | "oncuechange" | "oncut"
     | "ondblclick" | "ondrag" | "ondragend" | "ondragenter" | "ondragleave" | "ondragover" | "ondragstart" | "ondrop" | "ondurationchange" | "onemptied"
     | "onended" | "onerror" | "onfocus" | "onhashchange" | "oninput" | "oninvalid" | "onkeydown" | "onkeypress" | "onkeyup" | "onload" | "onloadeddata"
@@ -14,3 +14,5 @@ export type HtmlAttribute = "accept" | "accept-charset" | "accesskey" | "action"
     | "popover" | "popovertarget" | "popovertargetaction" | "poster" | "preload" | "readonly" | "rel" | "required" | "reversed" | "rows" | "rowspan"
     | "sandbox" | "scope" | "selected" | "shape" | "size" | "sizes" | "span" | "spellcheck" | "src" | "srcdoc" | "srclang" | "srcset" | "start"
     | "step" | "style" | "tabindex" | "target" | "title" | "translate" | "type" | "usemap" | "value" | "width" | "wrap";
+
+export type TextAreaWrap = "soft" | "hard";

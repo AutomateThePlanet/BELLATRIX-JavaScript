@@ -19,7 +19,7 @@ export interface TestSettings {
     parallelExecution: boolean;
 }
 
-export type BellatrixConfigurationOverride = RecursivePartial<BellatrixConfiguration>
+export type BellatrixConfigurationOverride = BellatrixConfiguration
 
 // {
 //     "frameworkSettings": {

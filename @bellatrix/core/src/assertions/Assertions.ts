@@ -6,7 +6,7 @@ export type ApproximateEqualityOptions = {
     method: 'round' | 'floor' | 'ceil'
 }
 
-export type AssertThatOptions = {
+export type AssertMultipleOptions = {
     message?: string,
     throwOnFirstError?: boolean;
     printStackOnFail?: boolean;
@@ -75,7 +75,7 @@ export class Assert {
 
         options ??= { strict: false };
         if (typeof expected === 'string' && typeof actual === 'string') {
-            stringAssert(expected, actual);
+            stringAssert(expected, actual, message);
         } else {
             const result = options.strict ? expected === actual : expected == actual;
             if (result === false) {
@@ -326,8 +326,8 @@ export class Assert {
     }
 
     static that<T>(value: T, ...expressions: AssertExpression<T>[]): void
-    static that<T>(value: T, options: AssertThatOptions, ...expressions: AssertExpression<T>[]): void
-    static that<T>(value: T, options?: AssertThatOptions | AssertExpression<T>, ...expressions: AssertExpression<T>[]) {
+    static that<T>(value: T, options: AssertMultipleOptions, ...expressions: AssertExpression<T>[]): void
+    static that<T>(value: T, options?: AssertMultipleOptions | AssertExpression<T>, ...expressions: AssertExpression<T>[]) {
         if (typeof options !== 'object') {
             return this.that(value, {}, options!, ...expressions)
         }
@@ -337,9 +337,43 @@ export class Assert {
         }
 
         const errors: Error[] = [];
-        for (const expression of [...expressions]) {
+        for (const expression of expressions) {
             try {
                 expression(value);
+            } catch (e) {
+                if (options.throwOnFirstError) {
+                    if (options.message !== undefined) throw Error(options.message, { cause: e })
+                    else throw e;
+                }
+
+                errors.push(e instanceof Error ? e : new Error('Non-Error exception occurred', { cause: e }));
+            }
+        };
+
+        if (errors.length > 1) {
+            throw new BellatrixAggregateAssertionError([...errors], options.message, options.printStackOnFail);
+        }
+
+        if (errors.length === 1) {
+            throw errors[0];
+        }
+    }
+
+    static async multiple(...expressions: Function[]): Promise<void>
+    static async multiple(options: AssertMultipleOptions, ...expressions: Function[]): Promise<void> 
+    static async multiple(options?: AssertMultipleOptions | Function, ...expressions: Function[]) {
+        if (typeof options !== 'object') {
+            return this.multiple({}, options!, ...expressions);
+        }
+
+        if (expressions[0] === undefined) {
+            throw Error('Used assert.multiple without conditions to assert.')
+        }
+
+        const errors: Error[] = [];
+        for (const expression of expressions) {
+            try {
+                await expression();
             } catch (e) {
                 if (options.throwOnFirstError) {
                     if (options.message !== undefined) throw Error(options.message, { cause: e })
@@ -623,7 +657,7 @@ function deepEquals(obj1: any, obj2: any, strict: boolean) {
     return obj1 !== obj1 && obj2 !== obj2;
 }
 
-function stringAssert(expected: string, actual: string): void {
+function stringAssert(expected: string, actual: string, message?: string): void {
     if (expected !== actual) {
         const minLength = Math.min(expected.length, actual.length);
         let diffIndex = -1;
@@ -634,7 +668,7 @@ function stringAssert(expected: string, actual: string): void {
             }
         }
 
-        throw new BellatrixAssertionError(`"${expected}"`, `"${actual}"`, `Strings differ at index ${diffIndex}.`, diffIndex + 1);
+        throw new BellatrixAssertionError(`"${expected}"`, `"${actual}"`, `${message}\nStrings differ at index ${diffIndex}.`, diffIndex + 1);
     }
 }
 
