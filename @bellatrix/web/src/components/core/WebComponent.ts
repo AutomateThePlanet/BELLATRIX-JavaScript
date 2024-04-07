@@ -6,13 +6,16 @@ import { ComponentService } from '@bellatrix/web/services';
 
 import type { Ctor, MethodNamesStartingWith } from '@bellatrix/core/types';
 import type { HtmlAttribute } from '@bellatrix/web/types';
+import { ComponentWaitService } from './ComponentWaitService';
 
 @BellatrixComponent
 export class WebComponent {
     private _cachedElement!: WebElement;
+    private _wait: ComponentWaitService;
 
     constructor(private _findStrategy: FindStrategy, private _driver: BrowserAutomationTool, private _parentElement?: WebElement, cachedElement?: WebElement) {
         this._cachedElement = cachedElement!;
+        this._wait = new ComponentWaitService(this);
     };
 
     get wrappedElement(): WebElement {
@@ -21,6 +24,10 @@ export class WebComponent {
 
     get findStrategy(): FindStrategy {
         return this._findStrategy;
+    }
+
+    get wait(): ComponentWaitService {
+        return this._wait;
     }
 
     as<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>): T {
@@ -35,9 +42,16 @@ export class WebComponent {
         return await this.wrappedElement.getAttribute(name);
     }
 
+    async isPresent(): Promise<boolean> {
+        return await this.wrappedElement.isPresent();
+    }
+
     async isVisible(): Promise<boolean> {
-        return false;
-        // TODO
+        return await this.wrappedElement.isVisible();
+    }
+
+    async isClickable(): Promise<boolean> {
+        return await this.wrappedElement.isClickable();
     }
 
     validate<T extends Uncapitalize<keyof MethodNamesStartingWith<this, 'get'> extends string ? keyof MethodNamesStartingWith<this, 'get'> : never>, K extends `get${Capitalize<T extends string ? T : never>}` & keyof this>(attribute: T & string, ...args: Parameters<this[K] extends () => any ? never : this[K] extends (...args: any) => any ? this[K] : never> extends never ? [] : Parameters<this[K] extends () => any ? never : this[K] extends (...args: any) => any ? this[K] : never>)

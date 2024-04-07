@@ -88,4 +88,20 @@ export class PlaywrightWebElement extends WebElement {
     override async selectByValue(value: string): Promise<void> {
         await this._locator.selectOption({ value: value });
     }
+
+    override async isPresent(): Promise<boolean> {
+        try {
+            return await this._locator.elementHandle() != null;
+        } catch {
+            return false;
+        }
+    }
+
+    override async isVisible(): Promise<boolean> {
+        return await this._locator.isVisible();
+    }
+
+    override async isClickable(): Promise<boolean> {
+        return await this._locator.isEnabled();
+    }
 }

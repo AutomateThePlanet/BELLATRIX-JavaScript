@@ -131,4 +131,20 @@ export class SeleniumWebElement extends WebElement {
         
         // as there is no method for this, JS must be performed
     }
+
+    override async isPresent(): Promise<boolean> {
+        try {
+            return await this._element.getId() != null;
+        } catch {
+            return false;
+        }
+    }
+
+    override async isVisible(): Promise<boolean> {
+        return await this._element.isDisplayed();
+    }
+
+    override async isClickable(): Promise<boolean> {
+        return await this._element.isEnabled();
+    }
 }

@@ -21,4 +21,8 @@ export abstract class WebElement {
     abstract selectByText(text: string): Promise<void>;
     abstract selectByIndex(index: number): Promise<void>;
     abstract selectByValue(value: string): Promise<void>;
+
+    abstract isPresent(): Promise<boolean>;
+    abstract isVisible(): Promise<boolean>;
+    abstract isClickable(): Promise<boolean>;
 }
