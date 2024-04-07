@@ -12,6 +12,11 @@ export class ComponentsList<T extends WebComponent> {
     constructor(private _type: Ctor<T, ConstructorParameters<typeof WebComponent>>, private _findStrategy: FindStrategy, private _driver: BrowserAutomationTool, private _parentElement?: WebElement) {
     };
 
+    async count(): Promise<number> {
+        const components = await this.get();
+        return components.length;
+    }
+
     async get(): Promise<T[]>;
     async get(index: number): Promise<T>;
     async get(index?: number): Promise<T | T[]> {
