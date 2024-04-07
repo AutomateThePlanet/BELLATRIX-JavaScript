@@ -12,4 +12,8 @@ export class DialogService extends WebService {
     async getMessage(): Promise<string> {
         return await this.driver.getDialogMessage();
     }
+
+    async handle(action: (dialog: DialogService) => void): Promise<void> {
+        await action(this);
+    }
 }
