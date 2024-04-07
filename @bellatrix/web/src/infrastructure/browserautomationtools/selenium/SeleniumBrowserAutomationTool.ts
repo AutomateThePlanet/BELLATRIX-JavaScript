@@ -129,14 +129,22 @@ export class SeleniumBrowserAutomationTool extends BrowserAutomationTool {
             await this.wrappedDriver.switchTo().alert().sendKeys(promptText);
             await this.wrappedDriver.switchTo().alert().accept();
         }
+
+        await this.wrappedDriver.switchTo().defaultContent();
     }
 
     override async dismissDialog(): Promise<void> {
         await this.wrappedDriver.switchTo().alert().dismiss();
+
+        await this.wrappedDriver.switchTo().defaultContent();
     }
 
     override async getDialogMessage(): Promise<string> {
-        return await this.wrappedDriver.switchTo().alert().getText();
+        const message = await this.wrappedDriver.switchTo().alert().getText()
+        
+        await this.wrappedDriver.switchTo().defaultContent();
+
+        return message;
     }
 
     private async isPageFullyLoaded() {
