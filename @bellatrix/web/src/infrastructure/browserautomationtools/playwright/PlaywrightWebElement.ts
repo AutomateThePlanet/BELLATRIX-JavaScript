@@ -104,4 +104,8 @@ export class PlaywrightWebElement extends WebElement {
     override async isClickable(): Promise<boolean> {
         return await this._locator.isEnabled();
     }
+
+    override async scrollToVisible(): Promise<void> {
+        await this._locator.scrollIntoViewIfNeeded();
+    }
 }

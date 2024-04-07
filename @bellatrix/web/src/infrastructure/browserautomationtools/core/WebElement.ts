@@ -25,4 +25,6 @@ export abstract class WebElement {
     abstract isPresent(): Promise<boolean>;
     abstract isVisible(): Promise<boolean>;
     abstract isClickable(): Promise<boolean>;
+
+    abstract scrollToVisible(): Promise<void>;
 }

@@ -147,4 +147,8 @@ export class SeleniumWebElement extends WebElement {
     override async isClickable(): Promise<boolean> {
         return await this._element.isEnabled();
     }
+
+    override async scrollToVisible(): Promise<void> {
+        await this.evaluate('el => el.scrollIntoView(true);');
+    }
 }

@@ -54,6 +54,10 @@ export class WebComponent {
         return await this.wrappedElement.isClickable();
     }
 
+    async scrollToVisible(): Promise<void> {
+        return await this.wrappedElement.scrollToVisible();
+    }
+
     validate<T extends Uncapitalize<keyof MethodNamesStartingWith<this, 'get'> extends string ? keyof MethodNamesStartingWith<this, 'get'> : never>, K extends `get${Capitalize<T extends string ? T : never>}` & keyof this>(attribute: T & string, ...args: Parameters<this[K] extends () => any ? never : this[K] extends (...args: any) => any ? this[K] : never> extends never ? [] : Parameters<this[K] extends () => any ? never : this[K] extends (...args: any) => any ? this[K] : never>)
         : Awaited<ReturnType<this[K] extends (...args: any) => any ? this[K] : never>> extends string ? StringValidator
         : Awaited<ReturnType<this[K] extends (...args: any) => any ? this[K] : never>> extends number ? NumberValidator
