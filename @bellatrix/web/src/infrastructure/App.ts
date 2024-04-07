@@ -2,10 +2,10 @@
 import { ComponentService, CookiesService, NavigationService, BrowserService, ScriptService, DialogService } from '@bellatrix/web/services';
 import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 import { ServiceLocator, SingletonFactory } from '@bellatrix/core/utilities';
+import { WebComponent } from '@bellatrix/web/components';
 import { WebPage } from '@bellatrix/web/pages';
 
 import type { Ctor, ParameterlessCtor } from '@bellatrix/core/types';
-import { WebComponent } from 'components';
 
 export class App {
     private _driver: BrowserAutomationTool;
