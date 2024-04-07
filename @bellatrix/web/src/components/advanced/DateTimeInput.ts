@@ -1,5 +1,5 @@
-import { WebComponent } from "components";
-import { BellatrixComponent } from "components/decorators";
+import { WebComponent } from "@bellatrix/web/components";
+import { BellatrixComponent } from "@bellatrix/web/components/decorators";
 
 @BellatrixComponent
 export class DateTimeInput extends WebComponent {

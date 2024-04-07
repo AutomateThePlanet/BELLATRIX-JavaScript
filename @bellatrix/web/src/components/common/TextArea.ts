@@ -1,6 +1,7 @@
 import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
-import { TextAreaWrap } from 'types';
+
+import type { TextAreaWrap } from '@bellatrix/web/types';
 
 @BellatrixComponent
 export class TextArea extends WebComponent {
