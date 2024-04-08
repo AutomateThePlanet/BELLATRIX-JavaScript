@@ -5,7 +5,7 @@ import { ServiceLocator } from '@bellatrix/core/utilities';
 import { Ctor } from '@bellatrix/core/types';
 
 @BellatrixComponent
-export class Label extends WebComponent {
+export class Label extends WebComponent<HTMLLabelElement> {
     async getInnerHtml(): Promise<string> {
         return await this.wrappedElement.getInnerHtml();
     }

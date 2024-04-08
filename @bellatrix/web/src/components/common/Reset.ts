@@ -2,7 +2,7 @@ import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
 @BellatrixComponent
-export class Reset extends WebComponent {
+export class Reset extends WebComponent<HTMLButtonElement> {
     async click(): Promise<void> {
         await this.wrappedElement.click();
     }
@@ -16,6 +16,6 @@ export class Reset extends WebComponent {
     }
 
     async isDisabled(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('required')).toLowerCase() === 'true';
+        return (await this.wrappedElement.getAttribute('disabled')).toLowerCase() === 'true';
     }
 }

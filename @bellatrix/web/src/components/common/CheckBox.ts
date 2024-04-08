@@ -2,7 +2,7 @@ import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
 @BellatrixComponent
-export class CheckBox extends WebComponent {
+export class CheckBox extends WebComponent<HTMLInputElement> {
     async check(): Promise<void> {
         return await this.wrappedElement.setChecked(true);
     }

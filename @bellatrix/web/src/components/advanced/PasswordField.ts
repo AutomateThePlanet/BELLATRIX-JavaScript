@@ -2,7 +2,7 @@ import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
 @BellatrixComponent
-export class PasswordField extends WebComponent {
+export class PasswordField extends WebComponent<HTMLInputElement> {
     async getPassword(): Promise<string> {
         return await this.getValue();
     }

@@ -2,7 +2,7 @@ import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
 @BellatrixComponent
-export class SearchField extends WebComponent {
+export class SearchField extends WebComponent<HTMLInputElement> {
     async getSearch(): Promise<string> {
         return await this.getValue();
     }

@@ -2,7 +2,7 @@ import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
 @BellatrixComponent
-export class Select extends WebComponent {
+export class Select extends WebComponent<HTMLSelectElement> {
 
     async getSelected(): Promise<void> {
         // TODO: TO IMPLEMENT THIS, FIRST A RELATIVE CREATION OF COMPONENTS MUST BE IMPLEMENTED

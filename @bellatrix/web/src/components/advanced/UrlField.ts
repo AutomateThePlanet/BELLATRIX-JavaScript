@@ -2,7 +2,7 @@ import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
 @BellatrixComponent
-export class UrlField extends WebComponent {
+export class UrlField extends WebComponent<HTMLInputElement> {
     async getUrl(): Promise<string> {
         return await this.getValue();
     }
