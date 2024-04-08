@@ -48,7 +48,7 @@ class ProductPurchaseTests extends WebTest {
         await cartPage.applyCoupon("happybirthday");
         await cartPage.asserts.couponAppliedSuccessfully();
         await cartPage.increaseProductQuantity(0, 2);
-        await cartPage.asserts.totalPrice("114.00€");
+        await cartPage.asserts.totalPrice("114.00");
         await cartPage.clickProceedToCheckout();
 
         const purchaseInfo = {
@@ -78,7 +78,7 @@ class ProductPurchaseTests extends WebTest {
         await cartPage.applyCoupon("happybirthday");
         await cartPage.asserts.couponAppliedSuccessfully();
         await cartPage.increaseProductQuantity(0, 3);
-        await cartPage.asserts.totalPrice("355.00€");
+        await cartPage.asserts.totalPrice("355.00");
         await cartPage.clickProceedToCheckout();
 
         const purchaseInfo: PurchaseInfo = {
