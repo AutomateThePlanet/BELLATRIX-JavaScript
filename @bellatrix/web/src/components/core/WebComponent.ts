@@ -6,10 +6,10 @@ import { ComponentService } from '@bellatrix/web/services';
 import { ComponentWaitService } from './ComponentWaitService';
 
 import type { Ctor, MethodNamesStartingWith } from '@bellatrix/core/types';
-import type { EvaluateFunction, HtmlAttribute } from '@bellatrix/web/types';
+import type { HtmlAttribute } from '@bellatrix/web/types';
 
 @BellatrixComponent
-export class WebComponent {
+export class WebComponent<HTMLType extends HTMLElement = HTMLElement> {
     private _cachedElement!: WebElement;
     private _wait: ComponentWaitService;
 
@@ -77,7 +77,14 @@ export class WebComponent {
         await new Validator((this[`is${attribute.charAt(0).toUpperCase() + attribute.slice(1)}` as keyof this] as Function).bind(this, ...args as any[]), attribute).isFalse();
     }
 
-    async evaluate<R, VarArgs extends any[] = []>(script: string | EvaluateFunction<R, VarArgs>, ...args: VarArgs) : Promise<R> {
+    async evaluate<R, VarArgs extends any[] = []>(script: (element: HTMLType, ...args: { [K in keyof VarArgs]: VarArgs[K] extends WebComponent<infer T> ? T : VarArgs[K] }) => R, ...args: VarArgs) : Promise<R> {
+        for (let i = 0; i < args.length; i++) {
+            if (args[i] instanceof WebComponent) {
+                await (args[i] as WebComponent).wait.toExist();
+                args[i] = (args[i] as WebComponent).wrappedElement;
+            }
+        }
+
         return await this.wrappedElement.evaluate(script, ...args) as R;
     }
 

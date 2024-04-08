@@ -1,5 +1,5 @@
-import { WebTest } from "@bellatrix/web/infrastructure";
 import { Test, TestClass } from "@bellatrix/web/test";
+import { WebTest } from "@bellatrix/web/infrastructure";
 import { Button } from "@bellatrix/web/components";
 import { MainPage, CartPage, CheckoutPage, PurchaseInfo } from "../src/pages";
 

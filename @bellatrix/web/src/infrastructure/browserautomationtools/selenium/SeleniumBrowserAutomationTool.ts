@@ -120,7 +120,7 @@ export class SeleniumBrowserAutomationTool extends BrowserAutomationTool {
             }
         }
 
-        return await this.wrappedDriver.executeScript<T>(script, ...args);
+        return await this.wrappedDriver.executeScript<T>(`return (${script})(...arguments)`, ...args);
     }
 
     override async waitUntil(condition: (browserAutomationTool: Omit<BrowserAutomationTool, 'waitUntil'>) => boolean | Promise<boolean>, timeout: number, pollingInterval: number): Promise<void> {
@@ -156,7 +156,7 @@ export class SeleniumBrowserAutomationTool extends BrowserAutomationTool {
     private async isPageFullyLoaded() {
         const driver = this.wrappedDriver;
         await driver.wait(async () => {
-            const readyState = await driver.executeScript('return document.readyState');
+            const readyState = await driver.executeScript(() => document.readyState);
             return readyState === 'complete';
         }, BellatrixSettings.get().webSettings.timeoutSettings.pageLoadTimeout);
     }

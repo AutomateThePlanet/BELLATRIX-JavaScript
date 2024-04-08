@@ -4,7 +4,7 @@ import { WebComponent } from '@bellatrix/web/components';
 const defaultSetWeek = Symbol('defaultSetWeek');
 
 @BellatrixComponent
-export class WeekInput extends WebComponent {
+export class WeekInput extends WebComponent<HTMLInputElement> {
     async getWeek(): Promise<string> {
         return await this.getValue();
     }

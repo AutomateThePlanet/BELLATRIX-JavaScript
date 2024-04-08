@@ -11,7 +11,7 @@ export class InnerTextContainingFindStrategy extends FindStrategy {
 
     override convert(): Locator {
         // TODO: It may not work for relative finding in selenium, because for relative finding the xpath must start with './/'
-        return Locator.byXpath(`//*[contains(text(), '${this._text}')]']`, this.index);
+        return Locator.byXpath(`//*[contains(text(), "${this._text.replaceAll('"', '\\"')}")]`, this.index);
     }
 
     override toString(): string {

@@ -2,7 +2,7 @@ import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
 @BellatrixComponent
-export class Option extends WebComponent {
+export class Option extends WebComponent<HTMLOptionElement> {
     async getInnerText(): Promise<string> {
         return await this.wrappedElement.getInnerText();
     }
@@ -16,11 +16,11 @@ export class Option extends WebComponent {
     }
 
     async isSelected(): Promise<boolean> {
-        return await this.wrappedElement.evaluate<boolean>(el => el.selected);
+        return await this.evaluate(el => el.selected);
     }
 
     async select(): Promise<void> {
-        await this.wrappedElement.evaluate<boolean>(el => el.selected = true);
+        await this.evaluate(el => el.selected = true);
         // TODO: validate if it succeeded
     }
 }

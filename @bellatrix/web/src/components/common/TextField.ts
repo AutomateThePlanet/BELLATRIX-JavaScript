@@ -2,7 +2,7 @@ import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
 @BellatrixComponent
-export class TextField extends WebComponent {
+export class TextField extends WebComponent<HTMLInputElement> {
     async getInnerText(): Promise<string> {
         return await this.wrappedElement.getInnerText();
     }

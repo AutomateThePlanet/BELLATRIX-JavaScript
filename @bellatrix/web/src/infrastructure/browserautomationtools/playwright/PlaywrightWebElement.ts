@@ -26,7 +26,7 @@ export class PlaywrightWebElement extends WebElement {
     }
 
     override async clear() {
-        await this._locator.evaluate<string, HTMLElement & { [key: string]: any }>(node => node.value = '');
+        await this._locator.evaluate<string, HTMLInputElement>(node => node.value = '');
     }
 
     override async getAttribute(name: HtmlAttribute): Promise<string> {
@@ -71,10 +71,14 @@ export class PlaywrightWebElement extends WebElement {
         return nativeLocators.map(locator => new PlaywrightWebElement(locator));
     }
 
-    override async evaluate<R, Args extends any[]>(script: string, ...args: Args): Promise<R> {
-        return await this._locator.evaluate(new Function(`return (${script})(...arguments)`) as any, ...args); // remove any
-        // TODO: needs testing
-        // TODO: script to be the same between selenium and playwright
+    override async evaluate<R, VarArgs extends any[]>(script: string, ...args: VarArgs): Promise<R> {
+        for (let i = 0; i < args.length; i++) {
+            if (args[i] instanceof PlaywrightWebElement) {
+                args[i] = await (args[i] as PlaywrightWebElement)['_locator'].elementHandle();
+            }
+        }
+
+        return await this._locator.evaluate(new Function(`return (${script})(arguments[0], ...arguments[1])`) as any, args);
     }
 
     override async selectByText(text: string): Promise<void> {

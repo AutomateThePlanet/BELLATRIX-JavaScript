@@ -2,7 +2,7 @@ import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
 @BellatrixComponent
-export class DateInput extends WebComponent {
+export class DateInput extends WebComponent<HTMLInputElement> {
     async getDate(): Promise<Date> {
         // TODO: TEST
         const dateString = await this.getValue();

@@ -18,6 +18,7 @@ export function BellatrixComponent(target: any) {
                     const searchContext = this._parentElement ?? ServiceLocator.resolve(BrowserAutomationTool);
 
                     this._cachedElement ??= await searchContext.findElement(this._findStrategy.convert());
+                    let error;
                     // TODO: beforemethod plugins
                     while (Date.now() - startTime < totalWaitTime) {
                         try {
@@ -25,13 +26,14 @@ export function BellatrixComponent(target: any) {
                             const result = await originalMethod.apply(this, args);
                             // TODO: aftermethod plugins
                             return result;
-                        } catch {
+                        } catch (e) {
+                            error = e;
                             this._cachedElement = await searchContext.findElement(this._findStrategy.convert());
                             await new Promise(resolve => setTimeout(resolve, 50));
                         }
                     }
 
-                    throw new Error(`Waited for 10 second and timed out. Retried '${method}' ${retryCount} time${retryCount !== 1 ? 's' : ''}.`);
+                    throw new Error(`Waited for 10 second and timed out. Retried '${method}' ${retryCount} time${retryCount !== 1 ? 's' : ''}.`, { cause: error });
                 };
             } // do we need to do something with non-async methods?
         }

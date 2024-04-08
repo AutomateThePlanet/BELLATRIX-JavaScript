@@ -36,7 +36,8 @@ export class BrowserService extends WebService {
         const sleepInterval = BellatrixSettings.get().webSettings.timeoutSettings.sleepInterval;
 
         await this.driver.waitUntil(async () => {
-            const numberOfAjaxConnections = await this.driver.executeJavascript<number | null>('return !isNaN(window.openHTTPs) ? window.openHTTPs : null');
+            const numberOfAjaxConnections = await this.driver.executeJavascript<number | null>( // @ts-ignore
+                () => !isNaN(window.openHTTPs) ? window.openHTTPs : null);
             if (numberOfAjaxConnections !== null) {
                 return numberOfAjaxConnections === 0;
             } else {
@@ -52,24 +53,24 @@ export class BrowserService extends WebService {
         const sleepInterval = BellatrixSettings.get().webSettings.timeoutSettings.sleepInterval;
 
         await this.driver.waitUntil(async () => {
-            const readyState = await this.driver.executeJavascript('return document.readyState');
+            const readyState = await this.driver.executeJavascript(() => document.readyState);
             return readyState === 'complete';
         }, waitUntilReadyTimeout, sleepInterval);
     }
 
     private async monkeyPatchXMLHttpRequest() {
-        await this.driver.executeJavascript(`(function() {
-                const oldOpen = XMLHttpRequest.prototype.open;
-                window.openHTTPs = 0;
-                XMLHttpRequest.prototype.open = function(method, url, async, user, pass) {
+        await this.driver.executeJavascript(function() {
+                const oldOpen = XMLHttpRequest.prototype.open; // @ts-ignore
+                window.openHTTPs = 0; // @ts-ignore
+                XMLHttpRequest.prototype.open = function(method, url, async, user, pass) { // @ts-ignore
                     window.openHTTPs++;
                     this.addEventListener('readystatechange', function() {
-                        if (this.readyState == 4) {
+                        if (this.readyState == 4) { // @ts-ignore
                             window.openHTTPs--;
                     }
                 }, false);
                     oldOpen.call(this, method, url, async, user, pass);
                 }
-            })();`);
+            });
     }
 }

@@ -17,8 +17,6 @@ export class SeleniumWebElement extends WebElement {
 
     override async click() {
         await this._element.click();
-        // await this._element.isDisplayed();
-        // await this._driver.executeScript('arguments[0].click();', this._element); // js click
     }
 
     override async hover() {
@@ -98,9 +96,13 @@ export class SeleniumWebElement extends WebElement {
     }
 
     override async evaluate<R>(script: string | Function, ...args: any[]): Promise<R> {
+        for (let i = 0; i < args.length; i++) {
+            if (args[i] instanceof SeleniumWebElement) {
+                args[i] = (args[i] as SeleniumWebElement)['_element'];
+            }
+        }
+
         return await this._driver.executeScript<R>(`return (${script})(...arguments)`, this._element, ...args);
-        // TODO: needs testing
-        // TODO: script to be the same between selenium and playwright
     }
 
     override async selectByText(text: string): Promise<void> {

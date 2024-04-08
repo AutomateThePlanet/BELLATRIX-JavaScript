@@ -2,7 +2,7 @@ import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
 @BellatrixComponent
-export class Anchor extends WebComponent {
+export class Anchor extends WebComponent<HTMLAnchorElement> {
     async click(): Promise<void> {
         await this.wrappedElement.click();
     }

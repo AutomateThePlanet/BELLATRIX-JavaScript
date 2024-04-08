@@ -2,7 +2,7 @@ import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
 @BellatrixComponent
-export class TimeInput extends WebComponent {
+export class TimeInput extends WebComponent<HTMLInputElement> {
     async getTime(): Promise<string> {
         return await this.getValue();
     }

@@ -121,7 +121,7 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
             }
         }
 
-        return await this._page.evaluate<R, VarArgs>(typeof script === 'string' ? this.fixJavascript(script) : new Function(`return (${script})(...arguments[0])`) as any, args);
+        return await this._page.evaluate<R, VarArgs>(new Function(`return (${script})(...arguments[0])`) as any, args);
     }
 
     override async waitUntil(condition: (browserAutomationTool: Omit<BrowserAutomationTool, 'waitUntil'>) => boolean | Promise<boolean>, timeout: number, pollingInterval: number): Promise<void> {
@@ -181,9 +181,5 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
 
     setGridSessionId(sessionId?: string) {
         this._gridSessionId = sessionId;
-    }
-
-    private fixJavascript(script: string): string {
-        return `(() => { ${script} })()`;
     }
 }

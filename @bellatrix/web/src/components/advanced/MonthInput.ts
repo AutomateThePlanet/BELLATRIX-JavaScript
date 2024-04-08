@@ -4,7 +4,7 @@ import { WebComponent } from '@bellatrix/web/components';
 const defaultSetMonth = Symbol('defaultSetMonth');
 
 @BellatrixComponent
-export class MonthInput extends WebComponent {
+export class MonthInput extends WebComponent<HTMLInputElement> {
     async getMonth(): Promise<string> {
         return await this.getValue();
     }

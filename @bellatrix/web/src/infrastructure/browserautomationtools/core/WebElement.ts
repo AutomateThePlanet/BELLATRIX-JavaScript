@@ -1,6 +1,6 @@
 import { Locator } from '.';
 
-import type { EvaluateFunction, HtmlAttribute } from '@bellatrix/web/types';
+import type { HtmlAttribute } from '@bellatrix/web/types';
 
 export abstract class WebElement {
     abstract click(): Promise<void>;
@@ -14,7 +14,7 @@ export abstract class WebElement {
     abstract setChecked(checked: boolean): Promise<void>;
     abstract setInputFile(filePath: string): Promise<void>;
     
-    abstract evaluate<R, VarArgs extends any[] = []>(script: string | EvaluateFunction<R, VarArgs>, ...args: VarArgs): Promise<R>;
+    abstract evaluate<R, VarArgs extends any[] = []>(script: string | Function, ...args: VarArgs): Promise<R>;
 
     abstract findElement(locator: Locator): Promise<WebElement>;
     abstract findElements(locator: Locator): Promise<WebElement[]>;

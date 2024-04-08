@@ -21,5 +21,3 @@ export type MethodsNamesWithArguments<T> = {
 
 export type Method<T, K extends keyof T> = T[K] extends (...args: any[]) => any ? T[K] : never;
 export type StaticMethod<T> = T extends (...args: infer Params) => infer Return ? (...args: Params) => Return : never;
-
-export type ReplaceType<T, A, B> = T extends A ? B : T;

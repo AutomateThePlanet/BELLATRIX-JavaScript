@@ -2,7 +2,7 @@ import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
 @BellatrixComponent
-export class ColorInput extends WebComponent {
+export class ColorInput extends WebComponent<HTMLInputElement> {
     async getColor(): Promise<string> {
         return await this.getValue();
     }
