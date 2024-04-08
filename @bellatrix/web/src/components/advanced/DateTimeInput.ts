@@ -10,7 +10,7 @@ export class DateTimeInput extends WebComponent {
     }
 
     async setTime(dateTime: Date): Promise<void> {
-        await this.defaultSetValue(dateTime.toString());
+        await this.evaluate(el => el.value = dateTime.toDateString());
     }
 
     async getMax(): Promise<Date> {

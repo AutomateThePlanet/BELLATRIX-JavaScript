@@ -14,7 +14,7 @@ export class NameFindStrategy extends FindStrategy {
     }
 
     override toString(): string {
-        return `name is ${this._name}`;
+        return `name = ${this._name}`;
     }
 }
 

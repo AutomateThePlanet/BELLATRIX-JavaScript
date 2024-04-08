@@ -16,3 +16,5 @@ export type HtmlAttribute = "accept" | "accept-charset" | "accesskey" | "action"
     | "step" | "style" | "tabindex" | "target" | "title" | "translate" | "type" | "usemap" | "value" | "width" | "wrap";
 
 export type TextAreaWrap = "soft" | "hard";
+
+export type EvaluateFunction<R, VarArgs extends any[] = []> = (element: HTMLElement & { [key: string]: any }, ...args: VarArgs) => R;

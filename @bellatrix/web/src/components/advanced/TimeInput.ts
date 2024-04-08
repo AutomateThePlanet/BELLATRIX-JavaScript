@@ -8,7 +8,7 @@ export class TimeInput extends WebComponent {
     }
 
     async setTime(hours: number, minutes: number): Promise<void> {
-        await this.defaultSetValue(`${hours}:${minutes}:00`);
+        await this.evaluate(el => el.value = `${hours}:${minutes}:00`);
     }
 
     async getMax(): Promise<string> {

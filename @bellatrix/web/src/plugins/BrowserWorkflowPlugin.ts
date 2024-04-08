@@ -1,5 +1,4 @@
 import { Plugin } from '@bellatrix/core/infrastructure';
-import { BellatrixSettings } from '@bellatrix/core/settings';
 import { TestExecutionEngine } from '@bellatrix/web/infrastructure';
 
 export class BrowserWorkflowPlugin extends Plugin {

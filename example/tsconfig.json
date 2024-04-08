@@ -1,12 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
-    "rootDir": "src",
-    "outDir": "lib",
-    "paths": {
-      "@bellatrix/core/*": [ "../../core/src/*" ]
-    },
-    "lib": [ "ESNext", "DOM" ],
+    "lib": ["ESNext", "DOM"],
     "module": "esnext",
     "target": "esnext",
     "moduleResolution": "bundler",
@@ -23,9 +17,4 @@
     "forceConsistentCasingInFileNames": true,
     "allowJs": false
   },
-  "references": [
-    { "path": "../core" }
-  ],
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules"]
 }

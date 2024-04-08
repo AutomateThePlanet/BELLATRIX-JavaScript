@@ -1,0 +1,16 @@
+{
+  "name": "example",
+  "version": "0.0.1",
+  "dependencies": {
+    "@bellatrix/core": "file:../@bellatrix/core",
+    "@bellatrix/web": "file:../@bellatrix/web",
+    "@bellatrix/runner": "file:../@bellatrix/runner"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "scripts": {
+    "test": "bellatrix ./tests"
+  },
+  "type": "module"
+}

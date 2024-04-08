@@ -11,7 +11,7 @@ export class DateInput extends WebComponent {
 
     async setDate(date: Date): Promise<void> {
         // TODO: TEST
-        await this.defaultSetValue(date.toDateString());
+        await this.evaluate(el => el.value = date.toDateString());
     }
 
     async getMax(): Promise<Date> {

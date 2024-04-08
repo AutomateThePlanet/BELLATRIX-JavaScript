@@ -8,7 +8,7 @@ export class RangeInput extends WebComponent {
     }
 
     async setRange(range: number): Promise<void> {
-        await this.defaultSetValue(range);
+        await this.evaluate(el => el.value = range);
     }
 
     async isAutoComplete(): Promise<boolean> {

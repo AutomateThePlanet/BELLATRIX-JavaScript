@@ -10,7 +10,7 @@ export class CartPage extends WebPage<CartPageMap, CartPageAsserts> {
     }
 
     protected override async waitForPageLoad() {
-        await this.map.couponCodeTextField.wait().toExist();
+        await this.map.couponCodeTextField.wait.toExist();
     }
 
     async applyCoupon(coupon: string) {

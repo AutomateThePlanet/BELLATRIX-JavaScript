@@ -10,7 +10,7 @@ export class MainPage extends WebPage<MainPageMap, MainPageAsserts> {
     }
 
     protected override async waitForPageLoad() {
-        await this.map.addToCartFalcon9.wait().toExist();
+        await this.map.addToCartFalcon9.wait.toExist();
     }
 
     async addRocketToShoppingCart(rocketName: string) {

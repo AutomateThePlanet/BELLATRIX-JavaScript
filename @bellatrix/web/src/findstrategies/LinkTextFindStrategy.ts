@@ -15,7 +15,7 @@ export class LinkTextFindStrategy extends FindStrategy {
     }
 
     override toString(): string {
-        return `link text is ${this._linkText}`;
+        return `link text = ${this._linkText}`;
     }
 }
 

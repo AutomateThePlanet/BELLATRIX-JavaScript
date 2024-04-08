@@ -6,7 +6,7 @@ import { ComponentService } from '@bellatrix/web/services';
 import { ComponentWaitService } from './ComponentWaitService';
 
 import type { Ctor, MethodNamesStartingWith } from '@bellatrix/core/types';
-import type { HtmlAttribute } from '@bellatrix/web/types';
+import type { EvaluateFunction, HtmlAttribute } from '@bellatrix/web/types';
 
 @BellatrixComponent
 export class WebComponent {
@@ -77,13 +77,8 @@ export class WebComponent {
         await new Validator((this[`is${attribute.charAt(0).toUpperCase() + attribute.slice(1)}` as keyof this] as Function).bind(this, ...args as any[]), attribute).isFalse();
     }
 
-    async evaluate<R>(script: string | Function, ...args: any[]) : Promise<R> {
-        return await this.wrappedElement.evaluate(script, args) as R;
-    }
-
-    // TODO: Remove
-    protected async defaultSetValue(value: string | number | boolean): Promise<string> {
-        return await this.wrappedElement.evaluate(`el => el.value = "${value}"`);
+    async evaluate<R, VarArgs extends any[] = []>(script: string | EvaluateFunction<R, VarArgs>, ...args: VarArgs) : Promise<R> {
+        return await this.wrappedElement.evaluate(script, ...args) as R;
     }
 
     create<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>) {

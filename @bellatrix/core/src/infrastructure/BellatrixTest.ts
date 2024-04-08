@@ -1,5 +1,7 @@
 import { Symbols } from '@bellatrix/core/constants';
-import { PluginExecutionEngine } from '@bellatrix/core/infrastructure';
+import { Plugin, PluginExecutionEngine } from '@bellatrix/core/infrastructure';
+
+import type { InstanceOrParameterlessCtor } from '@bellatrix/core/types';
 
 let isConfigExecuted = false;
 
@@ -29,5 +31,9 @@ export abstract class BellatrixTest {
 
     async [Symbols.afterAll](): Promise<void> {
         await PluginExecutionEngine.executeAfterSuiteHook(this.afterAll.bind(this), this.constructor as typeof BellatrixTest);
+    }
+
+    addPlugin(plugin: InstanceOrParameterlessCtor<Plugin>) {
+        PluginExecutionEngine.addPlugin(plugin);
     }
 }

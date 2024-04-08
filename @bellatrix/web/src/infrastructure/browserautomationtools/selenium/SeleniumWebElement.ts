@@ -98,15 +98,7 @@ export class SeleniumWebElement extends WebElement {
     }
 
     override async evaluate<R>(script: string | Function, ...args: any[]): Promise<R> {
-        return await this._driver.executeScript<R>(`
-            const tempArgs = Array.from(arguments);
-            const element = tempArgs.shift();
-            for (let i = 0; i < tempArgs.length; i++) {
-                arguments[i] = tempArgs[i];
-            }
-            arguments.length = tempArgs.length;
-            return (${script})(element);
-        `, this._element, args);
+        return await this._driver.executeScript<R>(`return (${script})(...arguments)`, this._element, ...args);
         // TODO: needs testing
         // TODO: script to be the same between selenium and playwright
     }

@@ -15,6 +15,8 @@ export class App {
         ServiceLocator.registerSingleton(NavigationService, new NavigationService(this._driver));
         ServiceLocator.registerSingleton(CookiesService, new CookiesService(this._driver));
         ServiceLocator.registerSingleton(BrowserService, new BrowserService(this._driver));
+        ServiceLocator.registerSingleton(ScriptService, new ScriptService(this._driver));
+        ServiceLocator.registerSingleton(DialogService, new DialogService(this._driver));
     }
 
     get navigation() { return ServiceLocator.resolve(NavigationService) };

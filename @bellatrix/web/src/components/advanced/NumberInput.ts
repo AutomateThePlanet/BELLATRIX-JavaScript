@@ -8,7 +8,7 @@ export class NumberInput extends WebComponent {
     }
 
     async setNumber(number: number): Promise<void> {
-        await this.defaultSetValue(`${number}`);
+        await this.wrappedElement.setText(`${number}`);
     }
 
     async isAutoComplete(): Promise<boolean> {

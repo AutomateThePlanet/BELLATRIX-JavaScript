@@ -33,9 +33,12 @@ const config: BellatrixConfigurationOverride = {
             baseUrl: 'https://demos.bellatrix.solutions/'
         },
         remoteExecutionSettings: {
-            remoteUrl: 'localhost:4444',
-            user: '', // rename
-            key: '' // rename
+            provider: 'LambdaTest',
+            username: '',
+            accessKey: '',
+            capabilities: {
+                browserName: 'chrome'
+            }
         }
     }
 };

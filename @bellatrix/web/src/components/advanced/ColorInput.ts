@@ -8,7 +8,7 @@ export class ColorInput extends WebComponent {
     }
 
     async setColor(color: string): Promise<void> {
-        await this.defaultSetValue(color);
+        await this.evaluate(el => el.value = color);
     }
 
     async isAutoComplete(): Promise<boolean> {

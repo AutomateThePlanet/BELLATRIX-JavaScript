@@ -1,6 +1,8 @@
 import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
+const defaultSetWeek = Symbol('defaultSetWeek');
+
 @BellatrixComponent
 export class WeekInput extends WebComponent {
     async getWeek(): Promise<string> {
@@ -8,7 +10,7 @@ export class WeekInput extends WebComponent {
     }
 
     async setWeek(year: number, weekNumber: number): Promise<void> {
-        await this.defaultSetWeek(year, weekNumber);
+        await this[defaultSetWeek](year, weekNumber);
     }
 
     async getMax(): Promise<string> {
@@ -44,22 +46,16 @@ export class WeekInput extends WebComponent {
         return await this.wrappedElement.getAttribute('value');
     } 
 
-    private async defaultSetWeek(year: number, weekNumber: number): Promise<void> {
-        if (weekNumber <= 0 || weekNumber > 52) {
-            throw new Error(`The week number should be between 0 and 53 but you specified: ${weekNumber}`);
+    private async [defaultSetWeek](year: number, weekNumber: number): Promise<void> {
+        if (weekNumber < 1 || weekNumber > 52) {
+            throw new Error(`The week number should be between 1 and 52 but you specified: ${weekNumber}`);
         }
         if (year <= 0) {
             throw new Error(`The year should be a positive number but you specified: ${year}`);
         }
 
-        let valueToBeSet: string;
+        const valueToBeSet = `${year}-W${weekNumber.toString().padStart(2, '0')}`;
 
-        if (weekNumber < 10) {
-            valueToBeSet = `${year}-W0${weekNumber}`;
-        } else {
-            valueToBeSet = `${year}-W${weekNumber}`;
-        }
-
-        this.defaultSetValue(valueToBeSet);
+        this.evaluate(el => el.value = valueToBeSet);
     }
 }

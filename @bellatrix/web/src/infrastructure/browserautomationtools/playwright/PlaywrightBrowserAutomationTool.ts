@@ -114,8 +114,14 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
         await this._context.addCookies(updatedCookies);
     }
 
-    override async executeJavascript<T, VarArgs extends any[]>(script: string | ((...args: VarArgs) => T), ...args: VarArgs): Promise<T> {
-        return await this._page.evaluate<T, VarArgs>(typeof script === 'string' ? this.fixJavascript(script) : () => script(...args), args);
+    override async executeJavascript<R, VarArgs extends any[] = []>(script: string | ((...args: VarArgs) => R), ...args: VarArgs): Promise<R> {
+        for (let i = 0; i < args.length; i++) {
+            if (args[i] instanceof PlaywrightWebElement) {
+                args[i] = await (args[i] as PlaywrightWebElement)['_locator'].elementHandle();
+            }
+        }
+
+        return await this._page.evaluate<R, VarArgs>(typeof script === 'string' ? this.fixJavascript(script) : new Function(`return (${script})(...arguments[0])`) as any, args);
     }
 
     override async waitUntil(condition: (browserAutomationTool: Omit<BrowserAutomationTool, 'waitUntil'>) => boolean | Promise<boolean>, timeout: number, pollingInterval: number): Promise<void> {

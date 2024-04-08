@@ -114,6 +114,12 @@ export class SeleniumBrowserAutomationTool extends BrowserAutomationTool {
     }
 
     override async executeJavascript<T, VarArgs extends any[]>(script: string | ((...args: VarArgs) => T), ...args: VarArgs): Promise<T> {
+        for (let i = 0; i < args.length; i++) {
+            if (args[i] instanceof SeleniumWebElement) {
+                args[i] = (args[i] as SeleniumWebElement)['_element'];
+            }
+        }
+
         return await this.wrappedDriver.executeScript<T>(script, ...args);
     }
 

@@ -1,19 +1,10 @@
-import { PluginExecutionEngine } from "@bellatrix/core/infrastructure";
 import { WebTest } from "@bellatrix/web/infrastructure";
 import { Test, TestClass } from "@bellatrix/web/test";
-import { BrowserWorkflowPlugin } from "./base";
 import { Button } from "@bellatrix/web/components";
-import { CheckoutPage } from "./pages/checkoutpage/CheckoutPage";
-import { MainPage } from "./pages/mainpage/MainPage";
-import { CartPage } from "./pages/cartpage/CartPage";
-import { PurchaseInfo } from "./pages/checkoutpage/PurchaseInfo";
+import { MainPage, CartPage, CheckoutPage, PurchaseInfo } from "../src/pages";
 
 @TestClass
 class ProductPurchaseTests extends WebTest {
-    override async configure() {
-        PluginExecutionEngine.addPlugin(BrowserWorkflowPlugin);
-    }
-
     override async afterEach() {
         await this.app.cookies.clearCookies();
     }
@@ -56,7 +47,7 @@ class ProductPurchaseTests extends WebTest {
         const cartPage = this.app.createPage(CartPage);
         await cartPage.applyCoupon("happybirthday");
         await cartPage.asserts.couponAppliedSuccessfully();
-        await cartPage.increaseProductQuantity(2);
+        await cartPage.increaseProductQuantity(0, 2);
         await cartPage.asserts.totalPrice("114.00€");
         await cartPage.clickProceedToCheckout();
 
@@ -86,7 +77,7 @@ class ProductPurchaseTests extends WebTest {
         const cartPage = this.app.createPage(CartPage);
         await cartPage.applyCoupon("happybirthday");
         await cartPage.asserts.couponAppliedSuccessfully();
-        await cartPage.increaseProductQuantity(3);
+        await cartPage.increaseProductQuantity(0, 3);
         await cartPage.asserts.totalPrice("355.00€");
         await cartPage.clickProceedToCheckout();
 

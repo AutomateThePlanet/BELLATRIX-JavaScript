@@ -1,6 +1,8 @@
 import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
+const defaultSetMonth = Symbol('defaultSetMonth');
+
 @BellatrixComponent
 export class MonthInput extends WebComponent {
     async getMonth(): Promise<string> {
@@ -8,7 +10,7 @@ export class MonthInput extends WebComponent {
     }
 
     async setMonth(year: number, month: number): Promise<void> {
-        await this.defaultSetMonth(year, month);
+        await this[defaultSetMonth](year, month);
     }
 
     async getMax(): Promise<string> {
@@ -43,7 +45,7 @@ export class MonthInput extends WebComponent {
         return await this.wrappedElement.getAttribute('value');
     } 
 
-    private async defaultSetMonth(year: number, month: number): Promise<void> {
+    private async [defaultSetMonth](year: number, month: number): Promise<void> {
         if (year <= 0) {
             throw Error(`The year should be a positive number but you specified: ${year}`);
         }
@@ -60,6 +62,6 @@ export class MonthInput extends WebComponent {
             valueToBeSet = `${year}-${month}`;
         }
 
-        await this.defaultSetValue(valueToBeSet);
+        await this.evaluate(el => el.value = valueToBeSet);
     }
 }

@@ -14,7 +14,7 @@ export class TagFindStrategy extends FindStrategy {
     }
 
     override toString(): string {
-        return `tag is <${this._tag}>`;
+        return `tag = <${this._tag}>`;
     }
 }
 
