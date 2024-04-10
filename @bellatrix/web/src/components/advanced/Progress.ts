@@ -4,7 +4,7 @@ import { WebComponent } from '@bellatrix/web/components';
 @BellatrixComponent
 export class Progress extends WebComponent<HTMLProgressElement> {
     async getMax(): Promise<number> {
-        return parseFloat(await this.wrappedElement.getAttribute('max'));
+        return parseFloat(await this.getAttribute('max'));
     }
 
     async getInnerText(): Promise<string> {
@@ -12,6 +12,6 @@ export class Progress extends WebComponent<HTMLProgressElement> {
     }
     
     async getValue(): Promise<number> {
-        return parseFloat(await this.wrappedElement.getAttribute('value'));
+        return parseFloat(await this.getAttribute('value'));
     } 
 }

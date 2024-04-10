@@ -8,7 +8,7 @@ export class Button extends WebComponent<HTMLButtonElement> {
     }
 
     async isDisabled(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('disabled')).toLowerCase() === 'true';
+        return (await this.getAttribute('disabled')).toLowerCase() === 'true';
     }
 
     async getInnerText(): Promise<string> {
@@ -16,6 +16,6 @@ export class Button extends WebComponent<HTMLButtonElement> {
     }
 
     async getValue(): Promise<string> {
-        return await this.wrappedElement.getAttribute('value');
+        return await this.getAttribute('value');
     }
 }

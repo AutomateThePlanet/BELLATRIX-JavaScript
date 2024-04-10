@@ -8,7 +8,7 @@ export class Anchor extends WebComponent<HTMLAnchorElement> {
     }
 
     async getHref(): Promise<string> {
-        return await this.wrappedElement.getAttribute('href');
+        return await this.getAttribute('href');
     }
 
     async getInnerText(): Promise<string> {
@@ -20,10 +20,10 @@ export class Anchor extends WebComponent<HTMLAnchorElement> {
     }
 
     async getTarget(): Promise<string> {
-        return await this.wrappedElement.getAttribute('target');
+        return await this.getAttribute('target');
     }
 
     async getRel(): Promise<string> {
-        return await this.wrappedElement.getAttribute('rel');
+        return await this.getAttribute('rel');
     }
 }

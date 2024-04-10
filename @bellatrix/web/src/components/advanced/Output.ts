@@ -4,7 +4,7 @@ import { WebComponent } from '@bellatrix/web/components';
 @BellatrixComponent
 export class Output extends WebComponent<HTMLOutputElement> {
     async getFor(): Promise<string> {
-        return await this.wrappedElement.getAttribute('for');
+        return await this.getAttribute('for');
     }
     
     async getInnerHtml(): Promise<string> {

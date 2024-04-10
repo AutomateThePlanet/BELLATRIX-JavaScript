@@ -12,22 +12,22 @@ export class ColorInput extends WebComponent<HTMLInputElement> {
     }
 
     async isAutoComplete(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('autocomplete')).toLowerCase() === 'true';
+        return (await this.getAttribute('autocomplete')).toLowerCase() === 'true';
     }
 
     async isDisabled(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('disabled')).toLowerCase() === 'true';
+        return (await this.getAttribute('disabled')).toLowerCase() === 'true';
     }  
 
     async getList(): Promise<string> {
-        return await this.wrappedElement.getAttribute('list');
+        return await this.getAttribute('list');
     }
 
     async isRequired(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('required')).toLowerCase() === 'true';
+        return (await this.getAttribute('required')).toLowerCase() === 'true';
     }
     
     async getValue(): Promise<string> {
-        return await this.wrappedElement.getAttribute('value');
+        return await this.getAttribute('value');
     } 
 }

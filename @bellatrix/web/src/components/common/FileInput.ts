@@ -8,14 +8,14 @@ export class FileInput extends WebComponent<HTMLInputElement> {
     }
     
     async isRequired(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('required')).toLowerCase() === 'true';
+        return (await this.getAttribute('required')).toLowerCase() === 'true';
     }
 
     async isMultiple(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('multiple')).toLowerCase() === 'true';
+        return (await this.getAttribute('multiple')).toLowerCase() === 'true';
     }
 
     async getAccept(): Promise<string> {
-        return await this.wrappedElement.getAttribute('accept');
+        return await this.getAttribute('accept');
     }
 }

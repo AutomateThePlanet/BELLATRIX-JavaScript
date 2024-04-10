@@ -3,48 +3,45 @@ import { WebComponent } from '@bellatrix/web/components';
 
 @BellatrixComponent
 export class DateInput extends WebComponent<HTMLInputElement> {
-    async getDate(): Promise<Date> {
-        // TODO: TEST
-        const dateString = await this.getValue();
-        return new Date(dateString);
+    async getDate(): Promise<Date | null> {
+        return await this.evaluate(el => el.valueAsDate);
     }
 
     async setDate(date: Date): Promise<void> {
-        // TODO: TEST
         await this.evaluate(el => el.value = date.toDateString());
     }
 
-    async getMax(): Promise<Date> {
-        const dateString = await this.wrappedElement.getAttribute('max');
-        return new Date(dateString);
+    async getMax(): Promise<Date | null> {
+        const dateString = await this.getAttribute('max');
+        return dateString === '' ? null : new Date(dateString);
     }
 
-    async getMin(): Promise<Date> {
-        const dateString = await this.wrappedElement.getAttribute('min');
-        return new Date(dateString);
+    async getMin(): Promise<Date | null> {
+        const dateString = await this.getAttribute('min');
+        return dateString === '' ? null : new Date(dateString);
     }
 
     async isAutoComplete(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('autocomplete')).toLowerCase() === 'true';
+        return (await this.getAttribute('autocomplete')).toLowerCase() === 'true';
     }
 
     async isReadonly(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('readonly')).toLowerCase() === 'true';
+        return (await this.getAttribute('readonly')).toLowerCase() === 'true';
     }
 
     async isDisabled(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('disabled')).toLowerCase() === 'true';
+        return (await this.getAttribute('disabled')).toLowerCase() === 'true';
     }  
     
     async isRequired(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('required')).toLowerCase() === 'true';
+        return (await this.getAttribute('required')).toLowerCase() === 'true';
     }
 
     async getStep(): Promise<number> {
-        return parseFloat(await this.wrappedElement.getAttribute('step'));
+        return parseFloat(await this.getAttribute('step'));
     }
     
     async getValue(): Promise<string> {
-        return await this.wrappedElement.getAttribute('value');
+        return await this.getAttribute('value');
     } 
 }
