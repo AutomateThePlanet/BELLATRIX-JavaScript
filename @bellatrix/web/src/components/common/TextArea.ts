@@ -14,50 +14,50 @@ export class TextArea extends WebComponent<HTMLTextAreaElement> {
     }
 
     async isReadOnly(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('readonly')).toLowerCase() === 'true';
+        return (await this.getAttribute('readonly')).toLowerCase() === 'true';
     }
 
     async isDisabled(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('disabled')).toLowerCase() === 'true';
+        return (await this.getAttribute('disabled')).toLowerCase() === 'true';
     }
 
     async isRequired(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('required')).toLowerCase() === 'true';
+        return (await this.getAttribute('required')).toLowerCase() === 'true';
     }
 
     async isAutoComplete(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('autocomplete')).toLowerCase() === 'true';
+        return (await this.getAttribute('autocomplete')).toLowerCase() === 'true';
     }
 
     async getValue(): Promise<string> {
-        return await this.wrappedElement.getAttribute('value');
+        return await this.getAttribute('value');
     }
 
     async getMinLength(): Promise<number> {
-        return parseInt(await this.wrappedElement.getAttribute('min'));
+        return parseInt(await this.getAttribute('min'));
     }
 
     async getMaxLength(): Promise<number> {
-        return parseInt(await this.wrappedElement.getAttribute('max'));
+        return parseInt(await this.getAttribute('max'));
     }
 
     async getPlaceholder(): Promise<string> {
-        return await this.wrappedElement.getAttribute('placeholder');
+        return await this.getAttribute('placeholder');
     }
 
     async getRows(): Promise<number> {
-        return parseInt(await this.wrappedElement.getAttribute('rows'));
+        return parseInt(await this.getAttribute('rows'));
     }
     
     async getCols(): Promise<number> {
-        return parseInt(await this.wrappedElement.getAttribute('cols'));
+        return parseInt(await this.getAttribute('cols'));
     }
 
     async getSpellCheck(): Promise<string> {
-        return await this.wrappedElement.getAttribute('spellcheck');
+        return await this.getAttribute('spellcheck');
     }
 
     async getWrap(): Promise<TextAreaWrap> {
-        return await this.wrappedElement.getAttribute('wrap') as TextAreaWrap;
+        return await this.getAttribute('wrap') as TextAreaWrap;
     }
 }

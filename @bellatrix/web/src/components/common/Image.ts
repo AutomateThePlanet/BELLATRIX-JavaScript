@@ -4,30 +4,30 @@ import { WebComponent } from '@bellatrix/web/components';
 @BellatrixComponent
 export class Image extends WebComponent<HTMLImageElement> {
     async getSrc(): Promise<string> {
-        return await this.wrappedElement.getAttribute('src');
+        return await this.getAttribute('src');
     }
 
     async getLongDesc(): Promise<string> {
-        return await this.wrappedElement.getAttribute('longdesc');
+        return await this.getAttribute('longdesc');
     }
 
     async getAlt(): Promise<string> {
-        return await this.wrappedElement.getAttribute('alt');
+        return await this.getAttribute('alt');
     }
 
     async getSrcSet(): Promise<string> {
-        return await this.wrappedElement.getAttribute('srcset');
+        return await this.getAttribute('srcset');
     }
 
     async getSizes(): Promise<string> {
-        return await this.wrappedElement.getAttribute('sizes');
+        return await this.getAttribute('sizes');
     }
 
     async getHeight(): Promise<number> {
-        return parseFloat(await this.wrappedElement.getAttribute('height'));
+        return parseFloat(await this.getAttribute('height'));
     }
 
     async getWidth(): Promise<number> {
-        return parseFloat(await this.wrappedElement.getAttribute('width'));
+        return parseFloat(await this.getAttribute('width'));
     }
 }

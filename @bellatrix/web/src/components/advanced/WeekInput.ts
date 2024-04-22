@@ -14,36 +14,36 @@ export class WeekInput extends WebComponent<HTMLInputElement> {
     }
 
     async getMax(): Promise<string> {
-        return await this.wrappedElement.getAttribute('max');
+        return await this.getAttribute('max');
     }
 
     async getMin(): Promise<string> {
-        return await this.wrappedElement.getAttribute('min');
+        return await this.getAttribute('min');
     }
 
     async isAutoComplete(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('autocomplete')).toLowerCase() === 'true';
+        return (await this.getAttribute('autocomplete')).toLowerCase() === 'true';
     }
 
     async isReadonly(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('readonly')).toLowerCase() === 'true';
+        return (await this.getAttribute('readonly')).toLowerCase() === 'true';
     }
 
 
     async isDisabled(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('disabled')).toLowerCase() === 'true';
+        return (await this.getAttribute('disabled')).toLowerCase() === 'true';
     }  
     
     async isRequired(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('required')).toLowerCase() === 'true';
+        return (await this.getAttribute('required')).toLowerCase() === 'true';
     }
 
     async getStep(): Promise<number> {
-        return parseFloat(await this.wrappedElement.getAttribute('step'));
+        return parseFloat(await this.getAttribute('step'));
     }
     
     async getValue(): Promise<string> {
-        return await this.wrappedElement.getAttribute('value');
+        return await this.getAttribute('value');
     } 
 
     private async [defaultSetWeek](year: number, weekNumber: number): Promise<void> {

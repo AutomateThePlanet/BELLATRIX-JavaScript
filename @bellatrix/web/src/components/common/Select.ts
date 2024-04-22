@@ -40,14 +40,14 @@ export class Select extends WebComponent<HTMLSelectElement> {
     }
 
     async isDisabled(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('disabled')).toLowerCase() === 'true';
+        return (await this.getAttribute('disabled')).toLowerCase() === 'true';
     }
 
     async isReadonly(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('readonly')).toLowerCase() === 'true';
+        return (await this.getAttribute('readonly')).toLowerCase() === 'true';
     }
 
     async isRequired(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('required')).toLowerCase() === 'true';
+        return (await this.getAttribute('required')).toLowerCase() === 'true';
     }
 }

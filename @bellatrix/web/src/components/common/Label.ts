@@ -15,7 +15,7 @@ export class Label extends WebComponent<HTMLLabelElement> {
     }
 
     async getFor(): Promise<string> {
-        return await this.wrappedElement.getAttribute('for');
+        return await this.getAttribute('for');
     }
 
     async getRelatedComponent<T extends WebComponent>(type?: Ctor<T, ConstructorParameters<typeof WebComponent>>): Promise<T> {

@@ -4,10 +4,10 @@ import { WebComponent } from '@bellatrix/web/components';
 @BellatrixComponent
 export class Frame extends WebComponent<HTMLIFrameElement> {
     async getName(): Promise<string> {
-        return await this.wrappedElement.getAttribute('name');
+        return await this.getAttribute('name');
     }
 
     async getHref(): Promise<string> {
-        return await this.wrappedElement.getAttribute('href');
+        return await this.getAttribute('href');
     }
 }

@@ -12,42 +12,42 @@ export class NumberInput extends WebComponent<HTMLInputElement> {
     }
 
     async isAutoComplete(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('autocomplete')).toLowerCase() === 'true';
+        return (await this.getAttribute('autocomplete')).toLowerCase() === 'true';
     }
 
     async getMin(): Promise<number> {
-        return parseFloat(await this.wrappedElement.getAttribute('min'));
+        return parseFloat(await this.getAttribute('min'));
     }
 
     async getMax(): Promise<number> {
-        return parseFloat(await this.wrappedElement.getAttribute('max'));
+        return parseFloat(await this.getAttribute('max'));
     }
 
     async getPlaceholder(): Promise<string> {
-        return await this.wrappedElement.getAttribute('placeholder');
+        return await this.getAttribute('placeholder');
     }
 
     async isReadonly(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('readonly')).toLowerCase() === 'true';
+        return (await this.getAttribute('readonly')).toLowerCase() === 'true';
     }
 
     async isDisabled(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('disabled')).toLowerCase() === 'true';
+        return (await this.getAttribute('disabled')).toLowerCase() === 'true';
     }
 
     async isRequired(): Promise<boolean> {
-        return (await this.wrappedElement.getAttribute('required')).toLowerCase() === 'true';
+        return (await this.getAttribute('required')).toLowerCase() === 'true';
     }
 
     async getStep(): Promise<number> {
-        return parseFloat(await this.wrappedElement.getAttribute('step'));
+        return parseFloat(await this.getAttribute('step'));
     }
     
     async getSize(): Promise<number> {
-        return parseInt(await this.wrappedElement.getAttribute('size'));
+        return parseInt(await this.getAttribute('size'));
     }
 
     async getValue(): Promise<string> {
-        return await this.wrappedElement.getAttribute('value');
+        return await this.getAttribute('value');
     } 
 }
