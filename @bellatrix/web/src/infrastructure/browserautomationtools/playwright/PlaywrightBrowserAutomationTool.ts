@@ -148,13 +148,11 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
             } catch (e) {
                 if (e instanceof Error) {
                     error = e;
-                } else {
-                    throw e;
                 }
             }
         }
 
-        error ??= Error('Condition failed'); // TODO: Add more descriptive message
+        error ??= Error('Condition failed'); // method threw but e is not instance of Error
         throw error;
     }
 
