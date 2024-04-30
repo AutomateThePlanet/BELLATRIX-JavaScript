@@ -14,7 +14,16 @@ export class PlaywrightWebElement extends WebElement {
     }
 
     override async click(): Promise<void> {
-        await this._locator.click(); // TODO: { timeout: 10_000 } for click timeout 10 seconds
+        await this._locator.click({
+            timeout: 5000, // TODO: Get from config.
+            trial: true,
+        });
+        
+        try {
+            await this._locator.click({ timeout: 30, noWaitAfter: true, force: true });
+        } catch {
+            // ignore error, workaround for dialog popup
+        }
     }
 
     override async hover(): Promise<void> {

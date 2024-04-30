@@ -129,13 +129,13 @@ export class SeleniumBrowserAutomationTool extends BrowserAutomationTool {
     }
 
     override async acceptDialog(promptText?: string | undefined): Promise<void> {
-        if (promptText === undefined) {
-            await this.wrappedDriver.switchTo().alert().accept();
-        } else {
-            await this.wrappedDriver.switchTo().alert().sendKeys(promptText);
-            await this.wrappedDriver.switchTo().alert().accept();
+        const alert = await this.wrappedDriver.switchTo().alert();
+        
+        if (promptText) {
+            await alert.sendKeys(promptText);
         }
 
+        await alert.accept();
         await this.wrappedDriver.switchTo().defaultContent();
     }
 

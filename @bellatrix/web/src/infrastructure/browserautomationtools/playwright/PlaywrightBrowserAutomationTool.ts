@@ -10,12 +10,22 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
     private _context: BrowserContext;
     private _page: Page;
     private _gridSessionId: string | undefined;
+    private _dialog: Dialog | undefined;
+    private _dialogAutoDismiss: NodeJS.Timeout | undefined;
 
     constructor(browser: Browser, context: BrowserContext, page: Page) {
         super();
         this._browser = browser;
         this._context = context;
         this._page = page;
+
+        this._page.on('dialog', dialog => {
+            this._dialog = dialog;
+            this._dialogAutoDismiss = setTimeout(() => {
+                this._dialog?.dismiss();
+                this._dialog = undefined;
+            }, 5_000); // dismiss dialog if no action after 5 seconds
+        });
     }
 
     override get type(): string {
@@ -27,7 +37,7 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
     }
 
     override async getUrl(): Promise<string> {
-        return await this._page.url();
+        return this._page.url();
     }
 
     override async getTitle(): Promise<string> {
@@ -138,48 +148,47 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
             } catch (e) {
                 if (e instanceof Error) {
                     error = e;
+                } else {
+                    throw e;
                 }
             }
         }
 
-        error ??= Error('Condition failed');
+        error ??= Error('Condition failed'); // TODO: Add more descriptive message
         throw error;
     }
 
-    // TODO: NEEDS TESTING
     override async acceptDialog(promptText?: string | undefined): Promise<void> {
-        const dialogHandler = async (dialog: Dialog) => {
-            await dialog.accept(promptText);
-
-            this._page.off('dialog', dialogHandler);
-        }
-
-        await this._page.waitForEvent('dialog').then(dialogHandler);
+        this.checkForDialog();
+        await this._dialog!.accept(promptText);
+        this.clearDialog();
     }
 
-    // TODO: NEEDS TESTING
     override async dismissDialog(): Promise<void> {
-        const dialogHandler = async (dialog: Dialog) => {
-            await dialog.dismiss();
-
-            this._page.off('dialog', dialogHandler);
-        }
-
-        await this._page.waitForEvent('dialog').then(dialogHandler);
+        this.checkForDialog();
+        await this._dialog!.dismiss();
+        this.clearDialog();
     }
 
-    // TODO: NEEDS TESTING
     override async getDialogMessage(): Promise<string> {
-        const dialogHandler = async (dialog: Dialog) => {
-            this._page.off('dialog', dialogHandler);
-
-            return dialog.message();
-        }
-
-        return await this._page.waitForEvent('dialog').then(dialogHandler);
+        this.checkForDialog();
+        return this._dialog!.message();
     }
 
     setGridSessionId(sessionId?: string) {
         this._gridSessionId = sessionId;
+    }
+
+    private checkForDialog(): void {
+        if (!this._dialog) {
+            throw Error('Dialog not found.'); // TODO: More descriptive message
+        }
+    }
+
+    private clearDialog(): void {
+        if (this._dialogAutoDismiss) {
+            clearTimeout(this._dialogAutoDismiss);
+        }
+        this._dialog = undefined;
     }
 }
