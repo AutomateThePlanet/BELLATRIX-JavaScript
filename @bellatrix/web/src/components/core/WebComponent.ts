@@ -39,7 +39,7 @@ export class WebComponent<HTMLType extends HTMLElement = HTMLElement> {
     }
 
     async getAttribute(name: HtmlAttribute): Promise<string> {
-        return await this.getAttribute(name);
+        return await this.wrappedElement.getAttribute(name);
     }
 
     async isPresent(): Promise<boolean> {
