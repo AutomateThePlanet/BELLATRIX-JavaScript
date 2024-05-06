@@ -24,7 +24,6 @@
   },
   "dependencies": {
     "@bellatrix/core": "file:../core",
-    "node-html-parser": "^6.1.13",
     "selenium-webdriver": "^4.16.0"
   },
   "peerDependencies": {

@@ -6,7 +6,7 @@ import type { HtmlAttribute } from '@bellatrix/web/types';
 import { BellatrixSettings } from '@bellatrix/core/settings';
 
 export class PlaywrightWebElement extends WebElement {
-    private _locator: NativeLocator;
+    protected _locator: NativeLocator;
 
     constructor(locator: NativeLocator) {
         super();

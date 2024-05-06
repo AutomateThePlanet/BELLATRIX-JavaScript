@@ -11,7 +11,7 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
     private _page: Page;
     private _gridSessionId: string | undefined;
     private _dialog: Dialog | undefined;
-    private _dialogAutoDismiss: NodeJS.Timeout | undefined;
+    private _dialogAutoDismiss: number | undefined;
 
     constructor(browser: Browser, context: BrowserContext, page: Page) {
         super();
