@@ -8,8 +8,16 @@ import type { Ctor } from '@bellatrix/core/types';
 export class ComponentsList<T extends WebComponent> {
     private _cachedComponents?: T[];
     private _foundAll: boolean = false;
+    private _type: Ctor<T, ConstructorParameters<typeof WebComponent>>;
+    private _findStrategy: FindStrategy;
+    private _driver: BrowserAutomationTool;
+    private _parentElement?: WebElement;
 
-    constructor(private _type: Ctor<T, ConstructorParameters<typeof WebComponent>>, private _findStrategy: FindStrategy, private _driver: BrowserAutomationTool, private _parentElement?: WebElement) {
+    constructor(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, findStrategy: FindStrategy, driver: BrowserAutomationTool, parentElement?: WebElement) {
+        this._type = type;
+        this._findStrategy = findStrategy;
+        this._driver = driver;
+        this._parentElement = parentElement;
     };
 
     async count(): Promise<number> {

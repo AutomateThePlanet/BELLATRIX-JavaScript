@@ -12,8 +12,14 @@ import type { HtmlAttribute } from '@bellatrix/web/types';
 export class WebComponent<HTMLType extends HTMLElement = HTMLElement> {
     private _cachedElement!: WebElement;
     private _wait: ComponentWaitService;
+    private _findStrategy: FindStrategy;
+    private _driver: BrowserAutomationTool;
+    private _parentElement?: WebElement;
 
-    constructor(private _findStrategy: FindStrategy, private _driver: BrowserAutomationTool, private _parentElement?: WebElement, cachedElement?: WebElement) {
+    constructor(findStrategy: FindStrategy, driver: BrowserAutomationTool, parentElement?: WebElement, cachedElement?: WebElement) {
+        this._findStrategy = findStrategy;
+        this._driver = driver;
+        this._parentElement = parentElement;
         this._cachedElement = cachedElement!;
         this._wait = new ComponentWaitService(this);
     };
