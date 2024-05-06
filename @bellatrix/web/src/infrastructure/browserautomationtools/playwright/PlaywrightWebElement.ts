@@ -63,7 +63,17 @@ export class PlaywrightWebElement extends WebElement {
     }
 
     override async findElement(locator: Locator): Promise<WebElement> {
-        const nativeLocator: NativeLocator = this._locator.locator(locator.value).first();
+        let nativeLocator: NativeLocator;
+        switch (locator.type) {
+            case 'css':
+                nativeLocator = this._locator.locator(`css=${locator.value}`).first();
+                break;
+            case 'xpath':
+                nativeLocator = this._locator.locator(`xpath=${locator.value}`).first();
+                break;
+            default:
+                throw new Error(`Invalid locator type: ${locator.type}`);
+        }
 
         try {
             nativeLocator.waitFor({ timeout: BellatrixSettings.get().webSettings.timeoutSettings.findElementTimeout });
@@ -75,7 +85,17 @@ export class PlaywrightWebElement extends WebElement {
     }
 
     override async findElements(locator: Locator): Promise<WebElement[]> {
-        const nativeLocators: NativeLocator[] = await this._locator.locator(locator.value).all();
+        let nativeLocators: NativeLocator[];
+        switch (locator.type) {
+            case 'css':
+                nativeLocators = await this._locator.locator(`css=${locator.value}`).all();
+                break;
+            case 'xpath':
+                nativeLocators = await this._locator.locator(`xpath=${locator.value}`).all();
+                break;
+            default:
+                throw new Error(`Invalid locator type: ${locator.type}`);
+        }
 
         return nativeLocators.map(locator => new PlaywrightWebElement(locator));
     }

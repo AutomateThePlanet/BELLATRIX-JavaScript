@@ -3,7 +3,6 @@ import { WebElement as NativeWebElement, WebDriver as NativeWebDriver, until, By
 import { Locator, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 
 import type { HtmlAttribute } from '@bellatrix/web/types';
-import { BellatrixSettings } from '@bellatrix/core/settings';
 
 export class SeleniumWebElement extends WebElement {
     private _element: NativeWebElement;
