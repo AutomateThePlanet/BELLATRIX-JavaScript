@@ -1,4 +1,4 @@
-import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { BrowserAutomationTool, SearchContext } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 import { ServiceLocator } from '@bellatrix/core/utilities';
 
 export function BellatrixComponent(target: any) {
@@ -11,7 +11,7 @@ export function BellatrixComponent(target: any) {
 
             if (isAsync) {
                 target.prototype[method] = async function (...args: any[]) {
-                    const searchContext = this._parentElement ?? ServiceLocator.resolve(BrowserAutomationTool);
+                    const searchContext: SearchContext = this._parentElement ?? ServiceLocator.resolve(BrowserAutomationTool);
                     this._cachedElement ??= await searchContext.findElement(this._findStrategy.convert());
 
                     let retryCount = 10;

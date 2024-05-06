@@ -1,4 +1,4 @@
-import { Locator, WebElement } from '.';
+import { Locator, SearchContext, WebElement } from '.';
 
 export type Cookie = {
     name: string;
@@ -11,7 +11,7 @@ export type Cookie = {
     sameSite?: 'Strict' | 'Lax' | 'None';
 }
 
-export abstract class BrowserAutomationTool {
+export abstract class BrowserAutomationTool implements SearchContext {
     abstract get type(): string;
 
     abstract getUrl(): Promise<string>;

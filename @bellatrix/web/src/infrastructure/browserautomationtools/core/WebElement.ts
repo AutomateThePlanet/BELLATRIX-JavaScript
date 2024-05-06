@@ -1,8 +1,8 @@
-import { Locator } from '.';
+import { Locator, SearchContext } from '.';
 
 import type { HtmlAttribute } from '@bellatrix/web/types';
 
-export abstract class WebElement {
+export abstract class WebElement implements SearchContext {
     abstract click(): Promise<void>;
     abstract hover(): Promise<void>;
     abstract setText(value: string): Promise<void>;
