@@ -2,12 +2,11 @@ import { BrowserAutomationTool, WebElement } from '@bellatrix/web/infrastructure
 import { Validator, StringValidator, NumberValidator, UnknownValidator, BooleanValidator } from '@bellatrix/web/validators';
 import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { FindStrategy } from '@bellatrix/web/findstrategies';
-import { ComponentService } from '@bellatrix/web/services';
-import { ComponentWaitService } from './ComponentWaitService';
+import { ComponentService, ComponentWaitService } from '@bellatrix/web/services';
+import { ShadowRootContext } from '.';
 
 import type { Ctor, MethodNamesStartingWith } from '@bellatrix/core/types';
 import type { HtmlAttribute } from '@bellatrix/web/types';
-import { ShadowRootContext } from './ShadowRootContext';
 
 @BellatrixComponent
 export class WebComponent<HTMLType extends Element = Element> {
@@ -95,11 +94,11 @@ export class WebComponent<HTMLType extends Element = Element> {
         return await this.wrappedElement.evaluate(script, ...args) as R;
     }
 
-    async getShadowRoot(): Promise<ShadowRootContext | null> {
+    async getShadowRoot(): Promise<ShadowRootContext> {
         const shadowRoot = await this.wrappedElement.getShadowRoot();
         
         if (!shadowRoot) {
-            return null;
+            throw Error('Shadow root not found.');
         }
 
         return new ShadowRootContext(this._driver, this.wrappedElement, shadowRoot)

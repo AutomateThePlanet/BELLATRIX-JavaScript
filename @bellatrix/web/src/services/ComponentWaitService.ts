@@ -1,4 +1,4 @@
-import { WebComponent } from ".";
+import { WebComponent } from "@bellatrix/web/components";
 
 export class ComponentWaitService {
     private _component: WebComponent;

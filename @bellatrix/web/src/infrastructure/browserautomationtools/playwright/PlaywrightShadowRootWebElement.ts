@@ -57,7 +57,7 @@ export class PlaywrightShadowRootWebElement extends PlaywrightWebElement {
             return true;
         }
 
-        const shadowRoot = (await this['_locator'].evaluateHandle(element => element.shadowRoot)).asElement();
+        const shadowRoot = (await this['_locator'].evaluateHandle(el => el.shadowRoot)).asElement();
         
         if (!shadowRoot) {
             return false;

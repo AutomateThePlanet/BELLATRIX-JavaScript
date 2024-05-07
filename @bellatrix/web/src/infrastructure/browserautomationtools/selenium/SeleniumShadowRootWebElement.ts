@@ -53,6 +53,6 @@ export class SeleniumShadowRootWebElement extends SeleniumWebElement {
         }
 
         const elements = await this['_element'].findElements(by);
-        return elements.map(element => new SeleniumWebElement(element, this['_driver']) /* TODO: handle error? */);
+        return elements.map(el => new SeleniumWebElement(el, this['_driver']) /* TODO: handle error? */);
     }
 }

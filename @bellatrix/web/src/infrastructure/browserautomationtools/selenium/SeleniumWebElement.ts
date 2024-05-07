@@ -1,9 +1,9 @@
 import { WebElement as NativeWebElement, WebDriver as NativeWebDriver, By } from 'selenium-webdriver';
 
 import { Locator, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { SeleniumShadowRootWebElement } from '.';
 
 import type { HtmlAttribute } from '@bellatrix/web/types';
-import { SeleniumShadowRootWebElement } from './SeleniumShadowRootWebElement';
 
 export class SeleniumWebElement extends WebElement {
     private _element: NativeWebElement;
@@ -92,7 +92,7 @@ export class SeleniumWebElement extends WebElement {
         }
 
         const elements = await this._element.findElements(by);
-        return elements.map(element => new SeleniumWebElement(element, this._driver) /* TODO: handle error? */);
+        return elements.map(el => new SeleniumWebElement(el, this._driver) /* TODO: handle error? */);
     }
 
     override async evaluate<R>(script: string | Function, ...args: any[]): Promise<R> {
@@ -151,7 +151,11 @@ export class SeleniumWebElement extends WebElement {
     }
 
     override async getShadowRoot(): Promise<WebElement | null> {
-        const shadowRoot = await this._element.getShadowRoot();
-        return new SeleniumShadowRootWebElement(this._element, this._driver, shadowRoot);
+        try {
+            const shadowRoot = await this._element.getShadowRoot();
+            return new SeleniumShadowRootWebElement(this._element, this._driver, shadowRoot);
+        } catch {
+            return null;
+        }
     }
 }

@@ -87,7 +87,7 @@ export class SeleniumBrowserAutomationTool extends BrowserAutomationTool {
         }
 
         const elements = await this._driver.findElements(by);
-        return elements.map(element => new SeleniumWebElement(element, this._driver) /* TODO: handle error? */);
+        return elements.map(el => new SeleniumWebElement(el, this._driver) /* TODO: handle error? */);
     }
 
     override async addCookie(cookie: Cookie): Promise<void> {
