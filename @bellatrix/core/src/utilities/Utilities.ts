@@ -65,4 +65,18 @@ export class Utilities {
 
         throw Error("The given XPath does not return an element.");
     }
+
+    static relativeXpathToAbsoluteCss(htmlSoruce: string, xpath: string): string[] {
+        const absoluteXpaths = Utilities.relativeToAbsoluteXpath(htmlSoruce, xpath);
+
+        return absoluteXpaths.map(absoluteXpath => {
+            const cssSelector = absoluteXpath.split('/').filter(Boolean).map(currentXpath => {
+                return currentXpath.replace(/(\w+)(\[\d+\])?/g, (_, tagName, index) => {
+                    return `${tagName}:nth-child(${index?.slice(1, -1)})`;
+                })
+            });
+
+            return cssSelector.join(' > ');
+        })
+    }
 }

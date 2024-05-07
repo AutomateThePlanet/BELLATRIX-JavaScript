@@ -1,8 +1,9 @@
-import { WebElement as NativeWebElement, WebDriver as NativeWebDriver, until, By } from 'selenium-webdriver';
+import { WebElement as NativeWebElement, WebDriver as NativeWebDriver, By } from 'selenium-webdriver';
 
 import { Locator, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 
 import type { HtmlAttribute } from '@bellatrix/web/types';
+import { SeleniumShadowRootWebElement } from './SeleniumShadowRootWebElement';
 
 export class SeleniumWebElement extends WebElement {
     private _element: NativeWebElement;
@@ -96,8 +97,12 @@ export class SeleniumWebElement extends WebElement {
 
     override async evaluate<R>(script: string | Function, ...args: any[]): Promise<R> {
         for (let i = 0; i < args.length; i++) {
-            if (args[i] instanceof SeleniumWebElement) {
+            if (args[i].constructor === SeleniumWebElement) {
                 args[i] = (args[i] as SeleniumWebElement)['_element'];
+            }
+
+            if (args[i].constructor === SeleniumShadowRootWebElement) {
+                args[i] = await this.evaluate('el => el.shadowRoot')
             }
         }
 
@@ -143,5 +148,10 @@ export class SeleniumWebElement extends WebElement {
 
     override async scrollToVisible(): Promise<void> {
         await this.evaluate('el => el.scrollIntoView(true);');
+    }
+
+    override async getShadowRoot(): Promise<WebElement | null> {
+        const shadowRoot = await this._element.getShadowRoot();
+        return new SeleniumShadowRootWebElement(this._element, this._driver, shadowRoot);
     }
 }

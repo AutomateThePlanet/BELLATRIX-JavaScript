@@ -1,7 +1,7 @@
 import { By, WebDriver as NativeWebDriver, until } from 'selenium-webdriver';
 
 import { Cookie, BrowserAutomationTool, WebElement, Locator } from '@bellatrix/web/infrastructure/browserautomationtools/core';
-import { SeleniumWebElement } from '@bellatrix/web/infrastructure/browserautomationtools/selenium';
+import { SeleniumShadowRootWebElement, SeleniumWebElement } from '@bellatrix/web/infrastructure/browserautomationtools/selenium';
 import { BellatrixSettings } from '@bellatrix/core/settings';
 
 export class SeleniumBrowserAutomationTool extends BrowserAutomationTool {
@@ -115,8 +115,12 @@ export class SeleniumBrowserAutomationTool extends BrowserAutomationTool {
 
     override async executeJavascript<T, VarArgs extends any[]>(script: string | ((...args: VarArgs) => T), ...args: VarArgs): Promise<T> {
         for (let i = 0; i < args.length; i++) {
-            if (args[i] instanceof SeleniumWebElement) {
+            if (args[i].constructor === SeleniumWebElement) {
                 args[i] = (args[i] as SeleniumWebElement)['_element'];
+            }
+
+            if (args[i].constructor === SeleniumShadowRootWebElement) {
+                args[i] = await this.executeJavascript('el => el.shadowRoot', (args[i] as SeleniumShadowRootWebElement)['_element'])
             }
         }
 

@@ -7,9 +7,10 @@ import { ComponentWaitService } from './ComponentWaitService';
 
 import type { Ctor, MethodNamesStartingWith } from '@bellatrix/core/types';
 import type { HtmlAttribute } from '@bellatrix/web/types';
+import { ShadowRootContext } from './ShadowRootContext';
 
 @BellatrixComponent
-export class WebComponent<HTMLType extends HTMLElement = HTMLElement> {
+export class WebComponent<HTMLType extends Element = Element> {
     private _cachedElement!: WebElement;
     private _wait: ComponentWaitService;
     private _findStrategy: FindStrategy;
@@ -92,6 +93,16 @@ export class WebComponent<HTMLType extends HTMLElement = HTMLElement> {
         }
 
         return await this.wrappedElement.evaluate(script, ...args) as R;
+    }
+
+    async getShadowRoot(): Promise<ShadowRootContext | null> {
+        const shadowRoot = await this.wrappedElement.getShadowRoot();
+        
+        if (!shadowRoot) {
+            return null;
+        }
+
+        return new ShadowRootContext(this._driver, this.wrappedElement, shadowRoot)
     }
 
     create<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>) {

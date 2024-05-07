@@ -1,12 +1,13 @@
-import { Locator as NativeLocator } from '@playwright/test';
+import { Locator as NativeLocator, ElementHandle as NativeElementHandle } from '@playwright/test';
 
 import { Locator, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { BellatrixSettings } from '@bellatrix/core/settings';
+import { PlaywrightShadowRootWebElement } from '.';
 
 import type { HtmlAttribute } from '@bellatrix/web/types';
-import { BellatrixSettings } from '@bellatrix/core/settings';
 
 export class PlaywrightWebElement extends WebElement {
-    protected _locator: NativeLocator;
+    private _locator: NativeLocator;
 
     constructor(locator: NativeLocator) {
         super();
@@ -102,8 +103,12 @@ export class PlaywrightWebElement extends WebElement {
 
     override async evaluate<R, VarArgs extends any[]>(script: string, ...args: VarArgs): Promise<R> {
         for (let i = 0; i < args.length; i++) {
-            if (args[i] instanceof PlaywrightWebElement) {
+            if (args[i].constructor === PlaywrightWebElement) {
                 args[i] = await (args[i] as PlaywrightWebElement)['_locator'].elementHandle();
+            }
+
+            if (args[i].constructor === PlaywrightShadowRootWebElement) {
+                args[i] = (args[i] as PlaywrightShadowRootWebElement)['_shadowNodeElementHandle'];
             }
         }
 
@@ -123,6 +128,10 @@ export class PlaywrightWebElement extends WebElement {
     }
 
     override async isPresent(): Promise<boolean> {
+        if (this.constructor === PlaywrightShadowRootWebElement) {
+            return true;
+        }
+
         try {
             return await this._locator.elementHandle() != null;
         } catch {
@@ -140,5 +149,14 @@ export class PlaywrightWebElement extends WebElement {
 
     override async scrollToVisible(): Promise<void> {
         await this._locator.scrollIntoViewIfNeeded();
+    }
+
+    override async getShadowRoot(): Promise<WebElement | null> {
+        const shadowRoot = new PlaywrightShadowRootWebElement(this);
+        if (!await shadowRoot.tryAttachShadowRoot()) {
+            return null;
+        }
+        
+        return shadowRoot;
     }
 }
