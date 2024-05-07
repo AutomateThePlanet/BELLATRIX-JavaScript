@@ -17,14 +17,17 @@
     "./test": "./src/test/index.ts",
     "./types": "./src/types/index.ts",
     "./waitstrategies": "./src/waitstrategies/index.ts",
-    "./validators": "./src/validators/index.ts"
+    "./validators": "./src/validators/index.ts",
+    "./utilities": "./src/utilities/index.ts"
   },
   "devDependencies": {
     "@types/selenium-webdriver": "^4.1.21"
   },
   "dependencies": {
     "@bellatrix/core": "file:../core",
-    "selenium-webdriver": "^4.16.0"
+    "@xmldom/xmldom": "^0.8.10",
+    "selenium-webdriver": "^4.16.0",
+    "xpath": "^0.0.34"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"

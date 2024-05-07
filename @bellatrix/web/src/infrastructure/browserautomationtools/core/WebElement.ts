@@ -10,6 +10,7 @@ export abstract class WebElement implements SearchContext {
     abstract getAttribute(name: HtmlAttribute): Promise<string>;
     abstract getInnerText(): Promise<string>;
     abstract getInnerHtml(): Promise<string>;
+    abstract getOuterHtml(): Promise<string>;
     abstract isChecked(): Promise<boolean>;
     abstract setChecked(checked: boolean): Promise<void>;
     abstract setInputFile(filePath: string): Promise<void>;

@@ -2,7 +2,7 @@ import { Locator as NativeLocator, ElementHandle as NativeElementHandle } from '
 
 import { Locator, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 import { BellatrixSettings } from '@bellatrix/core/settings';
-import { PlaywrightShadowRootWebElement } from '.';
+import { PlaywrightShadowRootWebElement } from './PlaywrightShadowRootWebElement';
 
 import type { HtmlAttribute } from '@bellatrix/web/types';
 
@@ -49,6 +49,10 @@ export class PlaywrightWebElement extends WebElement {
 
     override async getInnerHtml(): Promise<string> {
         return await this._locator.innerHTML();
+    }
+
+    override async getOuterHtml(): Promise<string> {
+        return await this._locator.evaluate(el => el.outerHTML);
     }
 
     override async isChecked(): Promise<boolean> {

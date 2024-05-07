@@ -1,8 +1,8 @@
-import { ElementHandle as NativeElementHandle } from '@playwright/test';
+import { Locator as NativeLocator, ElementHandle as NativeElementHandle } from '@playwright/test';
 
+import { Utilities } from '@bellatrix/web/utilities';
 import { Locator, WebElement } from "@bellatrix/web/infrastructure/browserautomationtools/core";
-import { Utilities } from '@bellatrix/core/utilities';
-import { PlaywrightWebElement } from ".";
+import { PlaywrightWebElement } from "./PlaywrightWebElement";
 
 export class PlaywrightShadowRootWebElement extends PlaywrightWebElement {
     private _shadowNodeElementHandle!: NativeElementHandle<ShadowRoot | Element>;
@@ -16,13 +16,27 @@ export class PlaywrightShadowRootWebElement extends PlaywrightWebElement {
 
     override async findElement(locator: Locator): Promise<WebElement> {
         let nativeElementHandle: NativeElementHandle<Element> | null | undefined;
+        const searchContext = this._shadowNodeElementHandle ?? this['_locator'];
         switch (locator.type) {
             case 'css':
-                nativeElementHandle = await this._shadowNodeElementHandle.$(locator.value);
+                nativeElementHandle = await searchContext.$(locator.value);
                 break;
             case 'xpath':
-                const cssLocators = Utilities.relativeXpathToAbsoluteCss(await this._shadowNodeElementHandle.innerHTML(), locator.value);
-                nativeElementHandle = await this._shadowNodeElementHandle.$(cssLocators[0]);
+                const cssLocators = await Utilities.relativeXpathToAbsoluteCss(this, locator.value);
+
+                if (cssLocators.length === 0) {
+                    break;
+                }
+
+                const shadowRoot = this._shadowNodeElementHandle ?? await this['_locator'].evaluateHandle((el: Node) => {
+                    while (el.parentNode) {
+                        el = el.parentNode;
+                    }
+
+                    return el;
+                });
+
+                nativeElementHandle = await shadowRoot.$(cssLocators[0]);
                 break;
             default:
                 throw new Error(`Invalid locator type: ${locator.type}`);
@@ -32,24 +46,55 @@ export class PlaywrightShadowRootWebElement extends PlaywrightWebElement {
             throw Error(`Element at ${locator.value} not found.`); // TODO: better error handling?
         }
 
-        return new PlaywrightShadowRootWebElement(this, nativeElementHandle);
+        const webElement = new PlaywrightShadowRootWebElement(this, nativeElementHandle);
+        webElement['_locator'] = nativeElementHandle as unknown as NativeLocator; // They have the same methods, the different ones are overriden
+        return webElement;
     }
 
     override async findElements(locator: Locator): Promise<WebElement[]> {
         let nativeElementHandles: (NativeElementHandle<Element> | null | undefined)[];
+        const searchContext = this._shadowNodeElementHandle ?? this['_locator'];
         switch (locator.type) {
             case 'css':
-                nativeElementHandles = await this._shadowNodeElementHandle.$$(locator.value);
+                nativeElementHandles = await searchContext.$$(locator.value);
                 break;
             case 'xpath':
-                const cssLocators = Utilities.relativeXpathToAbsoluteCss(await this._shadowNodeElementHandle.innerHTML(), locator.value);
-                nativeElementHandles = await Promise.all(cssLocators.map(async cssLocator => await this._shadowNodeElementHandle.$(cssLocator)));
+                const cssLocators = await Utilities.relativeXpathToAbsoluteCss(this, locator.value);
+
+                const shadowRoot = this._shadowNodeElementHandle ?? await this['_locator'].evaluateHandle((el: Node) => {
+                    while (el.parentNode) {
+                        el = el.parentNode;
+                    }
+
+                    return el;
+                });
+
+                nativeElementHandles = await Promise.all(cssLocators.map(async cssLocator => await shadowRoot.$(cssLocator)));
                 break;
             default:
                 throw new Error(`Invalid locator type: ${locator.type}`);
         }
 
-        return nativeElementHandles.map(nativeElementHandle => new PlaywrightShadowRootWebElement(this, nativeElementHandle));
+        return nativeElementHandles.map(nativeElementHandle => {
+            const webElement = new PlaywrightShadowRootWebElement(this, nativeElementHandle);
+            webElement['_locator'] = nativeElementHandle as unknown as NativeLocator; // They have the same methods, the different ones are overriden
+            return webElement;
+        });
+    }
+
+    override async evaluate<R, VarArgs extends any[]>(script: string, ...args: VarArgs): Promise<R> {
+        for (let i = 0; i < args.length; i++) {
+            if (args[i].constructor === PlaywrightWebElement) {
+                args[i] = await (args[i] as PlaywrightWebElement)['_locator'].elementHandle();
+            }
+
+            if (args[i].constructor === PlaywrightShadowRootWebElement) {
+                args[i] = (args[i] as PlaywrightShadowRootWebElement)['_shadowNodeElementHandle'];
+            }
+        }
+
+        const searchContext = this._shadowNodeElementHandle ?? this['_locator'];
+        return await searchContext.evaluate(new Function(`return (${script})(arguments[0], ...arguments[1])`) as any, args);
     }
 
     async tryAttachShadowRoot(): Promise<boolean> {

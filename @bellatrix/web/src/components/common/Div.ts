@@ -7,6 +7,10 @@ export class Div extends WebComponent<HTMLDivElement> {
         return await this.wrappedElement.getInnerHtml();
     }
 
+    async getOuterHtml(): Promise<string> {
+        return await this.wrappedElement.getOuterHtml();
+    }
+
     async getInnerText(): Promise<string> {
         return await this.wrappedElement.getInnerText();
     }

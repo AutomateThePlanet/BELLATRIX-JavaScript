@@ -1,7 +1,7 @@
 import { WebElement as NativeWebElement, WebDriver as NativeWebDriver, By } from 'selenium-webdriver';
 
 import { Locator, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
-import { SeleniumShadowRootWebElement } from '.';
+import { SeleniumShadowRootWebElement } from './SeleniumShadowRootWebElement';
 
 import type { HtmlAttribute } from '@bellatrix/web/types';
 
@@ -45,6 +45,10 @@ export class SeleniumWebElement extends WebElement {
 
     override async getInnerHtml(): Promise<string> {
         return await this._element.getAttribute('innerHTML');
+    }
+
+    override async getOuterHtml(): Promise<string> {
+        return await this._element.getAttribute('outerHTML');
     }
 
     override async isChecked(): Promise<boolean> {
@@ -102,7 +106,7 @@ export class SeleniumWebElement extends WebElement {
             }
 
             if (args[i].constructor === SeleniumShadowRootWebElement) {
-                args[i] = await this.evaluate('el => el.shadowRoot')
+                args[i] = await (args[i] as SeleniumShadowRootWebElement).evaluate('el => el.shadowRoot');
             }
         }
 
@@ -153,7 +157,7 @@ export class SeleniumWebElement extends WebElement {
     override async getShadowRoot(): Promise<WebElement | null> {
         try {
             const shadowRoot = await this._element.getShadowRoot();
-            return new SeleniumShadowRootWebElement(this._element, this._driver, shadowRoot);
+            return new SeleniumShadowRootWebElement(this._element, this._driver, shadowRoot, true);
         } catch {
             return null;
         }

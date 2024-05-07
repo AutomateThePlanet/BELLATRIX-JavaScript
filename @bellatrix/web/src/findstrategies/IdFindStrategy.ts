@@ -10,7 +10,7 @@ export class IdFindStrategy extends FindStrategy {
     }
 
     override convert(): Locator {
-        return Locator.byCss(`[id='${this._id}']`, this.index);
+        return Locator.byCss(`#${this._id}`, this.index);
     }
 
     override toString(): string {

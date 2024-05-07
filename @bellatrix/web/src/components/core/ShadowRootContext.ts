@@ -7,11 +7,11 @@ import { WebComponent } from '.';
 export class ShadowRootContext<DOMType extends ShadowRoot = ShadowRoot> {
     private _cachedElement: WebElement;
     private _driver: BrowserAutomationTool;
-    private _parentElement: WebElement;
+    private _parentComponent: WebComponent | ShadowRootContext;
 
-    constructor(driver: BrowserAutomationTool, parentElement: WebElement, cachedElement: WebElement) {
+    constructor(driver: BrowserAutomationTool, parentComponent: WebComponent | ShadowRootContext, cachedElement: WebElement) {
         this._driver = driver;
-        this._parentElement = parentElement;
+        this._parentComponent = parentComponent;
         this._cachedElement = cachedElement;
     };
 
@@ -33,7 +33,7 @@ export class ShadowRootContext<DOMType extends ShadowRoot = ShadowRoot> {
         return await this.wrappedElement.evaluate(script, ...args) as R;
     }
 
-    create<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>) {
-        return new ComponentService(this._driver, type, this.wrappedElement);
+    create<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>): ComponentService<T> {
+        return new ComponentService(this._driver, type, this);
     }
 }

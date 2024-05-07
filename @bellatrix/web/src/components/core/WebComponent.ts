@@ -14,12 +14,12 @@ export class WebComponent<HTMLType extends Element = Element> {
     private _wait: ComponentWaitService;
     private _findStrategy: FindStrategy;
     private _driver: BrowserAutomationTool;
-    private _parentElement?: WebElement;
+    private _parentComponent?: WebComponent | ShadowRootContext;
 
-    constructor(findStrategy: FindStrategy, driver: BrowserAutomationTool, parentElement?: WebElement, cachedElement?: WebElement) {
+    constructor(findStrategy: FindStrategy, driver: BrowserAutomationTool, parentComponent?: WebComponent | ShadowRootContext, cachedElement?: WebElement) {
         this._findStrategy = findStrategy;
         this._driver = driver;
-        this._parentElement = parentElement;
+        this._parentComponent = parentComponent;
         this._cachedElement = cachedElement!;
         this._wait = new ComponentWaitService(this);
     };
@@ -101,10 +101,10 @@ export class WebComponent<HTMLType extends Element = Element> {
             throw Error('Shadow root not found.');
         }
 
-        return new ShadowRootContext(this._driver, this.wrappedElement, shadowRoot)
+        return new ShadowRootContext(this._driver, this, shadowRoot)
     }
 
-    create<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>) {
-        return new ComponentService(this._driver, type, this.wrappedElement);
+    create<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>): ComponentService<T> {
+        return new ComponentService(this._driver, type, this);
     }
 }

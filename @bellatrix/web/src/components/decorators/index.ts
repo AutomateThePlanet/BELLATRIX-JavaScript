@@ -1,1 +1,1 @@
-export * from './BellatrixComponent'
+export { BellatrixComponent } from './BellatrixComponent'

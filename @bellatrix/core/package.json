@@ -20,13 +20,11 @@
   "dependencies": {
     "@jest/globals": "^29.7.0",
     "@playwright/test": "^1.41.0",
-    "@xmldom/xmldom": "^0.8.10",
     "jasmine": "^5.1.0",
     "jasmine-core": "^5.1.1",
     "mocha": "^10.2.0",
     "reflect-metadata": "^0.2.1",
-    "vitest": "^1.2.1",
-    "xpath": "^0.0.34"
+    "vitest": "^1.2.1"
   },
   "devDependencies": {
     "c8": "^9.1.0",
