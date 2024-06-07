@@ -4,6 +4,7 @@
 
 export * from './ComponentsList';
 export * from './WebComponent';
+export * from './ShadowRootContext';
 
 // type ExtractAsyncMethods<T> = {
 //     [K in keyof T]: T[K] extends (...args: any[]) => Promise<any> ? K : never;

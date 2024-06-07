@@ -1,8 +1,8 @@
-import { Locator } from '.';
+import { Locator, SearchContext } from '.';
 
 import type { HtmlAttribute } from '@bellatrix/web/types';
 
-export abstract class WebElement {
+export abstract class WebElement implements SearchContext {
     abstract click(): Promise<void>;
     abstract hover(): Promise<void>;
     abstract setText(value: string): Promise<void>;
@@ -10,11 +10,13 @@ export abstract class WebElement {
     abstract getAttribute(name: HtmlAttribute): Promise<string>;
     abstract getInnerText(): Promise<string>;
     abstract getInnerHtml(): Promise<string>;
+    abstract getOuterHtml(): Promise<string>;
     abstract isChecked(): Promise<boolean>;
     abstract setChecked(checked: boolean): Promise<void>;
     abstract setInputFile(filePath: string): Promise<void>;
     
     abstract evaluate<R, VarArgs extends any[] = []>(script: string | Function, ...args: VarArgs): Promise<R>;
+    abstract getShadowRoot(): Promise<WebElement | null>;
 
     abstract findElement(locator: Locator): Promise<WebElement>;
     abstract findElements(locator: Locator): Promise<WebElement[]>;

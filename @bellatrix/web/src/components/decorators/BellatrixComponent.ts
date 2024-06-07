@@ -1,4 +1,5 @@
-import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { BrowserAutomationTool, SearchContext, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { ShadowRootContext, WebComponent } from '@bellatrix/web/components';
 import { ServiceLocator } from '@bellatrix/core/utilities';
 
 export function BellatrixComponent(target: any) {
@@ -11,33 +12,40 @@ export function BellatrixComponent(target: any) {
 
             if (isAsync) {
                 target.prototype[method] = async function (...args: any[]) {
-                    const startTime = Date.now();
-                    let totalWaitTime = 10_000; // milliseconds // TODO: get from timeout
-                    let retryCount = 0;
-
-                    const searchContext = this._parentElement ?? ServiceLocator.resolve(BrowserAutomationTool);
-
+                    const searchContext: SearchContext = this._parentComponent ? await resolveParentElement(this._parentComponent) : ServiceLocator.resolve(BrowserAutomationTool);
                     this._cachedElement ??= await searchContext.findElement(this._findStrategy.convert());
-                    let error;
+
+                    let retryCount = 10;
                     // TODO: beforemethod plugins
-                    while (Date.now() - startTime < totalWaitTime) {
+                    while (true) {
                         try {
-                            retryCount++;
                             const result = await originalMethod.apply(this, args);
                             // TODO: aftermethod plugins
                             return result;
                         } catch (e) {
-                            error = e;
-                            this._cachedElement = await searchContext.findElement(this._findStrategy.convert());
-                            await new Promise(resolve => setTimeout(resolve, 50));
+                            if (e instanceof Error && (e.name === 'StaleElementReferenceError' || e.name === 'TypeError') && --retryCount >= 0) {
+                                this._cachedElement = await searchContext.findElement(this._findStrategy.convert());
+                                continue;
+                            }
+
+                            throw e;
                         }
                     }
-
-                    throw new Error(`Waited for 10 second and timed out. Retried '${method}' ${retryCount} time${retryCount !== 1 ? 's' : ''}.`, { cause: error });
                 };
             } // do we need to do something with non-async methods?
         }
     });
 
     return target;
+}
+
+export async function resolveParentElement(parentComponent: WebComponent | ShadowRootContext): Promise<WebElement> {
+    if (parentComponent.wrappedElement) {
+        return parentComponent.wrappedElement;
+    }
+
+    const parentOfParentComponent = (parentComponent as WebComponent)['_parentComponent']
+    const searchContext: SearchContext = parentOfParentComponent ? await resolveParentElement(parentOfParentComponent as (WebComponent | ShadowRootContext)) : ServiceLocator.resolve(BrowserAutomationTool);
+    (parentComponent as WebComponent)['_cachedElement'] ??= await searchContext.findElement((parentComponent as WebComponent)['_findStrategy'].convert());
+    return parentComponent.wrappedElement;
 }

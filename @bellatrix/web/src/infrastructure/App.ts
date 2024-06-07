@@ -42,4 +42,8 @@ export class App {
         await instance.open();
         return instance;
     };
+
+    async sleep(ms: number): Promise<void> {
+        await new Promise(resolve => setTimeout(resolve, ms));
+    } 
 }

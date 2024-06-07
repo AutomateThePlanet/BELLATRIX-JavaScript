@@ -2,18 +2,24 @@ import { BrowserAutomationTool, WebElement } from '@bellatrix/web/infrastructure
 import { Validator, StringValidator, NumberValidator, UnknownValidator, BooleanValidator } from '@bellatrix/web/validators';
 import { BellatrixComponent } from '@bellatrix/web/components/decorators';
 import { FindStrategy } from '@bellatrix/web/findstrategies';
-import { ComponentService } from '@bellatrix/web/services';
-import { ComponentWaitService } from './ComponentWaitService';
+import { ComponentService, ComponentWaitService } from '@bellatrix/web/services';
+import { ShadowRootContext } from '.';
 
 import type { Ctor, MethodNamesStartingWith } from '@bellatrix/core/types';
 import type { HtmlAttribute } from '@bellatrix/web/types';
 
 @BellatrixComponent
-export class WebComponent<HTMLType extends HTMLElement = HTMLElement> {
+export class WebComponent<HTMLType extends Element = Element> {
     private _cachedElement!: WebElement;
     private _wait: ComponentWaitService;
+    private _findStrategy: FindStrategy;
+    private _driver: BrowserAutomationTool;
+    private _parentComponent?: WebComponent | ShadowRootContext;
 
-    constructor(private _findStrategy: FindStrategy, private _driver: BrowserAutomationTool, private _parentElement?: WebElement, cachedElement?: WebElement) {
+    constructor(findStrategy: FindStrategy, driver: BrowserAutomationTool, parentComponent?: WebComponent | ShadowRootContext, cachedElement?: WebElement) {
+        this._findStrategy = findStrategy;
+        this._driver = driver;
+        this._parentComponent = parentComponent;
         this._cachedElement = cachedElement!;
         this._wait = new ComponentWaitService(this);
     };
@@ -39,7 +45,7 @@ export class WebComponent<HTMLType extends HTMLElement = HTMLElement> {
     }
 
     async getAttribute(name: HtmlAttribute): Promise<string> {
-        return await this.getAttribute(name);
+        return await this.wrappedElement.getAttribute(name);
     }
 
     async isPresent(): Promise<boolean> {
@@ -56,6 +62,10 @@ export class WebComponent<HTMLType extends HTMLElement = HTMLElement> {
 
     async scrollToVisible(): Promise<void> {
         return await this.wrappedElement.scrollToVisible();
+    }
+    
+    async getOuterHtml(): Promise<string> {
+        return await this.wrappedElement.getOuterHtml();
     }
 
     validate<T extends Uncapitalize<keyof MethodNamesStartingWith<this, 'get'> extends string ? keyof MethodNamesStartingWith<this, 'get'> : never>, K extends `get${Capitalize<T extends string ? T : never>}` & keyof this>(attribute: T & string, ...args: Parameters<this[K] extends () => any ? never : this[K] extends (...args: any) => any ? this[K] : never> extends never ? [] : Parameters<this[K] extends () => any ? never : this[K] extends (...args: any) => any ? this[K] : never>)
@@ -88,7 +98,17 @@ export class WebComponent<HTMLType extends HTMLElement = HTMLElement> {
         return await this.wrappedElement.evaluate(script, ...args) as R;
     }
 
-    create<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>) {
-        return new ComponentService(this._driver, type, this.wrappedElement);
+    async getShadowRoot(): Promise<ShadowRootContext> {
+        const shadowRoot = await this.wrappedElement.getShadowRoot();
+        
+        if (!shadowRoot) {
+            throw Error('Shadow root not found.');
+        }
+
+        return new ShadowRootContext(this._driver, this, shadowRoot)
+    }
+
+    create<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>): ComponentService<T> {
+        return new ComponentService(this._driver, type, this);
     }
 }

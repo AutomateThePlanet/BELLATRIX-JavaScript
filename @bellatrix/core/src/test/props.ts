@@ -41,31 +41,31 @@ export type CurrentTest = {
 }
 
 export function getTestMetadata(testMethod: (...args: any[]) => (Promise<void> | void)): TestMetadata {
-    return Reflect.getMetadata(Symbols.test, testMethod);
+    return Reflect.getMetadata(Symbols.TEST, testMethod);
 }
 
 export function getSuiteMetadata(suiteClass: typeof BellatrixTest): TestMetadata {
-    return Reflect.getMetadata(Symbols.suite, suiteClass);
+    return Reflect.getMetadata(Symbols.SUITE, suiteClass);
 }
 
 export function setCurrentTest(testName: string, testMethod: (...args: any[]) => (Promise<void> | void), suiteClass: typeof BellatrixTest): void {
-    Reflect.defineMetadata(Symbols.currentTest, { name: testName, method: testMethod }, suiteClass.constructor);
+    Reflect.defineMetadata(Symbols.CURRENT_TEST, { name: testName, method: testMethod }, suiteClass.constructor);
 }
 
 export function unsetCurrentTest(suiteClass: typeof BellatrixTest): void {
-    Reflect.deleteMetadata(Symbols.currentTest, suiteClass.constructor);
+    Reflect.deleteMetadata(Symbols.CURRENT_TEST, suiteClass.constructor);
 }
 
 export function getCurrentTest(suiteClass: typeof BellatrixTest): CurrentTest {
-    return Reflect.getMetadata(Symbols.currentTest, suiteClass.constructor);
+    return Reflect.getMetadata(Symbols.CURRENT_TEST, suiteClass.constructor);
 }
 
 export function defineTestMetadata(testMethod: (...args: any[]) => (Promise<void> | void), suiteClass: typeof BellatrixTest) {
-    Reflect.defineMetadata(Symbols.test, { testName: testMethod.name, suiteName: suiteClass.name, testMethod: testMethod, suiteClass: suiteClass, customData: new Map } satisfies TestMetadata, testMethod); // <<<<<< !!!!!!! DEFINE TEST METADATA
+    Reflect.defineMetadata(Symbols.TEST, { testName: testMethod.name, suiteName: suiteClass.name, testMethod: testMethod, suiteClass: suiteClass, customData: new Map } satisfies TestMetadata, testMethod); // <<<<<< !!!!!!! DEFINE TEST METADATA
 }
 
 export function defineSuiteMetadata(suiteClass: typeof BellatrixTest) {
-    Reflect.defineMetadata(Symbols.suite, { suiteName: suiteClass.name, suiteClass, customData: new Map } satisfies SuiteMetadata, suiteClass)
+    Reflect.defineMetadata(Symbols.SUITE, { suiteName: suiteClass.name, suiteClass, customData: new Map } satisfies SuiteMetadata, suiteClass)
 }
 
 // { testName: key, suiteName: target.constructor, testMethod: target[key], suiteClass: target.constructor }

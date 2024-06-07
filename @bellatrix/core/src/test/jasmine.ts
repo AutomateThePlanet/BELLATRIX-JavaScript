@@ -16,10 +16,10 @@ const testSettings = BellatrixSettings.get().frameworkSettings.testSettings;
 
 function getSymbolMethods<T extends BellatrixTest>(type: ParameterlessCtor<T>) {
     return {
-        beforeEach: type.prototype[Symbols.beforeEach] as Method<BellatrixTest, typeof Symbols.beforeEach>,
-        beforeAll: type.prototype[Symbols.beforeAll] as Method<BellatrixTest, typeof Symbols.beforeAll>,
-        afterAll: type.prototype[Symbols.afterAll] as Method<BellatrixTest, typeof Symbols.afterAll>,
-        afterEach: type.prototype[Symbols.afterEach] as Method<BellatrixTest, typeof Symbols.afterEach>,
+        beforeEach: type.prototype[Symbols.BEFORE_EACH] as Method<BellatrixTest, typeof Symbols.BEFORE_EACH>,
+        beforeAll: type.prototype[Symbols.BEFORE_ALL] as Method<BellatrixTest, typeof Symbols.BEFORE_ALL>,
+        afterAll: type.prototype[Symbols.AFTER_ALL] as Method<BellatrixTest, typeof Symbols.AFTER_ALL>,
+        afterEach: type.prototype[Symbols.AFTER_EACH] as Method<BellatrixTest, typeof Symbols.AFTER_EACH>,
     } as const;
 }
 
@@ -43,7 +43,7 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
     const testClassInstance = new (target.prototype.constructor as ParameterlessCtor<T>);
     const testClassSymbolMethods = getSymbolMethods(target);
 
-    const testMethods = Object.getOwnPropertyNames(testClass).filter(method => typeof testClass[method] === 'function' && Reflect.hasMetadata(Symbols.test, testClass[method]));
+    const testMethods = Object.getOwnPropertyNames(testClass).filter(method => typeof testClass[method] === 'function' && Reflect.hasMetadata(Symbols.TEST, testClass[method]));
     const title = target.name; // or passed as @Suite('title') or similar
 
     nativeLibrary.describe(title, () => {

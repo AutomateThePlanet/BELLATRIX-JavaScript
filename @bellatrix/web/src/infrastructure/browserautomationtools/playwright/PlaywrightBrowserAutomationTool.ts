@@ -10,12 +10,22 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
     private _context: BrowserContext;
     private _page: Page;
     private _gridSessionId: string | undefined;
+    private _dialog: Dialog | undefined;
+    private _dialogAutoDismiss: number | NodeJS.Timeout | undefined;
 
     constructor(browser: Browser, context: BrowserContext, page: Page) {
         super();
         this._browser = browser;
         this._context = context;
         this._page = page;
+
+        this._page.on('dialog', dialog => {
+            this._dialog = dialog;
+            this._dialogAutoDismiss = setTimeout(() => {
+                this._dialog?.dismiss();
+                this._dialog = undefined;
+            }, 5_000); // dismiss dialog if no action after 5 seconds
+        });
     }
 
     override get type(): string {
@@ -27,7 +37,7 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
     }
 
     override async getUrl(): Promise<string> {
-        return await this._page.url();
+        return this._page.url();
     }
 
     override async getTitle(): Promise<string> {
@@ -71,7 +81,17 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
     }
 
     override async findElement(locator: Locator): Promise<WebElement> {
-        const nativeLocator: NativeLocator = this._page.locator(locator.value).first();
+        let nativeLocator: NativeLocator;
+        switch (locator.type) {
+            case 'css':
+                nativeLocator = this._page.locator(`css=${locator.value}`).first();
+                break;
+            case 'xpath':
+                nativeLocator = this._page.locator(`xpath=${locator.value}`).first();
+                break;
+            default:
+                throw new Error(`Invalid locator type: ${locator.type}`);
+        }
 
         try {
             nativeLocator.waitFor({ timeout: BellatrixSettings.get().webSettings.timeoutSettings.findElementTimeout });
@@ -83,7 +103,18 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
     }
 
     override async findElements(locator: Locator): Promise<WebElement[]> {
-        const nativeLocators: NativeLocator[] = await this._page.locator(locator.value).all();
+        let nativeLocators: NativeLocator[];
+        switch (locator.type) {
+            case 'css':
+                nativeLocators = await this._page.locator(`css=${locator.value}`).all();
+                break;
+            case 'xpath':
+                nativeLocators = await this._page.locator(`xpath=${locator.value}`).all();
+                break;
+            default:
+                throw new Error(`Invalid locator type: ${locator.type}`);
+        }
+        
         return nativeLocators.map(locator => new PlaywrightWebElement(locator));
     }
 
@@ -142,44 +173,41 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
             }
         }
 
-        error ??= Error('Condition failed');
+        error ??= Error('Condition failed'); // method threw but e is not instance of Error
         throw error;
     }
 
-    // TODO: NEEDS TESTING
     override async acceptDialog(promptText?: string | undefined): Promise<void> {
-        const dialogHandler = async (dialog: Dialog) => {
-            await dialog.accept(promptText);
-
-            this._page.off('dialog', dialogHandler);
-        }
-
-        await this._page.waitForEvent('dialog').then(dialogHandler);
+        this.checkForDialog();
+        await this._dialog!.accept(promptText);
+        this.clearDialog();
     }
 
-    // TODO: NEEDS TESTING
     override async dismissDialog(): Promise<void> {
-        const dialogHandler = async (dialog: Dialog) => {
-            await dialog.dismiss();
-
-            this._page.off('dialog', dialogHandler);
-        }
-
-        await this._page.waitForEvent('dialog').then(dialogHandler);
+        this.checkForDialog();
+        await this._dialog!.dismiss();
+        this.clearDialog();
     }
 
-    // TODO: NEEDS TESTING
     override async getDialogMessage(): Promise<string> {
-        const dialogHandler = async (dialog: Dialog) => {
-            this._page.off('dialog', dialogHandler);
-
-            return dialog.message();
-        }
-
-        return await this._page.waitForEvent('dialog').then(dialogHandler);
+        this.checkForDialog();
+        return this._dialog!.message();
     }
 
     setGridSessionId(sessionId?: string) {
         this._gridSessionId = sessionId;
+    }
+
+    private checkForDialog(): void {
+        if (!this._dialog) {
+            throw Error('Dialog not found.'); // TODO: More descriptive message
+        }
+    }
+
+    private clearDialog(): void {
+        if (this._dialogAutoDismiss) {
+            clearTimeout(this._dialogAutoDismiss);
+        }
+        this._dialog = undefined;
     }
 }
