@@ -1,9 +1,10 @@
-import { Locator as NativeLocator } from '@playwright/test';
+import { Locator as NativeLocator, ElementHandle as NativeElementHandle } from '@playwright/test';
 
 import { Locator, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { BellatrixSettings } from '@bellatrix/core/settings';
+import { PlaywrightShadowRootWebElement } from './PlaywrightShadowRootWebElement';
 
 import type { HtmlAttribute } from '@bellatrix/web/types';
-import { BellatrixSettings } from '@bellatrix/core/settings';
 
 export class PlaywrightWebElement extends WebElement {
     private _locator: NativeLocator;
@@ -14,7 +15,16 @@ export class PlaywrightWebElement extends WebElement {
     }
 
     override async click(): Promise<void> {
-        await this._locator.click(); // TODO: { timeout: 10_000 } for click timeout 10 seconds
+        await this._locator.click({
+            timeout: 5000, // TODO: Get from config.
+            trial: true,
+        });
+        
+        try {
+            await this._locator.click({ timeout: 30, noWaitAfter: true, force: true });
+        } catch {
+            // ignore error, workaround for dialog popup
+        }
     }
 
     override async hover(): Promise<void> {
@@ -41,6 +51,10 @@ export class PlaywrightWebElement extends WebElement {
         return await this._locator.innerHTML();
     }
 
+    override async getOuterHtml(): Promise<string> {
+        return await this._locator.evaluate(el => el.outerHTML);
+    }
+
     override async isChecked(): Promise<boolean> {
         return await this._locator.isChecked();
     }
@@ -54,7 +68,17 @@ export class PlaywrightWebElement extends WebElement {
     }
 
     override async findElement(locator: Locator): Promise<WebElement> {
-        const nativeLocator: NativeLocator = this._locator.locator(locator.value).first();
+        let nativeLocator: NativeLocator;
+        switch (locator.type) {
+            case 'css':
+                nativeLocator = this._locator.locator(`css=${locator.value}`).first();
+                break;
+            case 'xpath':
+                nativeLocator = this._locator.locator(`xpath=${locator.value}`).first();
+                break;
+            default:
+                throw new Error(`Invalid locator type: ${locator.type}`);
+        }
 
         try {
             nativeLocator.waitFor({ timeout: BellatrixSettings.get().webSettings.timeoutSettings.findElementTimeout });
@@ -66,15 +90,29 @@ export class PlaywrightWebElement extends WebElement {
     }
 
     override async findElements(locator: Locator): Promise<WebElement[]> {
-        const nativeLocators: NativeLocator[] = await this._locator.locator(locator.value).all();
+        let nativeLocators: NativeLocator[];
+        switch (locator.type) {
+            case 'css':
+                nativeLocators = await this._locator.locator(`css=${locator.value}`).all();
+                break;
+            case 'xpath':
+                nativeLocators = await this._locator.locator(`xpath=${locator.value}`).all();
+                break;
+            default:
+                throw new Error(`Invalid locator type: ${locator.type}`);
+        }
 
         return nativeLocators.map(locator => new PlaywrightWebElement(locator));
     }
 
     override async evaluate<R, VarArgs extends any[]>(script: string, ...args: VarArgs): Promise<R> {
         for (let i = 0; i < args.length; i++) {
-            if (args[i] instanceof PlaywrightWebElement) {
+            if (args[i].constructor === PlaywrightWebElement) {
                 args[i] = await (args[i] as PlaywrightWebElement)['_locator'].elementHandle();
+            }
+
+            if (args[i].constructor === PlaywrightShadowRootWebElement) {
+                args[i] = (args[i] as PlaywrightShadowRootWebElement)['_shadowNodeElementHandle'];
             }
         }
 
@@ -94,6 +132,10 @@ export class PlaywrightWebElement extends WebElement {
     }
 
     override async isPresent(): Promise<boolean> {
+        if (this.constructor === PlaywrightShadowRootWebElement) {
+            return true;
+        }
+
         try {
             return await this._locator.elementHandle() != null;
         } catch {
@@ -111,5 +153,14 @@ export class PlaywrightWebElement extends WebElement {
 
     override async scrollToVisible(): Promise<void> {
         await this._locator.scrollIntoViewIfNeeded();
+    }
+
+    override async getShadowRoot(): Promise<WebElement | null> {
+        const shadowRoot = new PlaywrightShadowRootWebElement(this);
+        if (!await shadowRoot.tryAttachShadowRoot()) {
+            return null;
+        }
+        
+        return shadowRoot;
     }
 }

@@ -1,7 +1,10 @@
-import { WebComponent } from ".";
+import { WebComponent } from "@bellatrix/web/components";
 
 export class ComponentWaitService {
-    constructor(private _component: WebComponent) {
+    private _component: WebComponent;
+
+    constructor(component: WebComponent) {
+        this._component = component;
     }
 
     async toBeVisible(): Promise<void> {

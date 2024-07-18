@@ -1,9 +1,9 @@
-import { WebElement as NativeWebElement, WebDriver as NativeWebDriver, until, By } from 'selenium-webdriver';
+import { WebElement as NativeWebElement, WebDriver as NativeWebDriver, By } from 'selenium-webdriver';
 
 import { Locator, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { SeleniumShadowRootWebElement } from './SeleniumShadowRootWebElement';
 
 import type { HtmlAttribute } from '@bellatrix/web/types';
-import { BellatrixSettings } from '@bellatrix/core/settings';
 
 export class SeleniumWebElement extends WebElement {
     private _element: NativeWebElement;
@@ -45,6 +45,10 @@ export class SeleniumWebElement extends WebElement {
 
     override async getInnerHtml(): Promise<string> {
         return await this._element.getAttribute('innerHTML');
+    }
+
+    override async getOuterHtml(): Promise<string> {
+        return await this._element.getAttribute('outerHTML');
     }
 
     override async isChecked(): Promise<boolean> {
@@ -92,13 +96,17 @@ export class SeleniumWebElement extends WebElement {
         }
 
         const elements = await this._element.findElements(by);
-        return elements.map(element => new SeleniumWebElement(element, this._driver) /* TODO: handle error? */);
+        return elements.map(el => new SeleniumWebElement(el, this._driver) /* TODO: handle error? */);
     }
 
     override async evaluate<R>(script: string | Function, ...args: any[]): Promise<R> {
         for (let i = 0; i < args.length; i++) {
-            if (args[i] instanceof SeleniumWebElement) {
+            if (args[i].constructor === SeleniumWebElement) {
                 args[i] = (args[i] as SeleniumWebElement)['_element'];
+            }
+
+            if (args[i].constructor === SeleniumShadowRootWebElement) {
+                args[i] = await (args[i] as SeleniumShadowRootWebElement).evaluate('el => el.shadowRoot');
             }
         }
 
@@ -144,5 +152,14 @@ export class SeleniumWebElement extends WebElement {
 
     override async scrollToVisible(): Promise<void> {
         await this.evaluate('el => el.scrollIntoView(true);');
+    }
+
+    override async getShadowRoot(): Promise<WebElement | null> {
+        try {
+            const shadowRoot = await this._element.getShadowRoot();
+            return new SeleniumShadowRootWebElement(this._element, this._driver, shadowRoot, true);
+        } catch {
+            return null;
+        }
     }
 }
