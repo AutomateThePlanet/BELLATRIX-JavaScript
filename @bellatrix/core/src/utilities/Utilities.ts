@@ -1,6 +1,3 @@
-import { select } from 'xpath';
-import { DOMParser } from '@xmldom/xmldom';
-
 export class Utilities {
     static isConstructor(constructor: any) {
         try {

@@ -5,6 +5,7 @@
   "exports": {
     "./components": "./src/components/index.ts",
     "./components/decorators": "./src/components/decorators/index.ts",
+    "./components/utilities": "./src/components/utilities/index.ts",
     "./findstrategies": "./src/findstrategies/index.ts",
     "./infrastructure": "./src/infrastructure/index.ts",
     "./pages": "./src/pages/index.ts",

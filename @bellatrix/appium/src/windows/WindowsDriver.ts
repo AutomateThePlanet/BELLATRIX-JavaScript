@@ -1,4 +1,4 @@
-import { ubyte } from '@bellatrix/appium/types';
+import { ubyte } from '@bellatrix/core/types';
 import { AppiumDriver } from '@bellatrix/appium/core';
 import { WindowsCommands } from '@bellatrix/appium/windows';
 
@@ -89,7 +89,7 @@ export class WindowsDriver extends AppiumDriver {
         });
     }
 
-    async rightClick(x: number, y: number,  modifierKeys: ModifierKey[] | ModifierKey | null = null): Promise<void> {
+    async rightClick(x: number, y: number, modifierKeys: ModifierKey[] | ModifierKey | null = null): Promise<void> {
         this.execute<string>('windows: click', {
             x,
             y,

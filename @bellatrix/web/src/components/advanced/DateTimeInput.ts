@@ -1,7 +1,7 @@
+import { BellatrixWebComponent } from "@bellatrix/web/components/decorators";
 import { WebComponent } from "@bellatrix/web/components";
-import { BellatrixComponent } from "@bellatrix/web/components/decorators";
 
-@BellatrixComponent
+@BellatrixWebComponent
 export class DateTimeInput extends WebComponent<HTMLInputElement> {
     async getTime(): Promise<Date | null> {
         const dateString = await this.getValue();

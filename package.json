@@ -1,5 +1,9 @@
 {
   "dependencies": {
-    "example": "file:example"
+    "example": "file:example",
+    "stack-trace": "^1.0.0-pre2"
+  },
+  "devDependencies": {
+    "@types/stack-trace": "^0.0.33"
   }
 }
