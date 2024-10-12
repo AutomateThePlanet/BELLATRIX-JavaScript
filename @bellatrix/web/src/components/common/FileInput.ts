@@ -1,7 +1,7 @@
-import { BellatrixComponent } from '@bellatrix/web/components/decorators';
+import { BellatrixWebComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
-@BellatrixComponent
+@BellatrixWebComponent
 export class FileInput extends WebComponent<HTMLInputElement> {
     async upload(filePath: string): Promise<void> {
         await this.wrappedElement.setInputFile(filePath);

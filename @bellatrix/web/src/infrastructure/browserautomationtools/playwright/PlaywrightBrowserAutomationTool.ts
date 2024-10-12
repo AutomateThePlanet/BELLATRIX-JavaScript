@@ -21,6 +21,7 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
 
         this._page.on('dialog', dialog => {
             this._dialog = dialog;
+            // @ts-ignore
             this._dialogAutoDismiss = setTimeout(() => {
                 this._dialog?.dismiss();
                 this._dialog = undefined;

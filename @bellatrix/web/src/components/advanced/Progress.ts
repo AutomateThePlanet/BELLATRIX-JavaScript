@@ -1,7 +1,7 @@
-import { BellatrixComponent } from '@bellatrix/web/components/decorators';
+import { BellatrixWebComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
-@BellatrixComponent
+@BellatrixWebComponent
 export class Progress extends WebComponent<HTMLProgressElement> {
     async getMax(): Promise<number> {
         return parseFloat(await this.getAttribute('max'));

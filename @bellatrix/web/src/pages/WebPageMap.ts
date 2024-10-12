@@ -6,6 +6,6 @@ import { BrowserAutomationTool } from "@bellatrix/web/infrastructure/browserauto
 
 export abstract class WebPageMap {
     create<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>) {
-        return new ComponentService(ServiceLocator.resolve(BrowserAutomationTool), type);
+        return new ComponentService(ServiceLocator.resolve(BrowserAutomationTool), type, undefined, true);
     }
 }

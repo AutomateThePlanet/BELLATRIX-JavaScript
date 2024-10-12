@@ -1,6 +1,6 @@
 import { BrowserAutomationTool, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 import { Validator, StringValidator, NumberValidator, UnknownValidator, BooleanValidator } from '@bellatrix/web/validators';
-import { BellatrixComponent } from '@bellatrix/web/components/decorators';
+import { BellatrixWebComponent } from '@bellatrix/web/components/decorators';
 import { FindStrategy } from '@bellatrix/web/findstrategies';
 import { ComponentService, ComponentWaitService } from '@bellatrix/web/services';
 import { ShadowRootContext } from '.';
@@ -8,19 +8,21 @@ import { ShadowRootContext } from '.';
 import type { Ctor, MethodNamesStartingWith } from '@bellatrix/core/types';
 import type { HtmlAttribute } from '@bellatrix/web/types';
 
-@BellatrixComponent
+@BellatrixWebComponent
 export class WebComponent<HTMLType extends Element = Element> {
     private _cachedElement!: WebElement;
     private _wait: ComponentWaitService;
     private _findStrategy: FindStrategy;
     private _driver: BrowserAutomationTool;
     private _parentComponent?: WebComponent | ShadowRootContext;
+    private _componentName: string;
 
-    constructor(findStrategy: FindStrategy, driver: BrowserAutomationTool, parentComponent?: WebComponent | ShadowRootContext, cachedElement?: WebElement) {
+    constructor(findStrategy: FindStrategy, driver: BrowserAutomationTool, parentComponent?: WebComponent | ShadowRootContext, cachedElement?: WebElement, componentName?: string) {
         this._findStrategy = findStrategy;
         this._driver = driver;
         this._parentComponent = parentComponent;
         this._cachedElement = cachedElement!;
+        this._componentName = componentName ?? `component with locator {${findStrategy.toString()}}`;
         this._wait = new ComponentWaitService(this);
     };
 

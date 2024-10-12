@@ -1,7 +1,7 @@
 import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 import { FindStrategy } from '@bellatrix/web/findstrategies';
 import { ServiceLocator } from '@bellatrix/core/utilities';
-import { resolveParentElement } from '../../components/decorators/BellatrixComponent';
+import { resolveParentElement } from '../decorators/BellatrixWebComponent';
 import { ShadowRootContext, WebComponent } from '.';
 
 import type { Ctor } from '@bellatrix/core/types';
@@ -13,8 +13,9 @@ export class ComponentsList<T extends WebComponent> {
     private _findStrategy: FindStrategy;
     private _driver: BrowserAutomationTool;
     private _parentComponent?: WebComponent | ShadowRootContext;
+    private _componentName?: string;
 
-    constructor(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, findStrategy: FindStrategy, driver: BrowserAutomationTool, parentComponent?: WebComponent | ShadowRootContext) {
+    constructor(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, findStrategy: FindStrategy, driver: BrowserAutomationTool, parentComponent?: WebComponent | ShadowRootContext, componentName?: string) {
         this._type = type;
         this._findStrategy = findStrategy;
         this._driver = driver;
@@ -34,7 +35,7 @@ export class ComponentsList<T extends WebComponent> {
             const elements = await searchContext.findElements(this._findStrategy.convert());
             const components = elements.map((element, index) => {
                 const findStrategy = this.cloneFindStrategyWithUpdatedIndex(this._findStrategy, index);
-                const component = new this._type(findStrategy, this._driver, this._parentComponent, element);
+                const component = new this._type(findStrategy, this._driver, this._parentComponent, element, this._componentName);
 
                 return component;
             })
@@ -45,7 +46,7 @@ export class ComponentsList<T extends WebComponent> {
 
         if (index !== undefined) {
             const findStrategy = this.cloneFindStrategyWithUpdatedIndex(this._findStrategy, index);
-            const component = new this._type(findStrategy, this._driver);
+            const component = new this._type(findStrategy, this._driver, undefined, undefined, this._componentName);
             this._cachedComponents ??= [];
             this._cachedComponents[index] ??= component;
             return this._cachedComponents[index];

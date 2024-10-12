@@ -1,7 +1,7 @@
-import { BellatrixComponent } from '@bellatrix/web/components/decorators';
+import { BellatrixWebComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
-@BellatrixComponent
+@BellatrixWebComponent
 export class Image extends WebComponent<HTMLImageElement> {
     async getSrc(): Promise<string> {
         return await this.getAttribute('src');

@@ -1,9 +1,9 @@
-import { BellatrixComponent } from '@bellatrix/web/components/decorators';
+import { BellatrixWebComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
 import type { TextAreaWrap } from '@bellatrix/web/types';
 
-@BellatrixComponent
+@BellatrixWebComponent
 export class TextArea extends WebComponent<HTMLTextAreaElement> {
     async getInnerText(): Promise<string> {
         return await this.wrappedElement.getInnerText();

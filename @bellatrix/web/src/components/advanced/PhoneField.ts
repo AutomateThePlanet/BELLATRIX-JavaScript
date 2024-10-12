@@ -1,7 +1,7 @@
-import { BellatrixComponent } from '@bellatrix/web/components/decorators';
+import { BellatrixWebComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
-@BellatrixComponent
+@BellatrixWebComponent
 export class PhoneField extends WebComponent<HTMLInputElement> {
     async getPhone(): Promise<string> {
         return await this.getValue();

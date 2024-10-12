@@ -1,7 +1,7 @@
-import { BellatrixComponent } from '@bellatrix/web/components/decorators';
+import { BellatrixWebComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
-@BellatrixComponent
+@BellatrixWebComponent
 export class Div extends WebComponent<HTMLDivElement> {
     async getInnerHtml(): Promise<string> {
         return await this.wrappedElement.getInnerHtml();
