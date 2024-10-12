@@ -11,13 +11,14 @@ export class ComponentService<T extends WebComponent> extends WebService {
     private _parentComponent?: WebComponent | ShadowRootContext;
     private _componentName?: string;
 
-    constructor(driver: BrowserAutomationTool, type: Ctor<T>, parentComponent?: WebComponent | ShadowRootContext, isPage: boolean = false) {
+    constructor(driver: BrowserAutomationTool, type: Ctor<T>, parentComponent?: WebComponent | ShadowRootContext) {
         super(driver);
         this._type = type;
         this._parentComponent = parentComponent;
 
-        if (isPage) {
-            this._componentName = stackTrace()[2]?.getMethodName();
+        const stackFrame = stackTrace()[2];
+        if (stackFrame?.getFunctionName().startsWith('get ')) {
+            this._componentName = stackFrame.getMethodName();
         }
     }
 

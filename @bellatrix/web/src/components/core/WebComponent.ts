@@ -22,7 +22,7 @@ export class WebComponent<HTMLType extends Element = Element> {
         this._driver = driver;
         this._parentComponent = parentComponent;
         this._cachedElement = cachedElement!;
-        this._componentName = componentName ?? `component with locator {${findStrategy.toString()}}`;
+        this._componentName = componentName ?? `${this.constructor.name} (${findStrategy.toString()})`;
         this._wait = new ComponentWaitService(this);
     };
 
