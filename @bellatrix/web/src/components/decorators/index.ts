@@ -1,1 +1,1 @@
-export { BellatrixComponent } from './BellatrixComponent'
+export { BellatrixWebComponent } from './BellatrixWebComponent'

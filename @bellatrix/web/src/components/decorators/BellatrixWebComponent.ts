@@ -1,8 +1,9 @@
 import { BrowserAutomationTool, SearchContext, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 import { ShadowRootContext, WebComponent } from '@bellatrix/web/components';
+import { WebComponentListener } from '@bellatrix/web/components/utilities';
 import { ServiceLocator } from '@bellatrix/core/utilities';
 
-export function BellatrixComponent(target: any) {
+export function BellatrixWebComponent(target: any) {
     const originalMethods = Object.getOwnPropertyNames(target.prototype);
 
     originalMethods.forEach((method: string) => {
@@ -11,19 +12,40 @@ export function BellatrixComponent(target: any) {
             const isAsync = originalMethod[Symbol.toStringTag] === 'AsyncFunction';
 
             if (isAsync) {
-                target.prototype[method] = async function (...args: any[]) {
+                target.prototype[method] = async function (this: WebComponent, ...args: any[]) {
+                    // @ts-ignore
                     const searchContext: SearchContext = this._parentComponent ? await resolveParentElement(this._parentComponent) : ServiceLocator.resolve(BrowserAutomationTool);
+                    // @ts-ignore
                     this._cachedElement ??= await searchContext.findElement(this._findStrategy.convert());
 
                     let retryCount = 10;
-                    // TODO: beforemethod plugins
+
+                    const beforeMethodListeners = ServiceLocator.resolveAll(WebComponentListener, `before|${method}`)
+                    for (const beforeMethodListener of beforeMethodListeners) {
+                        if (beforeMethodListener.component !== this.constructor) {
+                            continue;
+                        }
+
+                        await beforeMethodListener.method(this)
+                    }
+
                     while (true) {
                         try {
                             const result = await originalMethod.apply(this, args);
-                            // TODO: aftermethod plugins
+                            
+                            const afterMethodListeners = ServiceLocator.resolveAll(WebComponentListener, `after|${method}`)
+                            for (const afterMethodListener of afterMethodListeners) {
+                                if (afterMethodListener.component !== this.constructor) {
+                                    continue;
+                                }
+        
+                                await afterMethodListener.method(this)
+                            }
+
                             return result;
                         } catch (e) {
                             if (e instanceof Error && (e.name === 'StaleElementReferenceError' || e.name === 'TypeError') && --retryCount >= 0) {
+                                // @ts-ignore
                                 this._cachedElement = await searchContext.findElement(this._findStrategy.convert());
                                 continue;
                             }

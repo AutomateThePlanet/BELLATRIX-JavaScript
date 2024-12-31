@@ -1,10 +1,17 @@
 import { Test, TestClass } from "@bellatrix/web/test";
 import { WebTest } from "@bellatrix/web/infrastructure";
-import { Button } from "@bellatrix/web/components";
+import { Anchor, Button } from "@bellatrix/web/components";
 import { MainPage, CartPage, CheckoutPage, PurchaseInfo } from "../src/pages";
+import { WebComponentHooks } from "@bellatrix/web/components/utilities";
 
 @TestClass
 class ProductPurchaseTests extends WebTest {
+    override async configure(): Promise<void> {
+        await super.configure();
+        // @ts-ignore
+        WebComponentHooks.addListenerTo(Button).before('click', button => console.log(`clicking ${button._componentName}`));
+    }
+
     override async afterEach() {
         await this.app.cookies.clearCookies();
     }
@@ -14,7 +21,9 @@ class ProductPurchaseTests extends WebTest {
         await this.app.navigation.navigate('https://demos.bellatrix.solutions/');
         const addToCartFalcon9 = this.app.create(Button).byCss('[data-product_id*="28"]');
         const blogLink = this.app.create(Button).byInnerTextContaining('Blog');
-        await addToCartFalcon9.click();
+
+        // await addToCartFalcon9.click();
+        await this.app.create(Button).byCss('[data-product_id*="28"]').click();
         // blogLink.above(addToCartFalcon9).validate(); // layout assert
         await new MainPage().asserts.productBoxLink('Falcon 9', 'https://demos.bellatrix.solutions/product/falcon-9/');
     }

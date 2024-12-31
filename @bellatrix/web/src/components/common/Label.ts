@@ -1,10 +1,8 @@
-import { BellatrixComponent } from '@bellatrix/web/components/decorators';
-import { ComponentService } from '@bellatrix/web/services';
+import { BellatrixWebComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
-import { ServiceLocator } from '@bellatrix/core/utilities';
 import { Ctor } from '@bellatrix/core/types';
 
-@BellatrixComponent
+@BellatrixWebComponent
 export class Label extends WebComponent<HTMLLabelElement> {
     async getInnerHtml(): Promise<string> {
         return await this.wrappedElement.getInnerHtml();

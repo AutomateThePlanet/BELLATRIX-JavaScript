@@ -1,7 +1,7 @@
-import { BellatrixComponent } from '@bellatrix/web/components/decorators';
+import { BellatrixWebComponent } from '@bellatrix/web/components/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 
-@BellatrixComponent
+@BellatrixWebComponent
 export class DateInput extends WebComponent<HTMLInputElement> {
     async getDate(): Promise<Date | null> {
         return await this.evaluate(el => el.valueAsDate);
