@@ -10,12 +10,12 @@ export class Image {
     private _type: keyof typeof this.SIGNATURES;
 
     private readonly SIGNATURES = {
-        'png': Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]),
-        'bmp': Buffer.from([0x42, 0x4D]),
-        'jpeg': Buffer.from([0xFF, 0xD8, 0xFF]),
-        'gif89a': Buffer.from('GIF89a', 'ascii'),
-        'tiff-le': Buffer.from([0x49, 0x49, 0x2A, 0x00]), // TIFF little-endian
-        'tiff-be': Buffer.from([0x4D, 0x4D, 0x00, 0x2A]), // TIFF big-endian
+        'png': Uint8Array.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]),
+        'bmp': Uint8Array.from([0x42, 0x4D]),
+        'jpeg': Uint8Array.from([0xFF, 0xD8, 0xFF]),
+        'gif89a': Uint8Array.from(Buffer.from('GIF89a', 'ascii')),
+        'tiff-le': Uint8Array.from([0x49, 0x49, 0x2A, 0x00]), // TIFF little-endian
+        'tiff-be': Uint8Array.from([0x4D, 0x4D, 0x00, 0x2A]), // TIFF big-endian
         // Add more formats in the future
     } as const;
 
@@ -122,7 +122,7 @@ export class Image {
             case 'gif89a':
                 return this.buffer.readUInt16LE(8);
             case 'jpeg':
-                return this.buffer.readUInt16BE(this.buffer.indexOf(Buffer.from([0xFF, 0xC0]), 0, 'hex') + 7);
+                return this.buffer.readUInt16BE(this.buffer.indexOf(Uint8Array.from([0xFF, 0xC0]), 0, 'hex') + 7);
             case 'tiff-le': {
                 const offset = this.buffer.indexOf('0101', this.buffer.readUInt32LE(4), 'hex');
                 const dataType = this.buffer.readUInt16LE(offset + 2);

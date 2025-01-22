@@ -116,21 +116,21 @@ export class SeleniumWebElement extends WebElement {
     override async selectByText(text: string): Promise<void> {
         // TODO:
         // this method is for selecting through the <select> element
-        
+
         // as there is no method for this, JS must be performed
     }
 
     override async selectByIndex(index: number): Promise<void> {
         // TODO:
         // this method is for selecting through the <select> element
-        
+
         // as there is no method for this, JS must be performed
     }
 
     override async selectByValue(value: string): Promise<void> {
         // TODO:
         // this method is for selecting through the <select> element
-        
+
         // as there is no method for this, JS must be performed
     }
 

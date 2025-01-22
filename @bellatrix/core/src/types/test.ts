@@ -1,6 +1,7 @@
 import { PluginExecutionEngine, BellatrixTest } from '@bellatrix/core/infrastructure';
 export type TestResult = 'success' | 'failure' | 'unknown';
 export type TestFramework = 'jasmine' | 'jest' | 'mocha' | 'vitest' | 'playwright';
+export type TestReporter = 'console-only' | 'json' | 'junit' | 'trx' | 'nunit' | 'xunit' | 'tap';
 
 import type { MethodNames, ParameterlessCtor, Result, StaticMethod } from '.';
 
