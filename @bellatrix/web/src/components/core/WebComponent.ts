@@ -65,7 +65,7 @@ export class WebComponent<HTMLType extends Element = Element> {
     async scrollToVisible(): Promise<void> {
         return await this.wrappedElement.scrollToVisible();
     }
-    
+
     async getOuterHtml(): Promise<string> {
         return await this.wrappedElement.getOuterHtml();
     }
@@ -102,7 +102,7 @@ export class WebComponent<HTMLType extends Element = Element> {
 
     async getShadowRoot(): Promise<ShadowRootContext> {
         const shadowRoot = await this.wrappedElement.getShadowRoot();
-        
+
         if (!shadowRoot) {
             throw Error('Shadow root not found.');
         }

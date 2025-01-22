@@ -4,8 +4,11 @@ const config: BellatrixConfigurationOverride = {
     frameworkSettings: {
         testSettings: {
             testTimeout: 300000,
-            testFramework: 'mocha', // vitest, jasmine, mocha, jest, playwright
-            parallelExecution: true // not functional yet
+            testFramework: 'vitest', // vitest, jasmine, mocha, jest, playwright
+            testReporter: 'tap',
+            testReportDirectory: './reports',
+            testReportName: `result`,
+            parallelExecution: false, // not functional yet
         },
         parallelExecutionSettings: {
 

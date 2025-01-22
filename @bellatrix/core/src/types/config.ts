@@ -1,4 +1,4 @@
-import { RecursivePartial, TestFramework } from "@bellatrix/core/types";
+import { RecursivePartial, TestFramework, TestReporter } from "@bellatrix/core/types";
 
 export interface BellatrixConfiguration {
     frameworkSettings: FrameworkSettings;
@@ -16,6 +16,9 @@ export interface ParallelExecutionSettings {
 export interface TestSettings {
     testTimeout: number;
     testFramework: TestFramework;
+    testReporter: TestReporter; // TODO: add option for TestReporter[]
+    testReportDirectory?: string;
+    testReportName?: string;
     parallelExecution: boolean;
 }
 

@@ -8,5 +8,15 @@
       "stopSpecOnExpectationFailure": false,
       "stopOnSpecFailure": false,
       "random": false
+    },
+    "reporters": [
+    {
+      "name": "JUnitXmlReporter",
+      "options": {
+        "savePath": "./results/",
+        "filePrefix": "junit-results",
+        "consolidateAll": false
+      }
     }
+  ]
 }
