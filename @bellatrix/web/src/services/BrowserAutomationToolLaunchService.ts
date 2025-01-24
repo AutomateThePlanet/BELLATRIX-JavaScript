@@ -1,17 +1,16 @@
-// @ts-ignore
-import { Browser, Builder, WebDriver as NativeWebDriver } from "selenium-webdriver";
-import * as googleChrome from "selenium-webdriver/chrome";
-import * as mozillaFirefox from "selenium-webdriver/firefox";
-import * as microsoftEdge from "selenium-webdriver/edge";
-import { chromium, firefox, webkit } from "@playwright/test"
+import { Browser, Builder, WebDriver as NativeWebDriver } from 'selenium-webdriver';
+import * as googleChrome from 'selenium-webdriver/chrome';
+import * as mozillaFirefox from 'selenium-webdriver/firefox';
+import * as microsoftEdge from 'selenium-webdriver/edge';
+import { chromium, firefox, webkit } from '@playwright/test';
 
-import { BrowserAutomationTool } from "@bellatrix/web/infrastructure/browserautomationtools/core";
-import { SeleniumBrowserAutomationTool } from "@bellatrix/web/infrastructure/browserautomationtools/selenium";
-import { PlaywrightBrowserAutomationTool } from "@bellatrix/web/infrastructure/browserautomationtools/playwright";
-import { BellatrixSettings } from "@bellatrix/core/settings";
-import { HttpClient } from "@bellatrix/core/http";
+import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { SeleniumBrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/selenium';
+import { PlaywrightBrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/playwright';
+import { BellatrixSettings } from '@bellatrix/core/settings';
+import { HttpClient } from '@bellatrix/core/http';
 
-import type { BrowserAutomationToolType, BrowserType } from "@bellatrix/web/types";
+import type { BrowserAutomationToolType, BrowserType } from '@bellatrix/web/types';
 
 export type BrowserConfiguration = {
     type: BrowserAutomationToolType;
@@ -55,7 +54,7 @@ export class BrowserAutomationToolLaunchService {
                             console.warn('Not possible to launch Firefox maximized in Playwright.');
                         }
 
-                        browser = await firefox.launch({ headless })
+                        browser = await firefox.launch({ headless });
 
                         break;
                     case 'safari':
@@ -63,10 +62,10 @@ export class BrowserAutomationToolLaunchService {
                             console.warn('Not possible to launch WebKit maximized in Playwright.');
                         }
 
-                        browser = await webkit.launch({ headless })
+                        browser = await webkit.launch({ headless });
                         break;
                     default:
-                        throw Error('Browser not yet supported by Bellatrix Test Automation Framework.')
+                        throw Error('Browser not yet supported by Bellatrix Test Automation Framework.');
                 }
 
                 const context = await browser.newContext({ viewport: viewport ?? null });
@@ -83,7 +82,7 @@ export class BrowserAutomationToolLaunchService {
                 switch (webSettings.executionSettings.browser.toLowerCase()) {
                     case 'chrome':
                         builder = new Builder().forBrowser(Browser.CHROME);
-                        
+
                         if (headless) {
                             const options = new googleChrome.Options().addArguments('--headless=new');
                             builder.setChromeOptions(options);
@@ -134,7 +133,7 @@ export class BrowserAutomationToolLaunchService {
                 return webBrowser;
             }
             default:
-                throw new Error("unknown driver"); // TODO: Add more specific error
+                throw new Error('unknown driver'); // TODO: Add more specific error
         }
     }
 
@@ -176,7 +175,7 @@ export class BrowserAutomationToolLaunchService {
 
                         gridSessionId = response.body.value.sessionId;
 
-                        const cdpUrl = new URL(response.body.value.capabilities["se:cdp"]);
+                        const cdpUrl = new URL(response.body.value.capabilities['se:cdp']);
                         cdpUrl.host = gridUrl.host;
 
                         process.env.SELENIUM_REMOTE_CAPABILITIES = JSON.stringify(webSettings.remoteExecutionSettings.capabilities);
@@ -188,15 +187,15 @@ export class BrowserAutomationToolLaunchService {
                     case 'LambdaTest': {
                         const capabilities = webSettings.remoteExecutionSettings.capabilities ?? {};
                         capabilities['LT:Options'] = {
-                            ...capabilities['LT:Options'],
+                            ...capabilities['LT:Options'] as Record<string, unknown>,
                             user: webSettings.remoteExecutionSettings.username,
                             accessKey: webSettings.remoteExecutionSettings.accessKey,
-                        }
+                        };
 
-                        const supportedBrowsers = ["Chrome", "MicrosoftEdge", "pw-chromium", "pw-firefox", "pw-webkit"]
+                        const supportedBrowsers = ['Chrome', 'MicrosoftEdge', 'pw-chromium', 'pw-firefox', 'pw-webkit'];
 
                         if (supportedBrowsers.map(b => b.toLowerCase()).includes(webSettings.remoteExecutionSettings.capabilities.browserName.toLowerCase())) {
-                                browser = await chromium.connect(`wss://cdp.lambdatest.com/playwright?capabilities=${encodeURIComponent(JSON.stringify(capabilities))}`);
+                            browser = await chromium.connect(`wss://cdp.lambdatest.com/playwright?capabilities=${encodeURIComponent(JSON.stringify(capabilities))}`);
                         } else {
                             throw new Error('Unsupported browserName. Playwright cloud execution in BrowserStack supports the following browsers:\n'
                             + supportedBrowsers.map(b => `"${b}"`).join(', '));
@@ -211,7 +210,7 @@ export class BrowserAutomationToolLaunchService {
                             'browserstack.accessKey': webSettings.remoteExecutionSettings.accessKey,
                         };
 
-                        const supportedBrowsers = ["chrome", "edge", "playwright-chromium", "playwright-firefox", "playwright-webkit"]
+                        const supportedBrowsers = ['chrome', 'edge', 'playwright-chromium', 'playwright-firefox', 'playwright-webkit'];
 
                         if (supportedBrowsers.map(b => b.toLowerCase()).includes(webSettings.remoteExecutionSettings.capabilities.browserName.toLowerCase())) {
                             browser = await chromium.connect(`wss://cdp.browserstack.com/playwright?caps=${encodeURIComponent(JSON.stringify(capabilities))}`);
@@ -231,8 +230,8 @@ export class BrowserAutomationToolLaunchService {
                 const page = await context.newPage();
 
                 const webBrowser = new PlaywrightBrowserAutomationTool(browser, context, page);
-                webBrowser.setGridSessionId(gridSessionId)
-                
+                webBrowser.setGridSessionId(gridSessionId);
+
                 await webBrowser.open(baseUrl);
                 return webBrowser;
             }
@@ -259,23 +258,23 @@ export class BrowserAutomationToolLaunchService {
                             .usingServer(gridUrl.href)
                             .withCapabilities(webSettings.remoteExecutionSettings.capabilities)
                             .build() as NativeWebDriver;
-        
+
                         break;
                     }
                     case 'BrowserStack': {
                         const capabilities = webSettings.remoteExecutionSettings.capabilities;
                         capabilities['bstack:options'] = {
-                            ...capabilities['bstack:options'],
+                            ...capabilities['bstack:options'] as Record<string, unknown>,
                             userName: webSettings.remoteExecutionSettings.username,
                             accessKey: webSettings.remoteExecutionSettings.accessKey,
-                        }
+                        };
 
                         const gridUrl = new URL('https://hub-cloud.browserstack.com/wd/hub');
                         driver = new Builder()
                             .usingServer(gridUrl.href)
                             .withCapabilities(capabilities)
                             .build() as NativeWebDriver;
-        
+
                         break;
                     }
                     default:

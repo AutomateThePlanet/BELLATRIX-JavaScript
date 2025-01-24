@@ -7,7 +7,7 @@ describe('ServiceLocator', () => {
     class BaseService { }
     class FirstExtendedService extends BaseService { }
     class SecondExtendedService extends BaseService { }
-    class ServiceWithOneParam extends BaseService { value: any; constructor(param: any) { super(); this.value = param } }
+    class ServiceWithOneParam extends BaseService { value: unknown; constructor(param: unknown) { super(); this.value = param; } }
 
     afterEach(() => {
         ServiceLocator['services'].clear();
@@ -24,7 +24,7 @@ describe('ServiceLocator', () => {
         });
 
         it('should throw if no service is registered', () => {
-            assert.throws(() => ServiceLocator.resolve(BaseService), ServiceLocatorResolutionError)
+            assert.throws(() => ServiceLocator.resolve(BaseService), ServiceLocatorResolutionError);
         });
 
         it('should resolve the service as a singleton when registered using registerSingleton', () => {
@@ -99,7 +99,7 @@ describe('ServiceLocator', () => {
         });
 
         it('should not throw if no service is registered', () => {
-            assert.doesNotThrow(() => ServiceLocator.tryResolve(BaseService))
+            assert.doesNotThrow(() => ServiceLocator.tryResolve(BaseService));
         });
 
         it('should return null no service is registered', () => {
@@ -116,7 +116,7 @@ describe('ServiceLocator', () => {
             assert(services.length === 2
                 && services[0] instanceof FirstExtendedService
                 && services[1] instanceof SecondExtendedService,
-                'The resolved services were either not all resolved or not in the correct order');
+            'The resolved services were either not all resolved or not in the correct order');
         });
 
         it('should resolve all services registered services in order when registered with registerTransient', () => {
@@ -126,7 +126,7 @@ describe('ServiceLocator', () => {
             assert(services.length === 2
                 && services[0] instanceof FirstExtendedService
                 && services[1] instanceof SecondExtendedService,
-                'The resolved services were either not all resolved or not in the correct order');
+            'The resolved services were either not all resolved or not in the correct order');
         });
 
         it('should return an empty array if no service is registered', () => {
@@ -141,7 +141,7 @@ describe('ServiceLocator', () => {
             assert(services.length === 2
                 && services[0] instanceof FirstExtendedService
                 && services[1] instanceof SecondExtendedService,
-                'The resolved services were either not all resolved or not in the correct order');
+            'The resolved services were either not all resolved or not in the correct order');
         });
     });
 
@@ -154,12 +154,12 @@ describe('ServiceLocator', () => {
 
         it('should throw if the service is already registered as transient', () => {
             ServiceLocator.registerTransient(BaseService, FirstExtendedService);
-            assert.throws(() => ServiceLocator.registerSingleton(BaseService, FirstExtendedService), ServiceLocatorRegistrationError)
+            assert.throws(() => ServiceLocator.registerSingleton(BaseService, FirstExtendedService), ServiceLocatorRegistrationError);
         });
 
         it('should throw if the service is already registered as transient with the same name that is passed', () => {
             ServiceLocator.registerTransient(BaseService, FirstExtendedService, 'name');
-            assert.throws(() => ServiceLocator.registerSingleton(BaseService, FirstExtendedService, 'name'), ServiceLocatorRegistrationError)
+            assert.throws(() => ServiceLocator.registerSingleton(BaseService, FirstExtendedService, 'name'), ServiceLocatorRegistrationError);
         });
     });
 
@@ -200,7 +200,7 @@ describe('ServiceLocator', () => {
 
         it('should throw if the service is already registered as singleton with a the same name that is passed', () => {
             ServiceLocator.registerSingleton(BaseService, FirstExtendedService, 'name');
-            assert.throws(() => ServiceLocator.registerTransient(BaseService, FirstExtendedService, 'name'), ServiceLocatorRegistrationError)
+            assert.throws(() => ServiceLocator.registerTransient(BaseService, FirstExtendedService, 'name'), ServiceLocatorRegistrationError);
         });
     });
 
@@ -222,8 +222,6 @@ describe('ServiceLocator', () => {
             assert.strictEqual(result, false);
         });
 
-
-
         it('should return true when no service is registered', () => {
             const result = ServiceLocator.tryRegisterTransient(BaseService, FirstExtendedService);
             assert.strictEqual(result, true);
@@ -244,7 +242,7 @@ describe('ServiceLocator', () => {
         });
 
         it('should throw if no type is registered', () => {
-            assert.throws(() => ServiceLocator.resolveType(BaseService), ServiceLocatorResolutionError)
+            assert.throws(() => ServiceLocator.resolveType(BaseService), ServiceLocatorResolutionError);
         });
     });
 
@@ -256,7 +254,7 @@ describe('ServiceLocator', () => {
         });
 
         it('should not throw if no type is registered', () => {
-            assert.doesNotThrow(() => ServiceLocator.tryResolveType(BaseService))
+            assert.doesNotThrow(() => ServiceLocator.tryResolveType(BaseService));
         });
 
         it('should return null throw if no type is registered', () => {

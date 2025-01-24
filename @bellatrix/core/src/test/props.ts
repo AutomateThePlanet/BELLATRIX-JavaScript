@@ -1,6 +1,6 @@
-import type { ConfigureFn, TestDecoratorImpl as TestDecorator, TestFn, TestFunction, TestSuiteDecorator } from "@bellatrix/core/types";
-import { BellatrixTest } from "@bellatrix/core/infrastructure";
-import { Symbols } from "@bellatrix/core/constants";
+import type { ConfigureFn, TestDecoratorImpl as TestDecorator, TestFn, TestFunction, TestSuiteDecorator } from '@bellatrix/core/types';
+import { BellatrixTest } from '@bellatrix/core/infrastructure';
+import { Symbols } from '@bellatrix/core/constants';
 import 'reflect-metadata';
 
 export type BellatrixTestMethods<T extends TestProps, BaseTest extends BellatrixTest> = {
@@ -23,24 +23,24 @@ export abstract class TestProps {}
 export type TestMetadata = {
     testName: string;
     suiteName: string;
-    testMethod: (...args: any[]) => (Promise<void> | void);
+    testMethod: (...args: unknown[]) => (Promise<void> | void);
     suiteClass: typeof BellatrixTest;
     error?: Error;
-    customData: Record<string | symbol, any>;
+    customData: Map<string | symbol, unknown>;
 }
 
 export type SuiteMetadata = {
     suiteName: string;
     suiteClass: typeof BellatrixTest;
-    customData: Record<string | symbol, any>;
+    customData: Map<string | symbol, unknown>;
 }
 
 export type CurrentTest = {
     name: string;
-    method: (...args: any[]) => (Promise<void> | void);
+    method: (...args: unknown[]) => (Promise<void> | void);
 }
 
-export function getTestMetadata(testMethod: (...args: any[]) => (Promise<void> | void)): TestMetadata {
+export function getTestMetadata(testMethod: (...args: unknown[]) => (Promise<void> | void)): TestMetadata {
     return Reflect.getMetadata(Symbols.TEST, testMethod);
 }
 
@@ -48,7 +48,7 @@ export function getSuiteMetadata(suiteClass: typeof BellatrixTest): TestMetadata
     return Reflect.getMetadata(Symbols.SUITE, suiteClass);
 }
 
-export function setCurrentTest(testName: string, testMethod: (...args: any[]) => (Promise<void> | void), suiteClass: typeof BellatrixTest): void {
+export function setCurrentTest(testName: string, testMethod: (...args: unknown[]) => (Promise<void> | void), suiteClass: typeof BellatrixTest): void {
     Reflect.defineMetadata(Symbols.CURRENT_TEST, { name: testName, method: testMethod }, suiteClass.constructor);
 }
 
@@ -60,12 +60,12 @@ export function getCurrentTest(suiteClass: typeof BellatrixTest): CurrentTest {
     return Reflect.getMetadata(Symbols.CURRENT_TEST, suiteClass.constructor);
 }
 
-export function defineTestMetadata(testMethod: (...args: any[]) => (Promise<void> | void), suiteClass: typeof BellatrixTest) {
+export function defineTestMetadata(testMethod: (...args: unknown[]) => (Promise<void> | void), suiteClass: typeof BellatrixTest) {
     Reflect.defineMetadata(Symbols.TEST, { testName: testMethod.name, suiteName: suiteClass.name, testMethod: testMethod, suiteClass: suiteClass, customData: new Map } satisfies TestMetadata, testMethod); // <<<<<< !!!!!!! DEFINE TEST METADATA
 }
 
 export function defineSuiteMetadata(suiteClass: typeof BellatrixTest) {
-    Reflect.defineMetadata(Symbols.SUITE, { suiteName: suiteClass.name, suiteClass, customData: new Map } satisfies SuiteMetadata, suiteClass)
+    Reflect.defineMetadata(Symbols.SUITE, { suiteName: suiteClass.name, suiteClass, customData: new Map } satisfies SuiteMetadata, suiteClass);
 }
 
 // { testName: key, suiteName: target.constructor, testMethod: target[key], suiteClass: target.constructor }

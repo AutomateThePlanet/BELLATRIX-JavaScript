@@ -19,7 +19,7 @@ export class LinkTextFindStrategy extends FindStrategy {
     }
 }
 
-export function linkText(strings: TemplateStringsArray, ...values: any[]): LinkTextFindStrategy {
+export function linkText(strings: TemplateStringsArray, ...values: unknown[]): LinkTextFindStrategy {
     const linkTextExpression = FindStrategy.interpolate(strings, values);
     return new LinkTextFindStrategy(linkTextExpression);
 }

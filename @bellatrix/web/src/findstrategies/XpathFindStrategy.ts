@@ -14,7 +14,7 @@ export class XpathFindStrategy extends FindStrategy {
     }
 }
 
-export function xpath(strings: TemplateStringsArray, ...values: any[]): XpathFindStrategy {
+export function xpath(strings: TemplateStringsArray, ...values: unknown[]): XpathFindStrategy {
     const xpathExpression = FindStrategy.interpolate(strings, values);
     return new XpathFindStrategy(xpathExpression);
 }

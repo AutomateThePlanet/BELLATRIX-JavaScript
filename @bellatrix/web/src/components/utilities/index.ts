@@ -1,1 +1,1 @@
-export * from './WebComponentHooks'
+export * from './WebComponentHooks';

@@ -23,7 +23,7 @@ export class ShadowRootContext<DOMType extends ShadowRoot = ShadowRoot> {
         return await this.evaluate(el => el.innerHTML);
     }
 
-    async evaluate<R, VarArgs extends any[] = []>(script: (element: DOMType, ...args: { [K in keyof VarArgs]: VarArgs[K] extends WebComponent<infer T> ? T : VarArgs[K] }) => R, ...args: VarArgs) : Promise<R> {
+    async evaluate<R, VarArgs extends unknown[] = []>(script: (element: DOMType, ...args: { [K in keyof VarArgs]: VarArgs[K] extends WebComponent<infer T> ? T : VarArgs[K] }) => R, ...args: VarArgs) : Promise<R> {
         for (let i = 0; i < args.length; i++) {
             if (args[i] instanceof WebComponent) {
                 args[i] = (args[i] as WebComponent).wrappedElement;

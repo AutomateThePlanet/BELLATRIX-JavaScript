@@ -99,13 +99,13 @@ export class SeleniumWebElement extends WebElement {
         return elements.map(el => new SeleniumWebElement(el, this._driver) /* TODO: handle error? */);
     }
 
-    override async evaluate<R>(script: string | Function, ...args: any[]): Promise<R> {
+    override async evaluate<R>(script: string | Function, ...args: unknown[]): Promise<R> {
         for (let i = 0; i < args.length; i++) {
-            if (args[i].constructor === SeleniumWebElement) {
+            if ((args[i] as SeleniumWebElement).constructor === SeleniumWebElement) {
                 args[i] = (args[i] as SeleniumWebElement)['_element'];
             }
 
-            if (args[i].constructor === SeleniumShadowRootWebElement) {
+            if ((args[i] as SeleniumShadowRootWebElement).constructor === SeleniumShadowRootWebElement) {
                 args[i] = await (args[i] as SeleniumShadowRootWebElement).evaluate('el => el.shadowRoot');
             }
         }

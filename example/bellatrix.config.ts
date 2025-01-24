@@ -1,11 +1,11 @@
-import { BellatrixConfigurationOverride } from "@bellatrix/core/types";
+import { BellatrixConfigurationOverride } from '@bellatrix/core/types';
 
 const config: BellatrixConfigurationOverride = {
     frameworkSettings: {
         testSettings: {
             testTimeout: 300000,
             testFramework: 'vitest', // vitest, jasmine, mocha, jest, playwright
-            testReporter: 'tap',
+            testReporter: 'console-only',
             testReportDirectory: './reports',
             testReportName: `result`,
             parallelExecution: false, // not functional yet

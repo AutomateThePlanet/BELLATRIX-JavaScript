@@ -18,7 +18,7 @@ export class TagFindStrategy extends FindStrategy {
     }
 }
 
-export function tag(strings: TemplateStringsArray, ...values: any[]): TagFindStrategy {
+export function tag(strings: TemplateStringsArray, ...values: unknown[]): TagFindStrategy {
     const tagExpression = FindStrategy.interpolate(strings, values);
     return new TagFindStrategy(tagExpression);
 }

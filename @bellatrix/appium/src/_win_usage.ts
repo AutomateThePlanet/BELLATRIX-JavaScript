@@ -1,4 +1,4 @@
-import { WindowsDriver } from "./windows/WindowsDriver";
+import { WindowsDriver } from './windows/WindowsDriver';
 
 const capabilities = {
     platformName: 'Windows',
@@ -13,4 +13,4 @@ async function myTest() {
     await driver.deleteSession();
 }
 
-myTest();
+await myTest();

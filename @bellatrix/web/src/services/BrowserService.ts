@@ -1,6 +1,6 @@
-import { BrowserAutomationTool } from "@bellatrix/web/infrastructure/browserautomationtools/core";
-import { WebService } from ".";
-import { BellatrixSettings } from "@bellatrix/core/settings";
+import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { WebService } from '.';
+import { BellatrixSettings } from '@bellatrix/core/settings';
 
 export class BrowserService extends WebService {
     constructor(driver: BrowserAutomationTool) {
@@ -14,7 +14,7 @@ export class BrowserService extends WebService {
     async getTitle(): Promise<string> {
         return await this.driver.getTitle();
     }
-    
+
     async getPageSource(): Promise<string> {
         return await this.driver.getPageSource();
     }
@@ -32,12 +32,16 @@ export class BrowserService extends WebService {
     }
 
     async waitForAjax() {
-        const ajaxTimeout = BellatrixSettings.get().webSettings.timeoutSettings.waitForAjaxTimeout;
-        const sleepInterval = BellatrixSettings.get().webSettings.timeoutSettings.sleepInterval;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - sometimes Jest causes problems because it can't find the WebSettings file
+        const timeoutSettings = BellatrixSettings.get().webSettings.timeoutSettings;
+        const ajaxTimeout = timeoutSettings.waitForAjaxTimeout;
+        const sleepInterval = timeoutSettings.sleepInterval;
 
         await this.driver.waitUntil(async () => {
-            const numberOfAjaxConnections = await this.driver.executeJavascript<number | null>( // @ts-ignore
-                () => !isNaN(window.openHTTPs) ? window.openHTTPs : null);
+            const numberOfAjaxConnections = await this.driver.executeJavascript<number | null>(
+                // @ts-expect-error - added property to global window object
+                () => !isNaN(window.$openHTTPs) ? window.$openHTTPs : null);
             if (numberOfAjaxConnections !== null) {
                 return numberOfAjaxConnections === 0;
             } else {
@@ -45,12 +49,15 @@ export class BrowserService extends WebService {
             }
 
             return false;
-        }, ajaxTimeout, sleepInterval)
+        }, ajaxTimeout, sleepInterval);
     }
 
     async waitUntilPageLoadsCompletely() {
-        const waitUntilReadyTimeout = BellatrixSettings.get().webSettings.timeoutSettings.pageLoadTimeout;
-        const sleepInterval = BellatrixSettings.get().webSettings.timeoutSettings.sleepInterval;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - sometimes Jest causes problems because it can't find the WebSettings file
+        const timeoutSettings = BellatrixSettings.get().webSettings.timeoutSettings;
+        const waitUntilReadyTimeout = timeoutSettings.pageLoadTimeout;
+        const sleepInterval = timeoutSettings.sleepInterval;
 
         await this.driver.waitUntil(async () => {
             const readyState = await this.driver.executeJavascript(() => document.readyState);
@@ -60,17 +67,21 @@ export class BrowserService extends WebService {
 
     private async monkeyPatchXMLHttpRequest() {
         await this.driver.executeJavascript(function() {
-                const oldOpen = XMLHttpRequest.prototype.open; // @ts-ignore
-                window.openHTTPs = 0; // @ts-ignore
-                XMLHttpRequest.prototype.open = function(method, url, async, user, pass) { // @ts-ignore
-                    window.openHTTPs++;
-                    this.addEventListener('readystatechange', function() {
-                        if (this.readyState == 4) { // @ts-ignore
-                            window.openHTTPs--;
+            const oldOpen = XMLHttpRequest.prototype.open;
+            // @ts-expect-error - added property to global window object
+            window.$openHTTPs = 0;
+            XMLHttpRequest.prototype.open = function() {
+                // @ts-expect-error - added property to global window object
+                window.$openHTTPs++;
+                this.addEventListener('readystatechange', function() {
+                    if (this.readyState == 4) {
+                        // @ts-expect-error - added property to global window object
+                        window.$openHTTPs--;
                     }
                 }, false);
-                    oldOpen.call(this, method, url, async, user, pass);
-                }
-            });
+                // eslint-disable-next-line prefer-rest-params
+                oldOpen.apply(this, arguments as never);
+            };
+        });
     }
 }

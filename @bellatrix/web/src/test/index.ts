@@ -59,7 +59,7 @@ type RemoteExecutionSettings = {
     provider: 'Selenium Grid' | 'Selenoid',
     remoteUrl: string,
     capabilities: Capabilities,
-    headers?: object,
+    headers?: Record<string, string>,
 } | {
     provider: 'LambdaTest' | 'BrowserStack',
     capabilities: Capabilities,
@@ -67,7 +67,7 @@ type RemoteExecutionSettings = {
     accessKey: string,
 }
 
-type VendorSpecificKeys = Record<`${string}.${string}` | `${string}:${string}`, any>;
+type VendorSpecificKeys = Record<`${string}.${string}` | `${string}:${string}`, unknown>;
 
 type Capabilities = VendorSpecificKeys & {
     browserName: string,

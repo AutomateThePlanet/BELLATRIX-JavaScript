@@ -27,7 +27,6 @@ class BellatrixAggregateAssertionError extends Error {
 class BellatrixAssertionError extends Error {
     constructor(expected?: string, actual?: string, message?: string, diffPointer?: number) {
         const assertionFailedMessage = 'Assertion Failed.';
-        let errorMessage: string | undefined;
         const expectedPrefix = 'Expected: ';
         const actualPrefix = 'But was: ';
         const indentation = 0;
@@ -45,17 +44,17 @@ class BellatrixAssertionError extends Error {
                 arrowLength = stringBeforeDifference[stringBeforeDifference.length - 1].length;
             }
 
-            const arrowExtension = (actual.match(new RegExp('\t', 'g')) || []).length * (tabReplacement.length - 1);
+            const arrowExtension = (actual.match(new RegExp(/\t/, 'g')) || []).length * (tabReplacement.length - 1);
 
             diffPointerLine = `\n${arrowTailSymbol.repeat(arrowLength + arrowExtension)}^`;
         }
-        message = message === undefined ? assertionFailedMessage : `${assertionFailedMessage} ${message}`
+        message = message === undefined ? assertionFailedMessage : `${assertionFailedMessage} ${message}`;
         expected = expected?.replace(/\t/g, tabReplacement);
         actual = actual?.replace(/\t/g, tabReplacement);
         const expectedLine = expected === undefined ? '' : `\n${' '.repeat(indentation)}${expectedPrefix.padEnd(padLength)}${expected}`;
         const actualLine = actual === undefined ? '' : `\n${' '.repeat(indentation)}${actualPrefix.padEnd(padLength)}${actual}`;
 
-        errorMessage = message + expectedLine + actualLine + (diffPointerLine ?? '');
+        const errorMessage = message + expectedLine + actualLine + (diffPointerLine ?? '');
         super(errorMessage);
         this.name = 'BellatrixAssertionError';
     }
@@ -66,9 +65,9 @@ export class Assert {
         throw new Error('PluginExecutionEngine is static and cannot be instantiated');
     }
 
-    static areEqual(expected: any, actual: any, message?: string): void
-    static areEqual(expected: any, actual: any, options?: EqualityOptions, message?: string): void
-    static areEqual(expected: any, actual: any, options?: EqualityOptions | string, message?: string) {
+    static areEqual(expected: unknown, actual: unknown, message?: string): void
+    static areEqual(expected: unknown, actual: unknown, options?: EqualityOptions, message?: string): void
+    static areEqual(expected: unknown, actual: unknown, options?: EqualityOptions | string, message?: string) {
         if (typeof options === 'string') {
             return this.areEqual(expected, actual, undefined, options);
         }
@@ -84,9 +83,9 @@ export class Assert {
         }
     }
 
-    static areDeepEqual(expected: any, actual: any, message?: string): void
-    static areDeepEqual(expected: any, actual: any, options?: EqualityOptions, message?: string): void
-    static areDeepEqual(expected: any, actual: any, options?: EqualityOptions | string, message?: string) {
+    static areDeepEqual(expected: unknown, actual: unknown, message?: string): void
+    static areDeepEqual(expected: unknown, actual: unknown, options?: EqualityOptions, message?: string): void
+    static areDeepEqual(expected: unknown, actual: unknown, options?: EqualityOptions | string, message?: string) {
         if (typeof options === 'string') {
             return this.areDeepEqual(expected, actual, undefined, options);
         }
@@ -98,9 +97,9 @@ export class Assert {
         }
     }
 
-    static areApproximatelyEqual(expected: any, actual: any, decimalPlaces: number, message?: string): void
-    static areApproximatelyEqual(expected: any, actual: any, decimalPlaces: number, options?: ApproximateEqualityOptions, message?: string): void
-    static areApproximatelyEqual(expected: any, actual: any, decimalPlaces: number, options?: ApproximateEqualityOptions | string, message?: string) {
+    static areApproximatelyEqual(expected: number, actual: number, decimalPlaces: number, message?: string): void
+    static areApproximatelyEqual(expected: number, actual: number, decimalPlaces: number, options?: ApproximateEqualityOptions, message?: string): void
+    static areApproximatelyEqual(expected: number, actual: number, decimalPlaces: number, options?: ApproximateEqualityOptions | string, message?: string) {
         if (typeof options === 'string') {
             return this.areApproximatelyEqual(expected, actual, decimalPlaces, undefined, options);
         }
@@ -115,9 +114,9 @@ export class Assert {
         }
     }
 
-    static areNotEqual(expected: any, actual: any, message?: string): void
-    static areNotEqual(expected: any, actual: any, options?: EqualityOptions, message?: string): void
-    static areNotEqual(expected: any, actual: any, options?: EqualityOptions | string, message?: string) {
+    static areNotEqual(expected: unknown, actual: unknown, message?: string): void
+    static areNotEqual(expected: unknown, actual: unknown, options?: EqualityOptions, message?: string): void
+    static areNotEqual(expected: unknown, actual: unknown, options?: EqualityOptions | string, message?: string) {
         if (typeof options === 'string') {
             return this.areNotEqual(expected, actual, undefined, options);
         }
@@ -135,9 +134,9 @@ export class Assert {
         }
     }
 
-    static areNotDeepEqual(expected: any, actual: any, message?: string): void
-    static areNotDeepEqual(expected: any, actual: any, options?: EqualityOptions, message?: string): void
-    static areNotDeepEqual(expected: any, actual: any, options?: EqualityOptions | string, message?: string) {
+    static areNotDeepEqual(expected: unknown, actual: unknown, message?: string): void
+    static areNotDeepEqual(expected: unknown, actual: unknown, options?: EqualityOptions, message?: string): void
+    static areNotDeepEqual(expected: unknown, actual: unknown, options?: EqualityOptions | string, message?: string) {
         if (typeof options === 'string') {
             return this.areNotDeepEqual(expected, actual, undefined, options);
         }
@@ -149,9 +148,9 @@ export class Assert {
         }
     }
 
-    static areNotApproximatelyEqual(expected: any, actual: any, decimalPlaces: number, message?: string): void
-    static areNotApproximatelyEqual(expected: any, actual: any, decimalPlaces: number, options?: ApproximateEqualityOptions, message?: string): void
-    static areNotApproximatelyEqual(expected: any, actual: any, decimalPlaces: number, options?: ApproximateEqualityOptions | string, message?: string) {
+    static areNotApproximatelyEqual(expected: number, actual: number, decimalPlaces: number, message?: string): void
+    static areNotApproximatelyEqual(expected: number, actual: number, decimalPlaces: number, options?: ApproximateEqualityOptions, message?: string): void
+    static areNotApproximatelyEqual(expected: number, actual: number, decimalPlaces: number, options?: ApproximateEqualityOptions | string, message?: string) {
         if (typeof options === 'string') {
             return this.areNotApproximatelyEqual(expected, actual, decimalPlaces, undefined, options);
         }
@@ -173,7 +172,7 @@ export class Assert {
         }
     }
 
-    static isFalsy(value: any, message?: string) {
+    static isFalsy(value: unknown, message?: string) {
         const result = value == false;
         if (result === false) {
             throw new BellatrixAssertionError('falsy', quoteString(value), message);
@@ -187,49 +186,49 @@ export class Assert {
         }
     }
 
-    static isTruthy(value: any, message?: string) {
+    static isTruthy(value: unknown, message?: string) {
         const result = value == true;
         if (result === false) {
             throw new BellatrixAssertionError('truthy', quoteString(value), message);
         }
     }
 
-    static isNaN(value: any, message?: string): void
-    static isNaN(value: any, options?: EqualityOptions, message?: string): void
-    static isNaN(value: any, options?: EqualityOptions | string, message?: string) {
+    static isNaN(value: unknown, message?: string): void
+    static isNaN(value: unknown, options?: EqualityOptions, message?: string): void
+    static isNaN(value: unknown, options?: EqualityOptions | string, message?: string) {
         if (typeof options === 'string') {
             return this.isNaN(value, undefined, options);
         }
 
         options ??= { strict: false };
-        const result = isNaN(value) && options.strict ? typeof value === 'number' : true;
+        const result = isNaN(value as number) && options.strict ? typeof value === 'number' : true;
         if (result === false) {
             throw new BellatrixAssertionError('NaN', quoteString(value), message);
         }
     }
 
-    static isNull(value: any, message?: string) {
+    static isNull(value: unknown, message?: string) {
         const result = value === null;
         if (result === false) {
             throw new BellatrixAssertionError('null', quoteString(value), message);
         }
     }
 
-    static isNotNull(value: any, message?: string) {
+    static isNotNull(value: unknown, message?: string) {
         const result = value !== null;
         if (result === false) {
             throw new BellatrixAssertionError('not null', undefined, message);
         }
     }
 
-    static isDefined(value: any, message?: string) {
+    static isDefined(value: unknown, message?: string) {
         const result = value !== undefined;
         if (result === false) {
             throw new BellatrixAssertionError('not undefined', undefined, message);
         }
     }
 
-    static isUndefined(value: any, message?: string) {
+    static isUndefined(value: unknown, message?: string) {
         const result = value === undefined;
         if (result === false) {
             throw new BellatrixAssertionError('undefined', quoteString(value), message);
@@ -243,41 +242,41 @@ export class Assert {
         }
     }
 
-    static arrayIsEmpty(array: any[], message?: string) {
+    static arrayIsEmpty(array: unknown[], message?: string) {
         const result = Array.isArray(array) && array.length === 0;
         if (result === false) {
             throw new BellatrixAssertionError('[]', quoteString(array), message);
         }
     }
 
-    static arrayIsNotEmpty(array: any[], message?: string) {
+    static arrayIsNotEmpty(array: unknown[], message?: string) {
         const result = Array.isArray(array) && array.length > 0;
         if (result === false) {
             throw new BellatrixAssertionError('[]', quoteString(array), message);
         }
     }
 
-    static isInstanceOf(instanceOf: Function, value: any, message?: string) {
+    static isInstanceOf(instanceOf: Function, value: unknown, message?: string) {
         const result = value instanceof instanceOf;
         if (result === false) {
-            throw new BellatrixAssertionError(`instance of ${instanceOf.name}`, value.constructor.name, message);
+            throw new BellatrixAssertionError(`instance of ${instanceOf.name}`, (value as object).constructor.name, message);
         }
     }
 
-    static isNotInstanceOf(instanceOf: Function, value: any, message?: string) {
+    static isNotInstanceOf(instanceOf: Function, value: unknown, message?: string) {
         const result = !(value instanceof instanceOf);
         if (result === false) {
             throw new BellatrixAssertionError(`not instance of ${instanceOf.name}`, value.constructor.name, message);
         }
     }
 
-    static arrayIsSubsetOf(subsetOf: any[], array: any[], message?: string) {
+    static arrayIsSubsetOf(subsetOf: unknown[], array: unknown[], message?: string) {
         const result = array.every((item) => subsetOf.includes(item));
 
         const arraySet = new Set(array);
         const superset = new Set(subsetOf);
 
-        const extra: number[] = [];
+        const extra: unknown[] = [];
 
         arraySet.forEach((element) => {
             if (!superset.has(element)) {
@@ -290,7 +289,7 @@ export class Assert {
         }
     }
 
-    static arrayIsNotSubsetOf(subsetOf: any[], array: any[], message?: string) {
+    static arrayIsNotSubsetOf(subsetOf: unknown[], array: unknown[], message?: string) {
         const result = array.every((item) => subsetOf.includes(item));
 
         if (result === false) {
@@ -298,13 +297,13 @@ export class Assert {
         }
     }
 
-    static arrayIsSupersetOf(supersetOf: any[], array: any[], message?: string) {
+    static arrayIsSupersetOf(supersetOf: unknown[], array: unknown[], message?: string) {
         const result = supersetOf.every((item) => array.includes(item));
 
         const arraySet = new Set(array);
         const subset = new Set(supersetOf);
 
-        const missing: number[] = [];
+        const missing: unknown[] = [];
 
         subset.forEach((element) => {
             if (!arraySet.has(element)) {
@@ -317,7 +316,7 @@ export class Assert {
         }
     }
 
-    static arrayIsNotSupersetOf(supersetOf: any[], array: any[], message?: string) {
+    static arrayIsNotSupersetOf(supersetOf: unknown[], array: unknown[], message?: string) {
         const result = !supersetOf.every((item) => array.includes(item));
 
         if (result === false) {
@@ -329,11 +328,11 @@ export class Assert {
     static that<T>(value: T, options: AssertMultipleOptions, ...expressions: AssertExpression<T>[]): void
     static that<T>(value: T, options?: AssertMultipleOptions | AssertExpression<T>, ...expressions: AssertExpression<T>[]) {
         if (typeof options !== 'object') {
-            return this.that(value, {}, options!, ...expressions)
+            return this.that(value, {}, options!, ...expressions);
         }
 
         if (expressions[0] === undefined) {
-            throw Error('Used assert.that without conditions to assert.')
+            throw Error('Used assert.that without conditions to assert.');
         }
 
         const errors: Error[] = [];
@@ -342,7 +341,7 @@ export class Assert {
                 expression(value);
             } catch (e) {
                 if (options.throwOnFirstError) {
-                    if (options.message !== undefined) throw Error(options.message, { cause: e })
+                    if (options.message !== undefined) throw Error(options.message, { cause: e });
                     else throw e;
                 }
 
@@ -360,14 +359,14 @@ export class Assert {
     }
 
     static async multiple(...expressions: Function[]): Promise<void>
-    static async multiple(options: AssertMultipleOptions, ...expressions: Function[]): Promise<void> 
+    static async multiple(options: AssertMultipleOptions, ...expressions: Function[]): Promise<void>
     static async multiple(options?: AssertMultipleOptions | Function, ...expressions: Function[]) {
         if (typeof options !== 'object') {
             return this.multiple({}, options!, ...expressions);
         }
 
         if (expressions[0] === undefined) {
-            throw Error('Used assert.multiple without conditions to assert.')
+            throw Error('Used assert.multiple without conditions to assert.');
         }
 
         const errors: Error[] = [];
@@ -376,7 +375,7 @@ export class Assert {
                 await expression();
             } catch (e) {
                 if (options.throwOnFirstError) {
-                    if (options.message !== undefined) throw Error(options.message, { cause: e })
+                    if (options.message !== undefined) throw Error(options.message, { cause: e });
                     else throw e;
                 }
 
@@ -403,42 +402,42 @@ export const is = {
         return (actual: T) => Assert.areDeepEqual(expected, actual, options);
     },
 
-    approximatelyEqualTo<T>(expected: T, decimalPlaces: number, options?: ApproximateEqualityOptions): AssertExpression<T> {
-        return (actual: T) => Assert.areApproximatelyEqual(expected, actual, decimalPlaces, options);
+    approximatelyEqualTo(expected: number, decimalPlaces: number, options?: ApproximateEqualityOptions): AssertExpression<number> {
+        return (actual: number) => Assert.areApproximatelyEqual(expected, actual, decimalPlaces, options);
     },
 
     get false(): AssertExpression<boolean> {
-        return (actual: any) => Assert.isFalse(actual);
+        return (actual: unknown) => Assert.isFalse(actual as boolean);
     },
 
     get true(): AssertExpression<boolean> {
-        return (actual: any) => Assert.isTrue(actual);
+        return (actual: unknown) => Assert.isTrue(actual as boolean);
     },
 
-    get falsy(): AssertExpression<any> {
-        return (actual: any) => Assert.isFalsy(actual);
+    get falsy(): AssertExpression<unknown> {
+        return (actual: unknown) => Assert.isFalsy(actual);
     },
 
-    get truthy(): AssertExpression<any> {
-        return (actual: any) => Assert.isTruthy(actual);
+    get truthy(): AssertExpression<unknown> {
+        return (actual: unknown) => Assert.isTruthy(actual);
     },
 
-    get null(): AssertExpression<any> {
-        return (actual: any) => Assert.isNull(actual);
+    get null(): AssertExpression<unknown> {
+        return (actual: unknown) => Assert.isNull(actual);
     },
 
-    get defined(): AssertExpression<any> {
-        return (actual: any) => Assert.isDefined(actual);
+    get defined(): AssertExpression<unknown> {
+        return (actual: unknown) => Assert.isDefined(actual);
     },
 
-    get undefined(): AssertExpression<any> {
-        return (actual: any) => Assert.isUndefined(actual);
+    get undefined(): AssertExpression<unknown> {
+        return (actual: unknown) => Assert.isUndefined(actual);
     },
 
     greaterThan(expected: number): AssertExpression<number> {
         return (actual: number) => {
             try {
-                Assert.isTrue(actual > expected)
+                Assert.isTrue(actual > expected);
             } catch {
                 throw new BellatrixAssertionError(`> ${expected}`, `  ${quoteString(actual)}`);
             }
@@ -448,7 +447,7 @@ export const is = {
     greaterThanOrEqualTo(expected: number): AssertExpression<number> {
         return (actual: number) => {
             try {
-                (actual: number) => Assert.isTrue(actual >= expected);
+                Assert.isTrue(actual >= expected);
             } catch {
                 throw new BellatrixAssertionError(`≥ ${expected}`, `  ${quoteString(actual)}`);
             }
@@ -458,7 +457,7 @@ export const is = {
     lessThan(expected: number): AssertExpression<number> {
         return (actual: number) => {
             try {
-                Assert.isTrue(actual < expected)
+                Assert.isTrue(actual < expected);
             } catch {
                 throw new BellatrixAssertionError(`< ${expected}`, `  ${quoteString(actual)}`);
             }
@@ -468,7 +467,7 @@ export const is = {
     lessThanOrEqualTo(expected: number): AssertExpression<number> {
         return (actual: number) => {
             try {
-                Assert.isTrue(actual <= expected)
+                Assert.isTrue(actual <= expected);
             } catch {
                 throw new BellatrixAssertionError(`≤ ${expected}`, `  ${quoteString(actual)}`);
             }
@@ -476,69 +475,69 @@ export const is = {
     },
 
     instanceOf(expected: Function): AssertExpression<number> {
-        return (actual: any) => Assert.isInstanceOf(expected, actual);
+        return (actual: unknown) => Assert.isInstanceOf(expected, actual);
     },
 
-    get empty(): AssertExpression<any[]> {
-        return (actual: any[]) => {
-            if (!Array.isArray(actual)) throw Error('Assertion method assert.that(value, is.empty) is only applicable for arrays.')
-            Assert.arrayIsEmpty(actual)
+    get empty(): AssertExpression<unknown[]> {
+        return (actual: unknown[]) => {
+            if (!Array.isArray(actual)) throw Error('Assertion method assert.that(value, is.empty) is only applicable for arrays.');
+            Assert.arrayIsEmpty(actual);
         };
     },
 
-    subsetOf(array: any[]): AssertExpression<any[]> {
-        return (actual: any) => {
-            if (!Array.isArray(actual)) throw Error('Assertion method assert.that(value, is.subsetOf(array)) is only applicable for arrays.')
+    subsetOf(array: unknown[]): AssertExpression<unknown[]> {
+        return (actual: unknown) => {
+            if (!Array.isArray(actual)) throw Error('Assertion method assert.that(value, is.subsetOf(array)) is only applicable for arrays.');
             Assert.arrayIsSubsetOf(array, actual);
-        }
+        };
     },
 
-    supersetOf(array: any[]): AssertExpression<any[]> {
-        return (actual: any) => {
-            if (!Array.isArray(actual)) throw Error('Assertion method assert.that(value, is.supersetOf(array)) is only applicable for arrays.')
+    supersetOf(array: unknown[]): AssertExpression<unknown[]> {
+        return (actual: unknown) => {
+            if (!Array.isArray(actual)) throw Error('Assertion method assert.that(value, is.supersetOf(array)) is only applicable for arrays.');
             Assert.arrayIsSupersetOf(array, actual);
-        }
+        };
     },
 
     not: {
         equalTo<T>(expected: T, options?: EqualityOptions): AssertExpression<T> {
-            return (actual: any) => Assert.areNotEqual(expected, actual, options);
+            return (actual: unknown) => Assert.areNotEqual(expected, actual, options);
         },
 
-        approximatelyEqualTo<T>(expected: T, decimalPlaces: number, options?: ApproximateEqualityOptions): AssertExpression<T> {
-            return (actual: T) => Assert.areApproximatelyEqual(expected, actual, decimalPlaces, options);
+        approximatelyEqualTo(expected: number, decimalPlaces: number, options?: ApproximateEqualityOptions): AssertExpression<number> {
+            return (actual: number) => Assert.areApproximatelyEqual(expected, actual, decimalPlaces, options);
         },
 
-        deepEqualTo<T>(expected: any, options?: EqualityOptions): AssertExpression<T> {
-            return (actual: any) => Assert.areNotDeepEqual(expected, actual, options);
+        deepEqualTo<T>(expected: unknown, options?: EqualityOptions): AssertExpression<T> {
+            return (actual: unknown) => Assert.areNotDeepEqual(expected, actual, options);
         },
 
         get false(): AssertExpression<boolean> {
-            return (actual: any) => Assert.isTrue(actual);
+            return (actual: unknown) => Assert.isTrue(actual as boolean);
         },
 
         get true(): AssertExpression<boolean> {
-            return (actual: any) => Assert.isFalse(actual);
+            return (actual: unknown) => Assert.isFalse(actual as boolean);
         },
 
-        get falsy(): AssertExpression<any> {
-            return (actual: any) => Assert.isTruthy(actual);
+        get falsy(): AssertExpression<unknown> {
+            return (actual: unknown) => Assert.isTruthy(actual);
         },
 
-        get truthy(): AssertExpression<any> {
-            return (actual: any) => Assert.isFalsy(actual);
+        get truthy(): AssertExpression<unknown> {
+            return (actual: unknown) => Assert.isFalsy(actual);
         },
 
-        get null(): AssertExpression<any> {
-            return (actual: any) => Assert.isNotNull(actual);
+        get null(): AssertExpression<unknown> {
+            return (actual: unknown) => Assert.isNotNull(actual);
         },
 
-        get defined(): AssertExpression<any> {
-            return (actual: any) => Assert.isUndefined(actual);
+        get defined(): AssertExpression<unknown> {
+            return (actual: unknown) => Assert.isUndefined(actual);
         },
 
-        get undefined(): AssertExpression<any> {
-            return (actual: any) => Assert.isDefined(actual);
+        get undefined(): AssertExpression<unknown> {
+            return (actual: unknown) => Assert.isDefined(actual);
         },
 
         greaterThan(expected: number): AssertExpression<number> {
@@ -558,44 +557,44 @@ export const is = {
         },
 
         instanceOf(expected: Function): AssertExpression<Function> {
-            return (actual: any) => Assert.isNotInstanceOf(expected, actual);
+            return (actual: unknown) => Assert.isNotInstanceOf(expected, actual);
         },
 
-        get empty(): AssertExpression<any[]> {
-            return (actual: any[]) => {
-                if (!Array.isArray(actual)) throw Error('Assertion method assert.that(value, is.not.empty) is only applicable for arrays.')
-                Assert.arrayIsNotEmpty(actual)
+        get empty(): AssertExpression<unknown[]> {
+            return (actual: unknown[]) => {
+                if (!Array.isArray(actual)) throw Error('Assertion method assert.that(value, is.not.empty) is only applicable for arrays.');
+                Assert.arrayIsNotEmpty(actual);
             };
         },
 
-        subsetOf(array: any[]): AssertExpression<any[]> {
-            return (actual: any) => {
-                if (!Array.isArray(actual)) throw Error('Assertion method assert.that(value, is.not.subsetOf(array)) is only applicable for arrays.')
+        subsetOf(array: unknown[]): AssertExpression<unknown[]> {
+            return (actual: unknown) => {
+                if (!Array.isArray(actual)) throw Error('Assertion method assert.that(value, is.not.subsetOf(array)) is only applicable for arrays.');
                 Assert.arrayIsNotSubsetOf(array, actual);
-            }
+            };
         },
 
-        supersetOf(array: any[]): AssertExpression<any[]> {
-            return (actual: any) => {
-                if (!Array.isArray(actual)) throw Error('Assertion method assert.that(value, is.not.supersetOf(array)) is only applicable for arrays.')
+        supersetOf(array: unknown[]): AssertExpression<unknown[]> {
+            return (actual: unknown) => {
+                if (!Array.isArray(actual)) throw Error('Assertion method assert.that(value, is.not.supersetOf(array)) is only applicable for arrays.');
                 Assert.arrayIsNotSupersetOf(array, actual);
-            }
+            };
         },
     },
 } as const;
 
-function deepEquals(obj1: any, obj2: any, strict: boolean) {
+function deepEquals(obj1: unknown, obj2: unknown, strict: boolean) {
     if (obj1 === obj2) return true;
 
     if (obj1 && obj2 && typeof obj1 == 'object' && typeof obj2 == 'object') {
         if (obj1.constructor !== obj2.constructor) return false;
 
-        var length, i, keys;
+        let length, i;
         if (Array.isArray(obj1)) {
             length = obj1.length;
-            if (length != obj2.length) return false;
+            if (length != (obj2 as unknown[]).length) return false;
             for (i = length; i-- !== 0;)
-                if (!deepEquals(obj1[i], obj2[i], strict)) return false;
+                if (!deepEquals(obj1[i], (obj2 as unknown[])[i], strict)) return false;
             return true;
         }
 
@@ -616,29 +615,30 @@ function deepEquals(obj1: any, obj2: any, strict: boolean) {
         }
 
         if (ArrayBuffer.isView(obj1) && ArrayBuffer.isView(obj2)) {
-            // @ts-ignore
+            // @ts-expect-error - TypeScript ArrayBufferView type does not have length property
             length = obj1.length;
-            // @ts-ignore
+            // @ts-expect-error - TypeScript ArrayBufferView type does not have length property
             if (length != obj2.length) return false;
             for (i = length; i-- !== 0;)
                 if (strict)
-                    // @ts-ignore
-                    if (obj1[i] !== obj2[i]) return false
+                    // @ts-expect-error - TypeScript ArrayBufferView type does not have length property
+                    if (obj1[i] !== obj2[i]) return false;
                     else return true;
                 else
-                    // @ts-ignore
-                    if (obj1[i] != obj2[i]) return false
+                    // @ts-expect-error - TypeScript ArrayBufferView type does not have length property
+                    if (obj1[i] != obj2[i]) return false;
                     else return true;
             return true;
         }
 
+        // @ts-expect-error - TypeScript incorrectly thinks obj1 and obj2 are not objects
         if (obj1.constructor === RegExp) return obj1.source === obj2.source && obj1.flags === obj2.flags;
         if (obj1.valueOf !== Object.prototype.valueOf)
-            if (strict) obj1.valueOf() === obj2.valueOf()
-            else obj1.valueOf() == obj2.valueOf();
+            if (strict) return obj1.valueOf() === obj2.valueOf();
+            else return obj1.valueOf() == obj2.valueOf();
         if (obj1.toString !== Object.prototype.toString) return obj1.toString() === obj2.toString();
 
-        keys = Object.keys(obj1);
+        const keys = Object.keys(obj1);
         length = keys.length;
         if (length !== Object.keys(obj2).length) return false;
 
@@ -646,9 +646,9 @@ function deepEquals(obj1: any, obj2: any, strict: boolean) {
             if (!Object.prototype.hasOwnProperty.call(obj2, keys[i])) return false;
 
         for (i = length; i-- !== 0;) {
-            var key = keys[i];
+            const key = keys[i];
 
-            if (!deepEquals(obj1[key], obj2[key], strict)) return false;
+            if (!deepEquals(obj1[key as keyof typeof obj1], obj2[key as keyof typeof obj2], strict)) return false;
         }
 
         return true;
@@ -672,8 +672,8 @@ function stringAssert(expected: string, actual: string, message?: string): void 
     }
 }
 
-function quoteString(value: any): string {
-    if (Array.isArray(value)) return `[${value.map(v => quoteString(v)).join(', ')}]`
+function quoteString(value: unknown): string {
+    if (Array.isArray(value)) return `[${value.map(v => quoteString(v)).join(', ')}]`;
     return typeof value === 'string' ? `"${value}"` : `${value}`;
 }
 

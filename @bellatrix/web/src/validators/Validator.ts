@@ -1,8 +1,8 @@
-import { ServiceLocator } from "@bellatrix/core/utilities";
-import { BrowserAutomationTool } from "@bellatrix/web/infrastructure/browserautomationtools/core";
-import { StringValidator, NumberValidator, BooleanValidator, UnknownValidator } from ".";
-import { BellatrixSettings } from "@bellatrix/core/settings";
-import { Assert, is } from "@bellatrix/core/assertions";
+import { ServiceLocator } from '@bellatrix/core/utilities';
+import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { StringValidator, NumberValidator, BooleanValidator, UnknownValidator } from '.';
+import { BellatrixSettings } from '@bellatrix/core/settings';
+import { Assert, is } from '@bellatrix/core/assertions';
 
 export class Validator implements StringValidator, NumberValidator, BooleanValidator, UnknownValidator {
     private _method: Function;
@@ -13,14 +13,14 @@ export class Validator implements StringValidator, NumberValidator, BooleanValid
         this._attribute = attribute;
     }
 
-    async is(expected: any): Promise<void> {
+    async is(expected: unknown): Promise<void> {
         const validationTimeout = BellatrixSettings.get().webSettings.timeoutSettings.validationTimeout;
         const sleepInterval = BellatrixSettings.get().webSettings.timeoutSettings.sleepInterval;
         let result;
         try {
             await this.driver.waitUntil(async () => {
                 result = await this.getResult();
-    
+
                 switch (typeof result) {
                     case 'string':
                         return result === expected;
@@ -33,7 +33,7 @@ export class Validator implements StringValidator, NumberValidator, BooleanValid
         }
     }
 
-    async equals(expected: any): Promise<void> {
+    async equals(expected: unknown): Promise<void> {
         const validationTimeout = BellatrixSettings.get().webSettings.timeoutSettings.validationTimeout;
         const sleepInterval = BellatrixSettings.get().webSettings.timeoutSettings.sleepInterval;
         let result;
@@ -53,7 +53,7 @@ export class Validator implements StringValidator, NumberValidator, BooleanValid
         }
     }
 
-    async notEqual(expected: any): Promise<void> {
+    async notEqual(expected: unknown): Promise<void> {
         const validationTimeout = BellatrixSettings.get().webSettings.timeoutSettings.validationTimeout;
         const sleepInterval = BellatrixSettings.get().webSettings.timeoutSettings.sleepInterval;
         let result;
@@ -73,7 +73,7 @@ export class Validator implements StringValidator, NumberValidator, BooleanValid
         }
     }
 
-    async isNot(expected: any): Promise<void> {
+    async isNot(expected: unknown): Promise<void> {
         const validationTimeout = BellatrixSettings.get().webSettings.timeoutSettings.validationTimeout;
         const sleepInterval = BellatrixSettings.get().webSettings.timeoutSettings.sleepInterval;
         let result;
@@ -94,7 +94,7 @@ export class Validator implements StringValidator, NumberValidator, BooleanValid
         }
     }
 
-    async contains(expected: any): Promise<void> {
+    async contains(expected: unknown): Promise<void> {
         const validationTimeout = BellatrixSettings.get().webSettings.timeoutSettings.validationTimeout;
         const sleepInterval = BellatrixSettings.get().webSettings.timeoutSettings.sleepInterval;
         let result;
@@ -104,7 +104,7 @@ export class Validator implements StringValidator, NumberValidator, BooleanValid
 
                 switch (typeof result) {
                     case 'string':
-                        return result.includes(expected);
+                        return result.includes(String(expected));
                     default:
                         throw Error(`Tried to validate ${typeof result} with StringValidator`);
                 }
@@ -114,7 +114,7 @@ export class Validator implements StringValidator, NumberValidator, BooleanValid
         }
     }
 
-    async isGreaterThan(expected: any): Promise<void> {
+    async isGreaterThan(expected: number): Promise<void> {
         const validationTimeout = BellatrixSettings.get().webSettings.timeoutSettings.validationTimeout;
         const sleepInterval = BellatrixSettings.get().webSettings.timeoutSettings.sleepInterval;
         let result;
@@ -134,7 +134,7 @@ export class Validator implements StringValidator, NumberValidator, BooleanValid
         }
     }
 
-    async isLessThan(expected: any): Promise<void> {
+    async isLessThan(expected: number): Promise<void> {
         const validationTimeout = BellatrixSettings.get().webSettings.timeoutSettings.validationTimeout;
         const sleepInterval = BellatrixSettings.get().webSettings.timeoutSettings.sleepInterval;
         let result;
@@ -154,7 +154,7 @@ export class Validator implements StringValidator, NumberValidator, BooleanValid
         }
     }
 
-    async isGreaterThanOrEqual(expected: any): Promise<void> {
+    async isGreaterThanOrEqual(expected: number): Promise<void> {
         const validationTimeout = BellatrixSettings.get().webSettings.timeoutSettings.validationTimeout;
         const sleepInterval = BellatrixSettings.get().webSettings.timeoutSettings.sleepInterval;
         let result;
@@ -174,7 +174,7 @@ export class Validator implements StringValidator, NumberValidator, BooleanValid
         }
     }
 
-    async isLessThanOrEqual(expected: any): Promise<void> {
+    async isLessThanOrEqual(expected: number): Promise<void> {
         const validationTimeout = BellatrixSettings.get().webSettings.timeoutSettings.validationTimeout;
         const sleepInterval = BellatrixSettings.get().webSettings.timeoutSettings.sleepInterval;
         let result;
@@ -212,7 +212,7 @@ export class Validator implements StringValidator, NumberValidator, BooleanValid
                 }
             }, validationTimeout, sleepInterval);
         } catch {
-            Assert.isTrue(typeof result === 'string' ? Boolean(result) : result as unknown as boolean, `Validating ${this._attribute}.`)
+            Assert.isTrue(typeof result === 'string' ? Boolean(result) : result as unknown as boolean, `Validating ${this._attribute}.`);
         }
     }
 
@@ -234,7 +234,7 @@ export class Validator implements StringValidator, NumberValidator, BooleanValid
                 }
             }, validationTimeout, sleepInterval);
         } catch {
-            Assert.isFalse(typeof result === 'string' ? Boolean(result) : result as unknown as boolean, `Validating ${this._attribute}.`)
+            Assert.isFalse(typeof result === 'string' ? Boolean(result) : result as unknown as boolean, `Validating ${this._attribute}.`);
         }
     }
 
@@ -242,8 +242,7 @@ export class Validator implements StringValidator, NumberValidator, BooleanValid
         return ServiceLocator.resolve(BrowserAutomationTool);
     }
 
-    private async getResult(): Promise<any> {
-        // @ts-ignore
-        return this._method[Symbol.toStringTag] === 'AsyncFunction' ? await this._method() : this._method();
+    private async getResult(): Promise<unknown> {
+        return this._method[Symbol.toStringTag as unknown as keyof typeof this._method] === 'AsyncFunction' ? await this._method() : this._method();
     }
 }

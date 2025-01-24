@@ -1,10 +1,10 @@
-import { CssFindStrategy, XpathFindStrategy, NameFindStrategy, IdFindStrategy, ClassFindStrategy, FindStrategy, AttributeContainingFindStrategy, AttributeFindStrategy, ClassContainingFindStrategy, IdContainingFindStrategy, IdEndingWithFindStrategy, InnerTextContainingFindStrategy, LinkTextContainingFindStrategy, LinkTextFindStrategy, ValueContainingFindStrategy, TagFindStrategy, NameEndingWithFindStrategy } from "@bellatrix/web/findstrategies";
-import { ComponentsList, ShadowRootContext, WebComponent } from "@bellatrix/web/components";
-import { BrowserAutomationTool } from "@bellatrix/web/infrastructure/browserautomationtools/core";
+import { CssFindStrategy, XpathFindStrategy, NameFindStrategy, IdFindStrategy, ClassFindStrategy, FindStrategy, AttributeContainingFindStrategy, AttributeFindStrategy, ClassContainingFindStrategy, IdContainingFindStrategy, IdEndingWithFindStrategy, InnerTextContainingFindStrategy, LinkTextContainingFindStrategy, LinkTextFindStrategy, ValueContainingFindStrategy, TagFindStrategy, NameEndingWithFindStrategy } from '@bellatrix/web/findstrategies';
+import { ComponentsList, ShadowRootContext, WebComponent } from '@bellatrix/web/components';
+import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 import { get as stackTrace } from 'stack-trace';
-import { WebService } from ".";
+import { WebService } from '.';
 
-import type { Ctor } from "@bellatrix/core/types";
+import type { Ctor } from '@bellatrix/core/types';
 
 export class ComponentService<T extends WebComponent> extends WebService {
     private _type: Ctor<T>;
@@ -125,7 +125,7 @@ export class ComponentService<T extends WebComponent> extends WebService {
     allByName(name: string): ComponentsList<T> {
         return new ComponentsList<T>(this._type, new NameFindStrategy(name), this.driver, this._parentComponent, this._componentName);
     }
-    
+
     byNameEndingWith(name: string): T {
         return new this._type(new NameEndingWithFindStrategy(name), this.driver, this._parentComponent, undefined, this._componentName);
     }
@@ -155,6 +155,6 @@ export class ComponentService<T extends WebComponent> extends WebService {
     }
 
     allByXpath(xpath: string): ComponentsList<T> {
-        return new ComponentsList<T>(this._type, new XpathFindStrategy(xpath), this.driver, this._parentComponent)
+        return new ComponentsList<T>(this._type, new XpathFindStrategy(xpath), this.driver, this._parentComponent);
     }
 }

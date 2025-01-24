@@ -56,7 +56,7 @@ export class SeleniumBrowserAutomationTool extends BrowserAutomationTool {
         await this.wrappedDriver.get(url);
         await this.isPageFullyLoaded();
     }
-    
+
     override async findElement(locator: Locator): Promise<WebElement> {
         let by: By;
         switch (locator.type) {
@@ -113,14 +113,14 @@ export class SeleniumBrowserAutomationTool extends BrowserAutomationTool {
         await this.wrappedDriver.manage().deleteCookie(name);
     }
 
-    override async executeJavascript<T, VarArgs extends any[]>(script: string | ((...args: VarArgs) => T), ...args: VarArgs): Promise<T> {
+    override async executeJavascript<T, VarArgs extends unknown[]>(script: string | ((...args: VarArgs) => T), ...args: VarArgs): Promise<T> {
         for (let i = 0; i < args.length; i++) {
-            if (args[i].constructor === SeleniumWebElement) {
+            if ((args[i] as SeleniumWebElement).constructor === SeleniumWebElement) {
                 args[i] = (args[i] as SeleniumWebElement)['_element'];
             }
 
-            if (args[i].constructor === SeleniumShadowRootWebElement) {
-                args[i] = await this.executeJavascript('el => el.shadowRoot', (args[i] as SeleniumShadowRootWebElement)['_element'])
+            if ((args[i] as SeleniumShadowRootWebElement).constructor === SeleniumShadowRootWebElement) {
+                args[i] = await this.executeJavascript('el => el.shadowRoot', (args[i] as SeleniumShadowRootWebElement)['_element']);
             }
         }
 
@@ -128,13 +128,12 @@ export class SeleniumBrowserAutomationTool extends BrowserAutomationTool {
     }
 
     override async waitUntil(condition: (browserAutomationTool: Omit<BrowserAutomationTool, 'waitUntil'>) => boolean | Promise<boolean>, timeout: number, pollingInterval: number): Promise<void> {
-        const driver = this;
-        await this.wrappedDriver.wait(condition.bind(this, driver), timeout, 'Condition failed.' /* TODO: better message */, pollingInterval);
+        await this.wrappedDriver.wait(condition.bind(this, this), timeout, 'Condition failed.' /* TODO: better message */, pollingInterval);
     }
 
     override async acceptDialog(promptText?: string | undefined): Promise<void> {
         const alert = await this.wrappedDriver.switchTo().alert();
-        
+
         if (promptText) {
             await alert.sendKeys(promptText);
         }
@@ -150,8 +149,8 @@ export class SeleniumBrowserAutomationTool extends BrowserAutomationTool {
     }
 
     override async getDialogMessage(): Promise<string> {
-        const message = await this.wrappedDriver.switchTo().alert().getText()
-        
+        const message = await this.wrappedDriver.switchTo().alert().getText();
+
         await this.wrappedDriver.switchTo().defaultContent();
 
         return message;

@@ -33,7 +33,7 @@ export class SearchField extends WebComponent<HTMLInputElement> {
 
     async isDisabled(): Promise<boolean> {
         return (await this.getAttribute('disabled')).toLowerCase() === 'true';
-    }  
+    }
 
     async isRequired(): Promise<boolean> {
         return (await this.getAttribute('required')).toLowerCase() === 'true';
@@ -45,5 +45,5 @@ export class SearchField extends WebComponent<HTMLInputElement> {
 
     async getValue(): Promise<string> {
         return await this.getAttribute('value');
-    } 
+    }
 }

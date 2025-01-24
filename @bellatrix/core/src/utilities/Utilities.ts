@@ -1,9 +1,9 @@
 export class Utilities {
-    static isConstructor(constructor: any) {
+    static isConstructor(constructor: unknown) {
         try {
-          Reflect.construct(String, [], constructor);
+            Reflect.construct(String, [], constructor as new (...args: never) => never);
         } catch (e) {
-          return false;
+            return false;
         }
         return true;
     }

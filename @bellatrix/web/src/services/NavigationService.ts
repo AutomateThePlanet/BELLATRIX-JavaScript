@@ -1,7 +1,7 @@
 import * as path from 'path';
 
-import { BrowserAutomationTool } from "@bellatrix/web/infrastructure/browserautomationtools/core";
-import { WebService } from ".";
+import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { WebService } from '.';
 
 export class NavigationService extends WebService {
     constructor(driver: BrowserAutomationTool) {

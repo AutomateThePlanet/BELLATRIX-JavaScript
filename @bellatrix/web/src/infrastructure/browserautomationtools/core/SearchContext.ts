@@ -1,4 +1,4 @@
-import { Locator, WebElement } from ".";
+import { Locator, WebElement } from '.';
 
 export interface SearchContext {
     findElement(locator: Locator): Promise<WebElement>;

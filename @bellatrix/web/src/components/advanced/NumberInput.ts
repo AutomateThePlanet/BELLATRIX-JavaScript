@@ -42,12 +42,12 @@ export class NumberInput extends WebComponent<HTMLInputElement> {
     async getStep(): Promise<number> {
         return parseFloat(await this.getAttribute('step'));
     }
-    
+
     async getSize(): Promise<number> {
         return parseInt(await this.getAttribute('size'));
     }
 
     async getValue(): Promise<string> {
         return await this.getAttribute('value');
-    } 
+    }
 }

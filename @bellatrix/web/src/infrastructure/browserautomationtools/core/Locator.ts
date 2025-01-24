@@ -26,6 +26,6 @@ export class Locator {
     }
 
     toString(): string {
-        return `${this.type} = ${this.value}`
+        return `${this.type} = ${this.value}`;
     }
 }

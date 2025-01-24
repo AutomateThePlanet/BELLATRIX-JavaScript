@@ -26,18 +26,18 @@ export class AppiumCommandExecutor implements HttpCommandExecutor {
         const commandInfo = this.commandRespository.get(command);
 
         if (!commandInfo) {
-            throw Error('Invalid command.')
+            throw Error('Invalid command.');
         }
 
         const response = await this.httpClient.sendRequest<AppiumResponse<T>>({
             path: this.replacePathParameters(commandInfo.path),
             method: commandInfo.method,
             data,
-        })
+        });
 
         if ((response.body.value as AppiumError)?.error) {
             const appiumError = response.body.value as AppiumError;
-            throw Error(appiumError.stacktrace)
+            throw Error(appiumError.stacktrace);
         }
 
         return response.body.value;
@@ -45,7 +45,7 @@ export class AppiumCommandExecutor implements HttpCommandExecutor {
 
     setSessionId(sessionId: string) {
         if (this.pathParams.has('sessionId')) {
-            throw Error('Session ID is already set.')
+            throw Error('Session ID is already set.');
         }
 
         this.pathParams.set('sessionId', sessionId);
@@ -53,7 +53,7 @@ export class AppiumCommandExecutor implements HttpCommandExecutor {
 
     unsetSessionId() {
         if (!this.pathParams.has('sessionId')) {
-            throw Error('No session ID to delete.')
+            throw Error('No session ID to delete.');
         }
 
         this.pathParams.delete('sessionId');
@@ -61,7 +61,7 @@ export class AppiumCommandExecutor implements HttpCommandExecutor {
 
     setParam(name: string, value: string) {
         if (name === 'sessionId') {
-            throw Error('Use setSessionId to set Session ID.')
+            throw Error('Use setSessionId to set Session ID.');
         }
 
         this.pathParams.set(name, value);

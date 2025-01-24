@@ -18,7 +18,7 @@ export class IdFindStrategy extends FindStrategy {
     }
 }
 
-export function id(strings: TemplateStringsArray, ...values: any[]): IdFindStrategy {
+export function id(strings: TemplateStringsArray, ...values: unknown[]): IdFindStrategy {
     const idExpression = FindStrategy.interpolate(strings, values);
     return new IdFindStrategy(idExpression);
 }

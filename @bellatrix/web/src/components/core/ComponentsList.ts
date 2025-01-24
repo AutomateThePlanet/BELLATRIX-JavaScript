@@ -38,7 +38,7 @@ export class ComponentsList<T extends WebComponent> {
                 const component = new this._type(findStrategy, this._driver, this._parentComponent, element, this._componentName);
 
                 return component;
-            })
+            });
 
             this._cachedComponents = components;
             this._foundAll = true;

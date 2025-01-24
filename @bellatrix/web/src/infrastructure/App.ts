@@ -3,7 +3,7 @@ import { ComponentService, CookiesService, NavigationService, BrowserService, Sc
 import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 import { ServiceLocator, SingletonFactory } from '@bellatrix/core/utilities';
 import { WebComponent } from '@bellatrix/web/components';
-import { WebPage } from '@bellatrix/web/pages';
+import { WebPage, WebPageAsserts, WebPageMap } from '@bellatrix/web/pages';
 
 import type { Ctor, ParameterlessCtor } from '@bellatrix/core/types';
 
@@ -19,25 +19,25 @@ export class App {
         ServiceLocator.registerSingleton(DialogService, new DialogService(this._driver));
     }
 
-    get navigation() { return ServiceLocator.resolve(NavigationService) };
-    
-    get cookies() { return ServiceLocator.resolve(CookiesService) };
-    
-    get browser() { return ServiceLocator.resolve(BrowserService) };
+    get navigation() { return ServiceLocator.resolve(NavigationService); };
 
-    get script() { return ServiceLocator.resolve(ScriptService) };
+    get cookies() { return ServiceLocator.resolve(CookiesService); };
 
-    get dialog() { return ServiceLocator.resolve(DialogService) };
+    get browser() { return ServiceLocator.resolve(BrowserService); };
+
+    get script() { return ServiceLocator.resolve(ScriptService); };
+
+    get dialog() { return ServiceLocator.resolve(DialogService); };
 
     create<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>) {
         return new ComponentService(this._driver, type);
     }
 
-    createPage<T extends WebPage<any, any>>(page: ParameterlessCtor<T>) {
-        return SingletonFactory.getInstance(page)
+    createPage<T extends WebPage<WebPageMap, WebPageAsserts<WebPageMap>>>(page: ParameterlessCtor<T>) {
+        return SingletonFactory.getInstance(page);
     };
 
-    async goTo<T extends WebPage<any, any>>(page: ParameterlessCtor<T>) {
+    async goTo<T extends WebPage<WebPageMap, WebPageAsserts<WebPageMap>>>(page: ParameterlessCtor<T>) {
         const instance = SingletonFactory.getInstance(page);
         await instance.open();
         return instance;
@@ -45,5 +45,5 @@ export class App {
 
     async sleep(ms: number): Promise<void> {
         await new Promise(resolve => setTimeout(resolve, ms));
-    } 
+    }
 }

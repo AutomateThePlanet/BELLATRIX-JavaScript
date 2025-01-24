@@ -18,7 +18,7 @@ export class NameFindStrategy extends FindStrategy {
     }
 }
 
-export function name(strings: TemplateStringsArray, ...values: any[]): NameFindStrategy {
+export function name(strings: TemplateStringsArray, ...values: unknown[]): NameFindStrategy {
     const nameExpression = FindStrategy.interpolate(strings, values);
     return new NameFindStrategy(nameExpression);
 }

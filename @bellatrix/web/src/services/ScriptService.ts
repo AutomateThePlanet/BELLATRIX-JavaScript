@@ -1,8 +1,8 @@
-import { WebComponent } from "@bellatrix/web/components";
-import { WebService } from "."
+import { WebComponent } from '@bellatrix/web/components';
+import { WebService } from '.';
 
 export class ScriptService extends WebService {
-    async execute<R, VarArgs extends any[] = []>(script: string | ((...args: {
+    async execute<R, VarArgs extends unknown[] = []>(script: string | ((...args: {
         [K in keyof VarArgs]: VarArgs[K] extends WebComponent<infer T> ? T : VarArgs[K]
     }) => R), ...args: VarArgs): Promise<R> {
         for (let i = 0; i < args.length; i++) {
@@ -12,6 +12,6 @@ export class ScriptService extends WebService {
             }
         }
 
-        return await this.driver.executeJavascript(script, ...args as any);
+        return await this.driver.executeJavascript(script, ...args as never);
     }
 }

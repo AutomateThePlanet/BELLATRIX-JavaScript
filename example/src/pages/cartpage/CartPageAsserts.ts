@@ -1,4 +1,4 @@
-import { WebPageAsserts } from '@bellatrix/web/pages'
+import { WebPageAsserts } from '@bellatrix/web/pages';
 import { CartPageMap } from './CartPageMap';
 
 export class CartPageAsserts extends WebPageAsserts<CartPageMap> {

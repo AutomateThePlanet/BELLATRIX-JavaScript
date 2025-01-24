@@ -16,16 +16,16 @@ export class Select extends WebComponent<HTMLSelectElement> {
         //        return this.create().byXpath(Option.class, String.format("//option[@value='%s']", optionValue));
     }
 
-        //
-        //    public List<Option> getAllOptions() {
-        //        try {
-        //            return this.create().allByXpath(Option.class, "//option");
-        //        } catch (Exception ex) {
-        //            DebugInformation.printStackTrace(ex);
-        //            return null;
-        //        }
-        //    }
-        //
+    //
+    //    public List<Option> getAllOptions() {
+    //        try {
+    //            return this.create().allByXpath(Option.class, "//option");
+    //        } catch (Exception ex) {
+    //            DebugInformation.printStackTrace(ex);
+    //            return null;
+    //        }
+    //    }
+    //
 
     async selectByText(text: string): Promise<void> {
         await this.wrappedElement.selectByText(text);

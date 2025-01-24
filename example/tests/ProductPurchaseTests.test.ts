@@ -1,15 +1,14 @@
-import { Test, TestClass } from "@bellatrix/web/test";
-import { WebTest } from "@bellatrix/web/infrastructure";
-import { Anchor, Button } from "@bellatrix/web/components";
-import { MainPage, CartPage, CheckoutPage, PurchaseInfo } from "../src/pages";
-import { WebComponentHooks } from "@bellatrix/web/components/utilities";
+import { Test, TestClass } from '@bellatrix/web/test';
+import { WebTest } from '@bellatrix/web/infrastructure';
+import { Anchor, Button } from '@bellatrix/web/components';
+import { MainPage, CartPage, CheckoutPage, PurchaseInfo } from '../src/pages';
+import { WebComponentHooks } from '@bellatrix/web/components/utilities';
 
 @TestClass
 class ProductPurchaseTests extends WebTest {
     override async configure(): Promise<void> {
         await super.configure();
-        // @ts-ignore
-        WebComponentHooks.addListenerTo(Button).before('click', button => console.log(`clicking ${button._componentName}`));
+        WebComponentHooks.addListenerTo(Button).before('click', button => console.log(`clicking ${button.componentName}`));
     }
 
     override async afterEach() {
@@ -39,38 +38,38 @@ class ProductPurchaseTests extends WebTest {
     async falcon9LinkAddsCorrectProduct() {
         const mainPage = await this.app.goTo(MainPage);
 
-        await mainPage.asserts.productBoxLink("Falcon 9", "https://demos.bellatrix.solutions/product/falcon-9/");
+        await mainPage.asserts.productBoxLink('Falcon 9', 'https://demos.bellatrix.solutions/product/falcon-9/');
     }
 
     @Test
     async saturnVLinkAddsCorrectProduct() {
         const mainPage = await this.app.goTo(MainPage);
-        await mainPage.asserts.productBoxLink("Saturn V", "https://demos.bellatrix.solutions/product/saturn-v/");
+        await mainPage.asserts.productBoxLink('Saturn V', 'https://demos.bellatrix.solutions/product/saturn-v/');
     }
 
     @Test
     async purchaseFalcon9WithoutFacade() {
         const mainPage = await this.app.goTo(MainPage);
-        await mainPage.addRocketToShoppingCart("Falcon 9");
+        await mainPage.addRocketToShoppingCart('Falcon 9');
 
         const cartPage = this.app.createPage(CartPage);
-        await cartPage.applyCoupon("happybirthday");
+        await cartPage.applyCoupon('happybirthday');
         await cartPage.asserts.couponAppliedSuccessfully();
         await cartPage.increaseProductQuantity(0, 2);
-        await cartPage.asserts.totalPrice("114.00");
+        await cartPage.asserts.totalPrice('114.00');
         await cartPage.clickProceedToCheckout();
 
         const purchaseInfo = {
-            email: "info@berlinspaceflowers.com",
-            firstName: "Anton",
-            lastName: "Angelov",
-            company: "Space Flowers",
-            country: "Germany",
-            address1: "1 Willi Brandt Avenue Tiergarten",
-            address2: "Lützowplatz 17",
-            city: "Berlin",
-            zip: "10115",
-            phone: "+498888999281",
+            email: 'info@berlinspaceflowers.com',
+            firstName: 'Anton',
+            lastName: 'Angelov',
+            company: 'Space Flowers',
+            country: 'Germany',
+            address1: '1 Willi Brandt Avenue Tiergarten',
+            address2: 'Lützowplatz 17',
+            city: 'Berlin',
+            zip: '10115',
+            phone: '+498888999281',
         };
 
         const checkoutPage = this.app.createPage(CheckoutPage);
@@ -81,26 +80,26 @@ class ProductPurchaseTests extends WebTest {
     @Test
     async purchaseSaturnVWithoutFacade() {
         const mainPage = await this.app.goTo(MainPage);
-        await mainPage.addRocketToShoppingCart("Saturn V");
+        await mainPage.addRocketToShoppingCart('Saturn V');
 
         const cartPage = this.app.createPage(CartPage);
-        await cartPage.applyCoupon("happybirthday");
+        await cartPage.applyCoupon('happybirthday');
         await cartPage.asserts.couponAppliedSuccessfully();
         await cartPage.increaseProductQuantity(0, 3);
-        await cartPage.asserts.totalPrice("355.00");
+        await cartPage.asserts.totalPrice('355.00');
         await cartPage.clickProceedToCheckout();
 
         const purchaseInfo: PurchaseInfo = {
-            email: "info@berlinspaceflowers.com",
-            firstName: "Anton",
-            lastName: "Angelov",
-            company: "Space Flowers",
-            country: "Germany",
-            address1: "1 Willi Brandt Avenue Tiergarten",
-            address2: "Lützowplatz 17",
-            city: "Berlin",
-            zip: "10115",
-            phone: "+498888999281",
+            email: 'info@berlinspaceflowers.com',
+            firstName: 'Anton',
+            lastName: 'Angelov',
+            company: 'Space Flowers',
+            country: 'Germany',
+            address1: '1 Willi Brandt Avenue Tiergarten',
+            address2: 'Lützowplatz 17',
+            city: 'Berlin',
+            zip: '10115',
+            phone: '+498888999281',
         };
 
         const checkoutPage = this.app.createPage(CheckoutPage);

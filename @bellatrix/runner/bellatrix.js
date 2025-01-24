@@ -39,7 +39,7 @@ function findFilePath(fileVariants) { // use --config to point to config file
     let currentDir = process.cwd();
     let filePaths;
     while (true) {
-        filePaths = fileVariants.map(fileVariant => join(currentDir, fileVariant))
+        filePaths = fileVariants.map(fileVariant => join(currentDir, fileVariant));
         for (const filePath of filePaths) {
             if (existsSync(filePath)) {
                 return filePath;
@@ -79,7 +79,7 @@ const configs = [
     '.bellatrix.yml',
     'bellatrix.config.json',
     '.bellatrix.json',
-]
+];
 
 const configFileURL = pathToFileURL(findFilePath(configs));
 let config;
@@ -107,7 +107,7 @@ if (!reporter) {
     throw new Error(`Reporter not specified. Set testReporter to 'console-only' if you do not want to output a file report.`);
 }
 
-const supportedReporters = ['json', 'junit', 'trx', 'nunit', 'xunit', 'tap'];
+const supportedReporters = ['json', 'junit', 'trx', 'nunit', 'xunit', 'tap', 'console-only'];
 
 if (!supportedReporters.includes(reporter)) {
     throw new Error(`Reporter '${reporter}' not supported.`);
@@ -160,7 +160,7 @@ switch (config.frameworkSettings.testSettings.testFramework) {
                 config.reporters.push('tap');
                 config.outputFile = {
                     json: join(reportPath, reportName.endsWith('.tap') ? reportName : `${reportName}.tap`),
-                }
+                };
                 break;
             }
         }
@@ -190,14 +190,14 @@ switch (config.frameworkSettings.testSettings.testFramework) {
             }
             case 'trx': {
                 process.env.PLAYWRIGHT_TRX_OUTPUT_NAME = join(reportPath, reportName.endsWith('.trx') ? reportName : `${reportName}.trx`);
-                const trxReporter = new URL(import.meta.resolve('./.playwright/trxReporter.js')).pathname;
+                const trxReporter = new URL(import.meta.resolve('./playwright/trxReporter.js')).pathname;
                 cliArgs.push(`--reporter=${trxReporter}`);
                 break;
             }
             case 'nunit': throw new Error('Playwright does not have NUnit reporter');
             case 'xunit': throw new Error('Playwright does not have xUnit reporter');
         }
-    
+
         spawnSync('node', cliArgs, {
             stdio: 'inherit',
             env: {
@@ -211,7 +211,7 @@ switch (config.frameworkSettings.testSettings.testFramework) {
     case 'jasmine': {
         const tsPathsEsmLoaderPath = new URL(import.meta.resolve('ts-paths-esm-loader')).pathname;
         const cliPath = findFilePath([ 'node_modules/jasmine/bin/jasmine.js' ]);
-        const jasmineConfigPath = new URL(import.meta.resolve('./.jasmine/config.json')).pathname;
+        const jasmineConfigPath = new URL(import.meta.resolve('./jasmine/config.json')).pathname;
         const cliArgs = [ cliPath, `--config=${jasmineConfigPath}` ];
 
         switch (reporter) {
@@ -219,22 +219,22 @@ switch (config.frameworkSettings.testSettings.testFramework) {
             case 'junit': {
                 process.env.JASMINE_JUNIT_OUTPUT_DIR = reportPath;
                 process.env.JASMINE_JUNIT_OUTPUT_NAME = reportName;
-                const junitReporter = new URL(import.meta.resolve('./.jasmine/junitReporter.js')).pathname;
-                cliArgs.push(`--helper=${junitReporter}`)
+                const junitReporter = new URL(import.meta.resolve('./jasmine/junitReporter.js')).pathname;
+                cliArgs.push(`--helper=${junitReporter}`);
                 break;
             }
             case 'trx': {
                 process.env.JASMINE_TRX_OUTPUT_DIR = reportPath;
                 process.env.JASMINE_TRX_OUTPUT_NAME = reportName.endsWith('.trx') ? reportName : `${reportName}.trx`;
-                const trxReporter = new URL(import.meta.resolve('./.jasmine/trxReporter.js')).pathname;
-                cliArgs.push(`--helper=${trxReporter}`)
+                const trxReporter = new URL(import.meta.resolve('./jasmine/trxReporter.js')).pathname;
+                cliArgs.push(`--helper=${trxReporter}`);
                 break;
             }
             case 'nunit': {
                 process.env.JASMINE_NUNIT_OUTPUT_DIR = reportPath;
                 process.env.JASMINE_NUNIT_OUTPUT_NAME = reportName.endsWith('.xml') ? reportName : `${reportName}.xml`;
-                const nunitReporter = new URL(import.meta.resolve('./.jasmine/nunitReporter.js')).pathname;
-                cliArgs.push(`--helper=${nunitReporter}`)
+                const nunitReporter = new URL(import.meta.resolve('./jasmine/nunitReporter.js')).pathname;
+                cliArgs.push(`--helper=${nunitReporter}`);
                 break;
             }
             case 'xunit': throw new Error('Jasmine does not have xUnit reporter');
@@ -258,26 +258,26 @@ switch (config.frameworkSettings.testSettings.testFramework) {
         switch (reporter) {
             case 'json': {
                 const jsonReporter = new URL(import.meta.resolve('mocha-json-output-reporter')).pathname;
-                cliArgs.push('--reporter', jsonReporter, '--reporter-options', `output=${join(reportPath, reportName.endsWith('.json') ? reportName : `${reportName}.json`)}`)
+                cliArgs.push('--reporter', jsonReporter, '--reporter-options', `output=${join(reportPath, reportName.endsWith('.json') ? reportName : `${reportName}.json`)}`);
                 break;
             }
             case 'junit': {
                 const junitReporter = new URL(import.meta.resolve('mocha-junit-reporter')).pathname;
-                cliArgs.push('--reporter', junitReporter, '--reporter-options', `mochaFile=${join(reportPath, reportName.endsWith('.xml') ? reportName : `${reportName}.xml`)}`)
+                cliArgs.push('--reporter', junitReporter, '--reporter-options', `mochaFile=${join(reportPath, reportName.endsWith('.xml') ? reportName : `${reportName}.xml`)}`);
                 break;
             }
             case 'trx': {
                 const trxReporter = new URL(import.meta.resolve('mocha-trx-reporter')).pathname;
                 const outputFolderPath = relative(process.cwd(), reportPath);
                 mkdirSync(outputFolderPath, { recursive: true });
-                const outputFilePath = join(outputFolderPath, reportName.endsWith('.trx') ? reportName : `${reportName}.trx`);  
-                cliArgs.push('--reporter', trxReporter, '--reporter-options', `output=${outputFilePath}`)
+                const outputFilePath = join(outputFolderPath, reportName.endsWith('.trx') ? reportName : `${reportName}.trx`);
+                cliArgs.push('--reporter', trxReporter, '--reporter-options', `output=${outputFilePath}`);
                 break;
             }
             case 'nunit': throw new Error('Mocha does not have NUnit reporter');
             case 'xunit': {
                 const xunitReporter = new URL(import.meta.resolve('mocha-xunit-reporter')).pathname;
-                cliArgs.push('--reporter', xunitReporter, '--reporter-options', `mochaFile=${join(reportPath, reportName.endsWith('.xml') ? reportName : `${reportName}.xml`)}`)
+                cliArgs.push('--reporter', xunitReporter, '--reporter-options', `mochaFile=${join(reportPath, reportName.endsWith('.xml') ? reportName : `${reportName}.xml`)}`);
                 break;
             }
         }
@@ -298,7 +298,7 @@ switch (config.frameworkSettings.testSettings.testFramework) {
         const cliPath = join(new URL(import.meta.resolve('jest-cli')).pathname, '..', '..', 'bin', 'jest.js');
         const testMatch = '\\.test\\.(ts|js)';
         const cliArgs = [ cliPath ];
-        
+
         switch (reporter) {
             case 'json': throw new Error('Jest does not have default JSON reporter');
             case 'junit': {
@@ -309,32 +309,32 @@ switch (config.frameworkSettings.testSettings.testFramework) {
                 break;
             }
             case 'trx': {
-                const trxReporterConfig = new URL(import.meta.resolve('./.jest/trxReporterConfig.js')).pathname;
+                const trxReporterConfig = new URL(import.meta.resolve('./jest/trxReporterConfig.js')).pathname;
                 process.env.JEST_TRX_PRESET_DIR = defaultEsm;
                 process.env.JEST_TRX_TEST_MATCH = '**/*' + testMatch.replace(/\\/g, '');
                 process.env.JEST_TRX_ROOT_DIR = process.cwd();
                 process.env.JEST_TRX_OUTPUT_NAME = join(reportPath, reportName.endsWith('.trx') ? reportName : `${reportName}.trx`);
-                cliArgs.push(`--config=${trxReporterConfig}`)
+                cliArgs.push(`--config=${trxReporterConfig}`);
                 break;
             }
             case 'nunit': {
-                const nunitReporterConfig = new URL(import.meta.resolve('./.jest/nunitReporterConfig.js')).pathname;
+                const nunitReporterConfig = new URL(import.meta.resolve('./jest/nunitReporterConfig.js')).pathname;
                 process.env.JEST_NUNIT_PRESET_DIR = defaultEsm;
                 process.env.JEST_NUNIT_TEST_MATCH = '**/*' + testMatch.replace(/\\/g, '');
                 process.env.JEST_NUNIT_ROOT_DIR = process.cwd();
                 process.env.JEST_NUNIT_OUTPUT_DIR = reportPath;
                 process.env.JEST_NUNIT_OUTPUT_NAME = reportName.endsWith('.xml') ? reportName : `${reportName}.xml`;
-                cliArgs.push(`--config=${nunitReporterConfig}`)
+                cliArgs.push(`--config=${nunitReporterConfig}`);
                 break;
             }
             case 'xunit': {
-                const xunitReporterConfig = new URL(import.meta.resolve('./.jest/xunitReporterConfig.js')).pathname;
+                const xunitReporterConfig = new URL(import.meta.resolve('./jest/xunitReporterConfig.js')).pathname;
                 process.env.JEST_XUNIT_PRESET_DIR = defaultEsm;
                 process.env.JEST_XUNIT_TEST_MATCH = '**/*' + testMatch.replace(/\\/g, '');
                 process.env.JEST_XUNIT_ROOT_DIR = process.cwd();
                 process.env.JEST_XUNIT_OUTPUT_DIR = reportPath;
                 process.env.JEST_XUNIT_OUTPUT_NAME = reportName.endsWith('.xml') ? reportName : `${reportName}.xml`;
-                cliArgs.push(`--config=${xunitReporterConfig}`)
+                cliArgs.push(`--config=${xunitReporterConfig}`);
                 break;
             }
             default: {

@@ -6,7 +6,7 @@ import { TestProps } from '@bellatrix/core/test/props';
 import type { BellatrixTestMethods } from '@bellatrix/core/test/props';
 
 ServiceLocator.registerType(BellatrixTest);
-ServiceLocator.registerTransient(TestProps, class extends TestProps { static override get name() { return 'TestProps' }});
+ServiceLocator.registerTransient(TestProps, class extends TestProps { static override get name() { return 'TestProps'; }});
 
 let testFramework;
 

@@ -1,14 +1,14 @@
 import { Utilities } from '.';
 
-import type { AbstractCtor, Ctor, ParameterlessCtor } from '@bellatrix/core/types'
+import type { AbstractCtor, Ctor, ParameterlessCtor } from '@bellatrix/core/types';
 
-type ServiceRegistration = {
-    services: any[];
+type ServiceRegistration<T> = {
+    services: T[];
     isSingleton: boolean;
 }
 
-type TypeRegistration = {
-    types: AbstractCtor<any>[];
+type TypeRegistration<T> = {
+    types: AbstractCtor<T>[];
 }
 
 export abstract class ServiceLocatorError extends Error {
@@ -45,12 +45,12 @@ export class ServiceLocatorResolutionError extends ServiceLocatorError {
 }
 
 export class ServiceLocator {
-    private static readonly services: Map<string, ServiceRegistration> = new Map();
-    private static readonly namedServices: Map<string, ServiceRegistration> = new Map();
-    private static readonly types: Map<string, TypeRegistration> = new Map();
-    private static readonly namedTypes: Map<string, TypeRegistration> = new Map();
+    private static readonly services: Map<string, ServiceRegistration<unknown>> = new Map();
+    private static readonly namedServices: Map<string, ServiceRegistration<unknown>> = new Map();
+    private static readonly types: Map<string, TypeRegistration<unknown>> = new Map();
+    private static readonly namedTypes: Map<string, TypeRegistration<unknown>> = new Map();
 
-    private constructor() { /* c8 ignore next */ throw new Error('ServiceLocator is static and cannot be instantiated') }
+    private constructor() { throw new Error('ServiceLocator is static and cannot be instantiated'); }
 
     static resolve<T>(type: AbstractCtor<T>, name?: string): T {
         const serviceRegistration = this.resolveInternal(type, name);
@@ -116,12 +116,12 @@ export class ServiceLocator {
     }
 
     static registerTransient<TFrom, TTo extends TFrom>(type: AbstractCtor<TFrom>, ctor: ParameterlessCtor<TTo>, name?: string): void;
-    static registerTransient<TFrom, TTo extends TFrom>(type: AbstractCtor<TFrom>, ctor: Ctor<TTo>, bindParams: ConstructorParameters<typeof ctor>, name?: string): void;
-    static registerTransient<TFrom, TTo extends TFrom>(type: AbstractCtor<TFrom>, ctor: Ctor<TTo>, bindParamsOrName?: any[] | string, name?: string): void {
+    static registerTransient<TFrom, TTo extends TFrom>(type: AbstractCtor<TFrom>, ctor: Ctor<TTo>, bindParams: unknown[], name?: string): void;
+    static registerTransient<TFrom, TTo extends TFrom>(type: AbstractCtor<TFrom>, ctor: Ctor<TTo>, bindParamsOrName?: unknown[] | string, name?: string): void {
         if (Array.isArray(bindParamsOrName)) {
             const params = bindParamsOrName;
             if (params.length !== ctor.length) {
-                throw Error(`Constructor parameter count mismatch when registering ${ctor.name} as transient service.\nExpected ${ctor.length} but got ${params.length}.\nIn case the parameters are optional, set them to undefined.`)
+                throw Error(`Constructor parameter count mismatch when registering ${ctor.name} as transient service.\nExpected ${ctor.length} but got ${params.length}.\nIn case the parameters are optional, set them to undefined.`);
             }
             this.registerInternal(type, ctor.bind(null, ...params), false, name);
         } else {
@@ -145,8 +145,8 @@ export class ServiceLocator {
     }
 
     static tryRegisterTransient<TFrom, TTo extends TFrom>(type: AbstractCtor<TFrom>, ctor: ParameterlessCtor<TTo> , name?: string): boolean;
-    static tryRegisterTransient<TFrom, TTo extends TFrom>(type: AbstractCtor<TFrom>, ctor: Ctor<TTo> , bindParams?: any[], name?: string): boolean;
-    static tryRegisterTransient<TFrom, TTo extends TFrom>(type: AbstractCtor<TFrom>, ctor: Ctor<TTo> , bindParamsOrName?: any[] | string, name?: string): boolean {
+    static tryRegisterTransient<TFrom, TTo extends TFrom>(type: AbstractCtor<TFrom>, ctor: Ctor<TTo> , bindParams?: unknown[], name?: string): boolean;
+    static tryRegisterTransient<TFrom, TTo extends TFrom>(type: AbstractCtor<TFrom>, ctor: Ctor<TTo> , bindParamsOrName?: unknown[] | string, name?: string): boolean {
         if (Array.isArray(bindParamsOrName)) {
             const params = bindParamsOrName;
             if (params.length !== ctor.length) {
@@ -200,7 +200,7 @@ export class ServiceLocator {
             if (name) {
                 return this.namedServices.delete(`${type.name}@${name}`);
             }
-    
+
             return this.services.delete(type.name);
         }
 
@@ -224,7 +224,7 @@ export class ServiceLocator {
             if (name) {
                 return this.namedTypes.delete(`${type.name}@${name}`);
             }
-    
+
             return this.types.delete(type.name);
         }
 
@@ -270,12 +270,12 @@ export class ServiceLocator {
         if (this.isTypeRegistered(fromType, name)) {
             return false;
         } else {
-            name ? this.namedTypes.set(typeName, { types: [toType] }) : this.types.set(typeName, { types: [toType] });
+            this[name ? 'namedTypes' : 'types'].set(typeName, { types: [toType] });
             return true;
         }
     }
 
-    private static resolveInternal<T>(type: AbstractCtor<T>, name?: string): ServiceRegistration {
+    private static resolveInternal<T>(type: AbstractCtor<T>, name?: string): ServiceRegistration<T> {
         const key = name ? `${type.name}@${name}` : type.name;
         const services = name ? this.namedServices.get(key) : this.services.get(key);
 
@@ -283,10 +283,10 @@ export class ServiceLocator {
             throw new ServiceLocatorResolutionError(type.name, name);
         }
 
-        return services;
+        return services as ServiceRegistration<T>;
     }
 
-    private static resolveTypeInternal<T>(type: AbstractCtor<T>, name?: string): TypeRegistration {
+    private static resolveTypeInternal<T>(type: AbstractCtor<T>, name?: string): TypeRegistration<T> {
         const key = name ? `${type.name}@${name}` : type.name;
         const types = name ? this.namedTypes.get(key) : this.types.get(key);
 
@@ -294,7 +294,7 @@ export class ServiceLocator {
             throw new ServiceLocatorResolutionError(type.name, name);
         }
 
-        return types;
+        return types as TypeRegistration<T>;
     }
 
     private static registerTypeInternal<TFrom, TTo extends TFrom>(fromType: AbstractCtor<TFrom>, toType: AbstractCtor<TTo>, name?: string): void {
@@ -304,7 +304,7 @@ export class ServiceLocator {
             const typeContainer = name ? this.namedTypes.get(typeName)! : this.types.get(typeName)!;
             typeContainer.types.push(toType);
         } else {
-            name ? this.namedTypes.set(typeName, { types: [toType] }) : this.types.set(typeName, { types: [toType] });
+            this[name ? 'namedTypes' : 'types'].set(typeName, { types: [toType] });
         }
     }
 
@@ -319,14 +319,11 @@ export class ServiceLocator {
             if ((isSingleton && !serviceContainer.isSingleton) || (!isSingleton && serviceContainer.isSingleton)) {
                 const registrationType = isSingleton ? 'singleton' : 'transient';
                 throw new ServiceLocatorRegistrationError(type.name, registrationType, name);
+            } else {
+                serviceContainer.services.push(service);
             }
-
-            serviceContainer.services.push(service);
         } else {
-            name ? this.namedServices.set(serviceName, {
-                services: [service],
-                isSingleton,
-            }) : this.services.set(serviceName, {
+            this[name ? 'namedServices' : 'services'].set(serviceName, {
                 services: [service],
                 isSingleton,
             });

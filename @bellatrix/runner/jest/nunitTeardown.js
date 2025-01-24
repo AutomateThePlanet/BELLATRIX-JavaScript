@@ -9,4 +9,4 @@ export default async () => {
             "outputFilename": "${process.env.JEST_NUNIT_OUTPUT_NAME}"
         }
     }`, 'utf-8');
-}
+};
