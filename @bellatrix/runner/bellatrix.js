@@ -175,7 +175,7 @@ switch (config.frameworkSettings.testSettings.testFramework) {
         const tsPathsEsmLoaderPath = new URL(import.meta.resolve('ts-paths-esm-loader')).pathname;
         const cliPath = findFilePath([ 'node_modules/playwright/cli.js' ]);
 
-        const cliArgs = [ cliPath, 'test' /* ', --ui' TODO: make it an option */ ];
+        const cliArgs = [ cliPath, 'test' ];
 
         switch (reporter) {
             case 'json': {
@@ -197,6 +197,8 @@ switch (config.frameworkSettings.testSettings.testFramework) {
             case 'nunit': throw new Error('Playwright does not have NUnit reporter');
             case 'xunit': throw new Error('Playwright does not have xUnit reporter');
         }
+
+        // cliArgs.push('--ui'); // TODO: make it an option
 
         spawnSync('node', cliArgs, {
             stdio: 'inherit',
