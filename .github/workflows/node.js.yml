@@ -13,11 +13,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Use Node.js 20.6
+    - name: Use Node.js 20.6.0
       uses: actions/setup-node@v4
       with:
-        node-version: 20.6
+        node-version: 20.6.0
         cache: 'npm'
-    - run: npm i
+    - run: npm clean-install --legacy-peer-deps
       working-directory: example
     - run: npm test
