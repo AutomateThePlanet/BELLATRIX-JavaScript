@@ -59,7 +59,7 @@ export class SeleniumShadowRootWebElement extends SeleniumWebElement {
         }
 
         if (by === undefined) {
-            throw Error(`Element at ${locator.value} not found.`)
+            throw Error(`Element at ${locator.value} not found.`);
         }
 
         if (Array.isArray(by)) {
@@ -71,14 +71,14 @@ export class SeleniumShadowRootWebElement extends SeleniumWebElement {
         return elements.map(el => new SeleniumShadowRootWebElement(el, this['_driver'], this._shadowRoot, false) /* TODO: handle error? */);
     }
 
-    override async evaluate<R>(script: string | Function, ...args: any[]): Promise<R> {
+    override async evaluate<R>(script: string | Function, ...args: unknown[]): Promise<R> {
         for (let i = 0; i < args.length; i++) {
-            if (args[i].constructor === SeleniumWebElement) {
+            if ((args[i] as SeleniumWebElement).constructor === SeleniumWebElement) {
                 args[i] = (args[i] as SeleniumWebElement)['_element'];
             }
 
-            if (args[i].constructor === SeleniumShadowRootWebElement) {
-                if (args[i]._isRoot) {
+            if ((args[i] as SeleniumShadowRootWebElement).constructor === SeleniumShadowRootWebElement) {
+                if ((args[i] as SeleniumShadowRootWebElement)._isRoot) {
                     args[i] = await (args[i] as SeleniumShadowRootWebElement).evaluate('el => el.shadowRoot');
                 } else {
                     args[i] = (args[i] as SeleniumShadowRootWebElement)['_element'];

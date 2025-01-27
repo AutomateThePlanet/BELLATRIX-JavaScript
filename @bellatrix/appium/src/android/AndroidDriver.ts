@@ -3,9 +3,8 @@ import { AndroidPermission } from '@bellatrix/appium/types';
 import { AppiumDriver } from '@bellatrix/appium/core';
 import { MobileCommands } from '@bellatrix/appium/common/commands';
 
-
 type CreatedSessionResponse = {
-    capabilities: object;
+    capabilities: Record<string, unknown>;
     sessionId: string;
 }
 
@@ -41,42 +40,42 @@ type SMS = {
 export class AndroidDriver extends AppiumDriver {
     private static readonly ANDROID_PLATOFRM = 'Android';
 
-    constructor(serverUrl: string, capabilities: object) {
+    constructor(serverUrl: string, capabilities: Record<string, unknown>) {
         super(serverUrl, AppiumDriver.validatePlatformName(capabilities, AndroidDriver.ANDROID_PLATOFRM));
     }
 
     async createSession(): Promise<void> {
         const response = await this.commandExecutor.execute<CreatedSessionResponse>(MobileCommands.CREATE_SESSION, { capabilities: { alwaysMatch: this.capabilities } });
-        this.commandExecutor.setSessionId(response.sessionId);
+        await this.commandExecutor.setSessionId(response.sessionId);
     }
 
     async deleteSession(): Promise<void> {
-        const response = await this.commandExecutor.execute(MobileCommands.DELETE_SESSION)
-        this.commandExecutor.unsetSessionId();
+        const response = await this.commandExecutor.execute(MobileCommands.DELETE_SESSION);
+        await this.commandExecutor.unsetSessionId();
     }
 
     async getContexts(): Promise<string[]> {
-        return this.commandExecutor.execute(MobileCommands.GET_CONTEXTS);
+        return await this.commandExecutor.execute(MobileCommands.GET_CONTEXTS);
     }
 
     async getCurrentContext(): Promise<string> {
-        return this.commandExecutor.execute(MobileCommands.GET_CURRENT_CONTEXT);
+        return await this.commandExecutor.execute(MobileCommands.GET_CURRENT_CONTEXT);
     }
 
     async setContext(name: string): Promise<void> {
-        this.commandExecutor.execute(MobileCommands.SET_CONTEXT, { name });
+        await this.commandExecutor.execute(MobileCommands.SET_CONTEXT, { name });
     }
 
     async openNotifications(): Promise<void> {
-        this.commandExecutor.execute(MobileCommands.OPEN_NOTIFICATIONS);
+        await this.commandExecutor.execute(MobileCommands.OPEN_NOTIFICATIONS);
     }
 
     async closeNotifications(): Promise<void> {
-        this.executeADBShellCommand('service call statusbar 2');
+        await this.executeADBShellCommand('service call statusbar 2');
     }
 
     async toggleLocationServices(): Promise<void> {
-        this.commandExecutor.execute(MobileCommands.TOGGLE_LOCATION_SERVICES);
+        await this.commandExecutor.execute(MobileCommands.TOGGLE_LOCATION_SERVICES);
     }
 
     async getBatteryInfo(): Promise<AndroidBatteryInfo> {
@@ -92,11 +91,11 @@ export class AndroidDriver extends AppiumDriver {
 
         const state: BatteryState = stateMap[response.state] || 'Unknown';
 
-        return { percentage, state }
+        return { percentage, state };
     }
 
     async execute<T>(script: string, args: object = {}): Promise<T> {
-        return this.commandExecutor.execute(MobileCommands.EXECUTE_SCRIPT, { script, args }) as T;
+        return await this.commandExecutor.execute(MobileCommands.EXECUTE_SCRIPT, { script, args }) as T;
     }
 
     async executeADBShellCommand<T>(command: string, includeStderr?: boolean, timeout?: number): Promise<T>;
@@ -114,26 +113,26 @@ export class AndroidDriver extends AppiumDriver {
     }
 
     async performEditorAction(action: EditorAction) {
-        return this.execute('mobile: performEditorAction', { action })
+        return this.execute('mobile: performEditorAction', { action });
     }
 
     async getPermissions(type?: PermissionType, appPackage?: string): Promise<AndroidPermission[]> {
         return (await this.execute<string[]>('mobile: getPermissions', { type, appPackage }))
-            .map(permission => permission.replace('android.permission.', '')) as AndroidPermission[]
+            .map(permission => permission.replace('android.permission.', '')) as AndroidPermission[];
     }
 
     async grantPermissions(...permissions: AndroidPermission[]): Promise<void> {
         return this.execute('mobile: changePermissions', {
             action: 'grant', permissions: permissions
                 .map(permission => `android.permission.${permission}`)
-        })
+        });
     }
 
     async revokePermission(...permissions: AndroidPermission[]): Promise<void> {
         return this.execute('mobile: changePermissions', {
             action: 'revoke', permissions: permissions
                 .map(permission => `android.permission.${permission}`)
-        })
+        });
     }
 
     async getScreenshot(): Promise<Image> {
@@ -148,7 +147,7 @@ export class AndroidDriver extends AppiumDriver {
     }
 
     async getActiveElement() { // WIP
-        return this.commandExecutor.execute(MobileCommands.GET_ACTIVE_ELEMENT);
+        return await this.commandExecutor.execute(MobileCommands.GET_ACTIVE_ELEMENT);
     }
 
     async listSMS(): Promise<SMSListResponse> {
@@ -156,11 +155,11 @@ export class AndroidDriver extends AppiumDriver {
     }
 
     async startRecordingScreen(): Promise<void> {
-        return this.commandExecutor.execute(MobileCommands.START_RECORDING_SCREEN);
+        return await this.commandExecutor.execute(MobileCommands.START_RECORDING_SCREEN);
     }
 
     async stopRecordingScreen() { // WIP
-        const base64video = this.commandExecutor.execute(MobileCommands.STOP_RECORDING_SCREEN);
+        const base64video = await this.commandExecutor.execute(MobileCommands.STOP_RECORDING_SCREEN);
         return base64video;
     }
 }

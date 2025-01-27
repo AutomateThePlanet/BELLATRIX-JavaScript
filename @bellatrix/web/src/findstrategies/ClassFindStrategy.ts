@@ -19,7 +19,7 @@ export class ClassFindStrategy extends FindStrategy {
     }
 }
 
-export function className(strings: TemplateStringsArray, ...values: any[]): ClassFindStrategy {
+export function className(strings: TemplateStringsArray, ...values: unknown[]): ClassFindStrategy {
     const classExpression = FindStrategy.interpolate(strings, values);
     return new ClassFindStrategy(classExpression);
 }

@@ -1,5 +1,5 @@
-import { CommandInfo } from "@bellatrix/appium/types";
-import { CommandRepository } from "@bellatrix/appium/core/contracts";
+import { CommandInfo } from '@bellatrix/appium/types';
+import { CommandRepository } from '@bellatrix/appium/core/contracts';
 
 export class WindowsCommands {
     static readonly CREATE_SESSION = 'createSession';
@@ -9,7 +9,7 @@ export class WindowsCommands {
     static readonly SET_CONTEXT = 'setContext';
     static readonly EXECUTE_SCRIPT = 'executeScript';
     static readonly IMPLICIT_WAIT = 'implicitWait';
-    static readonly GET_ACTIVE_ELEMENT = 'getActiveElement'
+    static readonly GET_ACTIVE_ELEMENT = 'getActiveElement';
 
     public static commandRepository: CommandRepository = new Map([
         [this.CREATE_SESSION, this.postCommand('/session')],

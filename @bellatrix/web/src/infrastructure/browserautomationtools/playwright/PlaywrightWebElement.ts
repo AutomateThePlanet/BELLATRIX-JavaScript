@@ -16,12 +16,12 @@ export class PlaywrightWebElement extends WebElement {
 
     override async click(): Promise<void> {
         await this._locator.click({
-            timeout: 5000, // TODO: Get from config.
+            timeout: BellatrixSettings.get().webSettings.timeoutSettings.findElementTimeout,
             trial: true,
         });
-        
+
         try {
-            await this._locator.click({ timeout: 30, noWaitAfter: true, force: true });
+            await this._locator.click({ timeout: BellatrixSettings.get().webSettings.timeoutSettings.findElementTimeout, noWaitAfter: true, force: true });
         } catch {
             // ignore error, workaround for dialog popup
         }
@@ -81,7 +81,7 @@ export class PlaywrightWebElement extends WebElement {
         }
 
         try {
-            nativeLocator.waitFor({ timeout: BellatrixSettings.get().webSettings.timeoutSettings.findElementTimeout });
+            await nativeLocator.waitFor({ timeout: BellatrixSettings.get().webSettings.timeoutSettings.findElementTimeout });
         } catch {
             throw Error(`Element at ${locator.value} not found.`); // TODO: better error handling?
         }
@@ -105,18 +105,18 @@ export class PlaywrightWebElement extends WebElement {
         return nativeLocators.map(locator => new PlaywrightWebElement(locator));
     }
 
-    override async evaluate<R, VarArgs extends any[]>(script: string, ...args: VarArgs): Promise<R> {
+    override async evaluate<R, VarArgs extends unknown[]>(script: string, ...args: VarArgs): Promise<R> {
         for (let i = 0; i < args.length; i++) {
-            if (args[i].constructor === PlaywrightWebElement) {
+            if ((args[i] as PlaywrightWebElement).constructor === PlaywrightWebElement) {
                 args[i] = await (args[i] as PlaywrightWebElement)['_locator'].elementHandle();
             }
 
-            if (args[i].constructor === PlaywrightShadowRootWebElement) {
+            if ((args[i] as PlaywrightShadowRootWebElement).constructor === PlaywrightShadowRootWebElement) {
                 args[i] = (args[i] as PlaywrightShadowRootWebElement)['_shadowNodeElementHandle'];
             }
         }
 
-        return await this._locator.evaluate(new Function(`return (${script})(arguments[0], ...arguments[1])`) as any, args);
+        return await this._locator.evaluate(new Function(`return (${script})(arguments[0], ...arguments[1])`) as never, args);
     }
 
     override async selectByText(text: string): Promise<void> {
@@ -160,7 +160,7 @@ export class PlaywrightWebElement extends WebElement {
         if (!await shadowRoot.tryAttachShadowRoot()) {
             return null;
         }
-        
+
         return shadowRoot;
     }
 }

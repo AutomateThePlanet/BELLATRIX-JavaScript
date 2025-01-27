@@ -6,7 +6,7 @@ export class ClassContainingFindStrategy extends FindStrategy {
 
     constructor(classContaining: string) {
         super();
-        
+
         this._classContaining = classContaining;
     }
 
@@ -15,7 +15,7 @@ export class ClassContainingFindStrategy extends FindStrategy {
     }
 }
 
-export function classContaining(strings: TemplateStringsArray, ...values: any[]): ClassContainingFindStrategy {
+export function classContaining(strings: TemplateStringsArray, ...values: unknown[]): ClassContainingFindStrategy {
     const classExpression = FindStrategy.interpolate(strings, values);
     return new ClassContainingFindStrategy(classExpression);
 }

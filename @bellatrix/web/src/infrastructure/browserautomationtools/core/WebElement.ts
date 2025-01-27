@@ -14,8 +14,8 @@ export abstract class WebElement implements SearchContext {
     abstract isChecked(): Promise<boolean>;
     abstract setChecked(checked: boolean): Promise<void>;
     abstract setInputFile(filePath: string): Promise<void>;
-    
-    abstract evaluate<R, VarArgs extends any[] = []>(script: string | Function, ...args: VarArgs): Promise<R>;
+
+    abstract evaluate<R, VarArgs extends unknown[] = []>(script: string | Function, ...args: VarArgs): Promise<R>;
     abstract getShadowRoot(): Promise<WebElement | null>;
 
     abstract findElement(locator: Locator): Promise<WebElement>;

@@ -14,7 +14,7 @@ export class CssFindStrategy extends FindStrategy {
     }
 }
 
-export function css(strings: TemplateStringsArray, ...values: any[]): CssFindStrategy {
+export function css(strings: TemplateStringsArray, ...values: unknown[]): CssFindStrategy {
     const cssExpression = FindStrategy.interpolate(strings, values);
     return new CssFindStrategy(cssExpression);
 }

@@ -29,11 +29,10 @@ export class WeekInput extends WebComponent<HTMLInputElement> {
         return (await this.getAttribute('readonly')).toLowerCase() === 'true';
     }
 
-
     async isDisabled(): Promise<boolean> {
         return (await this.getAttribute('disabled')).toLowerCase() === 'true';
-    }  
-    
+    }
+
     async isRequired(): Promise<boolean> {
         return (await this.getAttribute('required')).toLowerCase() === 'true';
     }
@@ -41,10 +40,10 @@ export class WeekInput extends WebComponent<HTMLInputElement> {
     async getStep(): Promise<number> {
         return parseFloat(await this.getAttribute('step'));
     }
-    
+
     async getValue(): Promise<string> {
         return await this.getAttribute('value');
-    } 
+    }
 
     private async [defaultSetWeek](year: number, weekNumber: number): Promise<void> {
         if (weekNumber < 1 || weekNumber > 52) {
@@ -56,6 +55,6 @@ export class WeekInput extends WebComponent<HTMLInputElement> {
 
         const valueToBeSet = `${year}-W${weekNumber.toString().padStart(2, '0')}`;
 
-        this.evaluate(el => el.value = valueToBeSet);
+        await this.evaluate(el => el.value = valueToBeSet);
     }
 }

@@ -1,4 +1,4 @@
-import { WebPageAsserts } from '@bellatrix/web/pages'
+import { WebPageAsserts } from '@bellatrix/web/pages';
 import { MainPageMap } from './MainPageMap';
 
 export class MainPageAsserts extends WebPageAsserts<MainPageMap> {

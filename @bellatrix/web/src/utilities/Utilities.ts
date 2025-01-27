@@ -1,5 +1,5 @@
 import { DOMParser } from '@xmldom/xmldom';
-import { select } from "xpath";
+import { select } from 'xpath';
 
 import { WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 
@@ -32,7 +32,7 @@ export class Utilities {
         const htmlSource = data[1];
         const html = new DOMParser({ errorHandler: { warning: () => {} }}).parseFromString(`<${ROOT_NODE_NAME}>${htmlSource}</${ROOT_NODE_NAME}>`, 'text/xml');
 
-        let xpathResult = select(`(${xpathToStartFrom === '' ? ROOT_NODE_NAME : ROOT_NODE_NAME + '/' + xpathToStartFrom})${xpath}`, html);
+        const xpathResult = select(`(${xpathToStartFrom === '' ? ROOT_NODE_NAME : ROOT_NODE_NAME + '/' + xpathToStartFrom})${xpath}`, html);
 
         if (Array.isArray(xpathResult)) {
             return xpathResult.map(currentNode => {
@@ -58,10 +58,10 @@ export class Utilities {
                 }
 
                 return `/${paths.toReversed().join('/')}`;
-            })
+            });
         }
 
-        throw Error("The given XPath does not return an element.");
+        throw Error('The given XPath does not return an element.');
     }
 
     static async relativeXpathToAbsoluteCss(searchContext: WebElement, xpath: string): Promise<string[]> {
@@ -70,10 +70,10 @@ export class Utilities {
             const cssSelector = absoluteXpath.split('/').filter(Boolean).map(currentXpath => {
                 return currentXpath.replace(/(\w+)(\[\d+\])?/g, (_, tagName, index) => {
                     return `${tagName}:nth-child(${index?.slice(1, -1)})`;
-                })
+                });
             });
 
             return cssSelector.join(' > ');
-        })
+        });
     }
 }

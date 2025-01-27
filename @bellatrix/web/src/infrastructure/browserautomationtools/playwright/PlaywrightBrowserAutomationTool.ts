@@ -21,9 +21,8 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
 
         this._page.on('dialog', dialog => {
             this._dialog = dialog;
-            // @ts-ignore
             this._dialogAutoDismiss = setTimeout(() => {
-                this._dialog?.dismiss();
+                void this._dialog?.dismiss();
                 this._dialog = undefined;
             }, 5_000); // dismiss dialog if no action after 5 seconds
         });
@@ -72,8 +71,8 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
         if (webSettings.executionSettings.executionType === 'remote'
             && (webSettings.remoteExecutionSettings?.provider === 'Selenium Grid'
              || webSettings.remoteExecutionSettings?.provider === 'Selenoid')
-        ) { // @ts-ignore
-            await new HttpClient(new URL(BellatrixSettings.get().webSettings.remoteExecutionSettings.remoteUrl)).sendRequest({ path: `/session/${this._gridSessionId}`, method: 'DELETE' });
+        ) {
+            await new HttpClient(new URL(webSettings.remoteExecutionSettings.remoteUrl)).sendRequest({ path: `/session/${this._gridSessionId}`, method: 'DELETE' });
         }
     }
 
@@ -95,7 +94,7 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
         }
 
         try {
-            nativeLocator.waitFor({ timeout: BellatrixSettings.get().webSettings.timeoutSettings.findElementTimeout });
+            await nativeLocator.waitFor({ timeout: BellatrixSettings.get().webSettings.timeoutSettings.findElementTimeout });
         } catch {
             throw Error(`Element at ${locator.value} not found.`); // TODO: better error handling?
         }
@@ -115,7 +114,7 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
             default:
                 throw new Error(`Invalid locator type: ${locator.type}`);
         }
-        
+
         return nativeLocators.map(locator => new PlaywrightWebElement(locator));
     }
 
@@ -146,20 +145,20 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
         await this._context.addCookies(updatedCookies);
     }
 
-    override async executeJavascript<R, VarArgs extends any[] = []>(script: string | ((...args: VarArgs) => R), ...args: VarArgs): Promise<R> {
+    override async executeJavascript<R, VarArgs extends unknown[] = []>(script: string | ((...args: VarArgs) => R), ...args: VarArgs): Promise<R> {
         for (let i = 0; i < args.length; i++) {
             if (args[i] instanceof PlaywrightWebElement) {
                 args[i] = await (args[i] as PlaywrightWebElement)['_locator'].elementHandle();
             }
         }
 
-        return await this._page.evaluate<R, VarArgs>(new Function(`return (${script})(...arguments[0])`) as any, args);
+        return await this._page.evaluate<R, VarArgs>(new Function(`return (${script})(...arguments[0])`) as never, args);
     }
 
     override async waitUntil(condition: (browserAutomationTool: Omit<BrowserAutomationTool, 'waitUntil'>) => boolean | Promise<boolean>, timeout: number, pollingInterval: number): Promise<void> {
         const startTime = Date.now();
         const hasTimeoutEnded = () => Date.now() - startTime > timeout;
-        let error: Error | undefined
+        let error: Error | undefined;
 
         while (!hasTimeoutEnded()) {
             let result = false;

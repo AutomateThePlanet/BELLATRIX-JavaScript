@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error - jasmine-core does not have a declaration file
 import jasmineModule from 'jasmine-core';
 import 'reflect-metadata';
 
@@ -23,14 +23,14 @@ function getSymbolMethods<T extends BellatrixTest>(type: ParameterlessCtor<T>) {
     } as const;
 }
 
-
 class CurrentSpecReporter {
-    specStarted(result: any) { // add type
+    specStarted(result: unknown) {
+        // @ts-expect-error - TODO: add type
         currentSpecName = result.description;
     }
 }
 
-// @ts-ignore // do not install @types/jasmine as it will flood the global scope with types that are not needed
+// @ts-expect-error - WARNING: do not install @types/jasmine as it will flood the global scope with types that are not needed
 jasmine.getEnv().addReporter(new CurrentSpecReporter());
 
 let currentTestClass: BellatrixTest | undefined;
@@ -51,8 +51,7 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
 
         nativeLibrary.beforeEach(async () => {
             const currentTestName = currentSpecName!;
-            // @ts-ignore
-            setCurrentTest(currentTestName, testClassInstance[currentTestName], testClass.constructor);
+            setCurrentTest(currentTestName, testClassInstance[currentTestName as keyof T] as (...args: unknown[]) => (Promise<void> | void), testClass.constructor);
             await testClassSymbolMethods.beforeEach.call(testClassInstance);
         });
 
@@ -76,17 +75,16 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
                 }
             }, testSettings.testTimeout!);
         }
-    })
+    });
 }
 
 function test<T extends BellatrixTest, K extends string>(target: T, key: K extends MethodNames<BellatrixTest> ? never : K): void;
 function test(name: string, fn: TestFn<TestProps>): void;
-function test<T extends BellatrixTest, K extends string>(name: any, fn: any): void {
+function test<T extends BellatrixTest, K extends string>(name: unknown, fn: unknown): void {
     if (name instanceof BellatrixTest) {
         const target = name as T;
         const key = fn as K extends MethodNames<BellatrixTest> ? never : K;
-        // @ts-ignore
-        defineTestMetadata(target[key], target.constructor as ParameterlessCtor<T>);
+        defineTestMetadata(target[key as keyof T] as (...args: unknown[]) => (Promise<void> | void), target.constructor as ParameterlessCtor<T>);
         return;
     }
     if (!currentTestClass) {
@@ -97,10 +95,10 @@ function test<T extends BellatrixTest, K extends string>(name: any, fn: any): vo
         currentTestClass.constructor.prototype.configure = globalConfigureBlock;
     }
 
-    const testFn = async () => await fn(ServiceLocator.resolve(TestProps));
+    const testFn = async () => await (fn as TestFn<TestProps>)(ServiceLocator.resolve(TestProps));
     Object.defineProperty(testFn, 'name', { value: name });
-    currentTestClass.constructor.prototype[name] = testFn;
-    test(currentTestClass, name);
+    currentTestClass.constructor.prototype[name as keyof T] = testFn;
+    test(currentTestClass, name as string);
 }
 
 function describe(title: string, fn: () => void): void {
@@ -168,7 +166,7 @@ export {
     SuiteDecorator as suite,
     SuiteDecorator as Suite,
     SuiteDecorator as TestClass,
-}
+};
 
 // ######################################## TYPES ########################################
 
@@ -186,7 +184,7 @@ type JasmineModule = {
      * @see async
      */
     beforeAll: (fn: () => void, timeout?: number) => void;
-  
+
     /**
      * Run some shared teardown once after all of the specs in the {@link describe} are run.
      *
@@ -200,7 +198,7 @@ type JasmineModule = {
      * @see async
      */
     afterAll: (fn: () => void, timeout?: number) => void;
-  
+
     /**
      * Create a group of specs (often called a suite).
      *
@@ -213,7 +211,7 @@ type JasmineModule = {
      * @param {Function} specDefinitions Function for Jasmine to invoke that will define inner suites and specs
      */
     describe: (description: string, specDefinitions: () => void) => void;
-  
+
     /**
      * Run some shared setup before each of the specs in the {@link describe} in which it is called.
      * @name beforeEach
@@ -225,7 +223,7 @@ type JasmineModule = {
      * @see async
      */
     beforeEach: (fn: () => void, timeout?: number) => void;
-  
+
     /**
      * Run some shared teardown after each of the specs in the {@link describe} in which it is called.
      * @name afterEach
@@ -237,7 +235,7 @@ type JasmineModule = {
      * @see async
      */
     afterEach: (fn: () => void, timeout?: number) => void;
-  
+
     /**
      * Define a single spec. A spec should contain one or more {@link expect|expectations} that test the state of the code.
      *

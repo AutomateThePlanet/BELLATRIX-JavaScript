@@ -27,11 +27,10 @@ export class TimeInput extends WebComponent<HTMLInputElement> {
         return (await this.getAttribute('readonly')).toLowerCase() === 'true';
     }
 
-
     async isDisabled(): Promise<boolean> {
         return (await this.getAttribute('disabled')).toLowerCase() === 'true';
-    }  
-    
+    }
+
     async isRequired(): Promise<boolean> {
         return (await this.getAttribute('required')).toLowerCase() === 'true';
     }
@@ -39,8 +38,8 @@ export class TimeInput extends WebComponent<HTMLInputElement> {
     async getStep(): Promise<number> {
         return parseFloat(await this.getAttribute('step'));
     }
-    
+
     async getValue(): Promise<string> {
         return await this.getAttribute('value');
-    } 
+    }
 }

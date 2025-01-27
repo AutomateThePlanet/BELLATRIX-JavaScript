@@ -13,6 +13,6 @@ export type ConfigureProps = {
     addPlugin: StaticMethod<typeof PluginExecutionEngine.addPlugin>;
 }
 
-export type TestFn<T> = (props: T) => Result;
-export type ConfigureFn = (props: ConfigureProps) => Result;
+export type TestFn<T, R = unknown> = (props: T) => Result<R>;
+export type ConfigureFn = (props: ConfigureProps) => Result<void>;
 

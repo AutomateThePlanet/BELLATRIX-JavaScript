@@ -19,7 +19,7 @@ export class InnerTextContainingFindStrategy extends FindStrategy {
     }
 }
 
-export function innerTextContaining(strings: TemplateStringsArray, ...values: any[]): InnerTextContainingFindStrategy {
+export function innerTextContaining(strings: TemplateStringsArray, ...values: unknown[]): InnerTextContainingFindStrategy {
     const innerTextContainingExpression = FindStrategy.interpolate(strings, values);
     return new InnerTextContainingFindStrategy(innerTextContainingExpression);
 }

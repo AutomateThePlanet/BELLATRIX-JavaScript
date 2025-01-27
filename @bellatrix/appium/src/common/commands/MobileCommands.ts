@@ -64,8 +64,8 @@ export class MobileCommands {
     static readonly SET_VALUE_IMMEDIATE = 'setValueImmediate';
     static readonly REPLACE_VALUE = 'replaceValue';
     static readonly SCREENSHOT = 'screenshot';
-    static readonly ELEMENT_SCREENSHOT = 'elementScreenshot'
-    static readonly GET_ACTIVE_ELEMENT = 'getActiveElement'
+    static readonly ELEMENT_SCREENSHOT = 'elementScreenshot';
+    static readonly GET_ACTIVE_ELEMENT = 'getActiveElement';
 
     public static commandRepository: CommandRepository = new Map([
         [this.CREATE_SESSION, this.postCommand('/session')],

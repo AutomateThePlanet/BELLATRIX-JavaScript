@@ -6,7 +6,7 @@ export class FileInput extends WebComponent<HTMLInputElement> {
     async upload(filePath: string): Promise<void> {
         await this.wrappedElement.setInputFile(filePath);
     }
-    
+
     async isRequired(): Promise<boolean> {
         return (await this.getAttribute('required')).toLowerCase() === 'true';
     }

@@ -12,7 +12,7 @@ export abstract class FindStrategy {
         return this.convert().toString();
     }
 
-    static interpolate(strings: TemplateStringsArray, values: any[]): string {
+    static interpolate(strings: TemplateStringsArray, values: unknown[]): string {
         const interpolatedValues = values.map((value, index) => `${value}${strings[index + 1]}`).join('');
         return `${strings[0]}${interpolatedValues}`;
     }

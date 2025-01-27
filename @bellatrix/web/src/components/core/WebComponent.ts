@@ -15,14 +15,14 @@ export class WebComponent<HTMLType extends Element = Element> {
     private _findStrategy: FindStrategy;
     private _driver: BrowserAutomationTool;
     private _parentComponent?: WebComponent | ShadowRootContext;
-    private _componentName: string;
+    private _componentName?: string;
 
     constructor(findStrategy: FindStrategy, driver: BrowserAutomationTool, parentComponent?: WebComponent | ShadowRootContext, cachedElement?: WebElement, componentName?: string) {
         this._findStrategy = findStrategy;
         this._driver = driver;
         this._parentComponent = parentComponent;
         this._cachedElement = cachedElement!;
-        this._componentName = componentName ?? `${this.constructor.name} (${findStrategy.toString()})`;
+        this._componentName = componentName;
         this._wait = new ComponentWaitService(this);
     };
 
@@ -36,6 +36,10 @@ export class WebComponent<HTMLType extends Element = Element> {
 
     get wait(): ComponentWaitService {
         return this._wait;
+    }
+
+    get componentName(): string {
+        return this._componentName ?? `${this.constructor.name} (${this.findStrategy})`;
     }
 
     as<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>): T {
@@ -70,26 +74,26 @@ export class WebComponent<HTMLType extends Element = Element> {
         return await this.wrappedElement.getOuterHtml();
     }
 
-    validate<T extends Uncapitalize<keyof MethodNamesStartingWith<this, 'get'> extends string ? keyof MethodNamesStartingWith<this, 'get'> : never>, K extends `get${Capitalize<T extends string ? T : never>}` & keyof this>(attribute: T & string, ...args: Parameters<this[K] extends () => any ? never : this[K] extends (...args: any) => any ? this[K] : never> extends never ? [] : Parameters<this[K] extends () => any ? never : this[K] extends (...args: any) => any ? this[K] : never>)
-        : Awaited<ReturnType<this[K] extends (...args: any) => any ? this[K] : never>> extends string ? StringValidator
-        : Awaited<ReturnType<this[K] extends (...args: any) => any ? this[K] : never>> extends number ? NumberValidator
-        : Awaited<ReturnType<this[K] extends (...args: any) => any ? this[K] : never>> extends boolean ? BooleanValidator
+    validate<T extends Uncapitalize<keyof MethodNamesStartingWith<this, 'get'> extends string ? keyof MethodNamesStartingWith<this, 'get'> : never>, K extends `get${Capitalize<T extends string ? T : never>}` & keyof this>(attribute: T & string, ...args: Parameters<this[K] extends () => infer _R ? never : this[K] extends (...args: infer _A) => infer _R ? this[K] : never> extends never ? [] : Parameters<this[K] extends () => infer _R ? never : this[K] extends (...args: infer _A) => infer _R ? this[K] : never>)
+        : Awaited<ReturnType<this[K] extends (...args: infer _A) => infer _R ? this[K] : never>> extends string ? StringValidator
+        : Awaited<ReturnType<this[K] extends (...args: infer _A) => infer _R ? this[K] : never>> extends number ? NumberValidator
+        : Awaited<ReturnType<this[K] extends (...args: infer _A) => infer _R ? this[K] : never>> extends boolean ? BooleanValidator
         : UnknownValidator
     {
-        return new Validator((this[`get${attribute.charAt(0).toUpperCase() + attribute.slice(1)}` as keyof this] as Function).bind(this, ...args as any[]), attribute);
+        return new Validator((this[`get${attribute.charAt(0).toUpperCase() + attribute.slice(1)}` as keyof this] as Function).bind(this, ...args as unknown[]), attribute);
     }
 
-    async validateIs<T extends Uncapitalize<keyof MethodNamesStartingWith<this, 'is'> extends string ? keyof MethodNamesStartingWith<this, 'is'> : never>, K extends `is${Capitalize<T extends string ? T : never>}` & keyof this>(attribute: T & string, ...args: Parameters<this[K] extends () => any ? never : this[K] extends (...args: any) => any ? this[K] : never> extends never ? [] : Parameters<this[K] extends () => any ? never : this[K] extends (...args: any) => any ? this[K] : never>) : Promise<void>
+    async validateIs<T extends Uncapitalize<keyof MethodNamesStartingWith<this, 'is'> extends string ? keyof MethodNamesStartingWith<this, 'is'> : never>, K extends `is${Capitalize<T extends string ? T : never>}` & keyof this>(attribute: T & string, ...args: Parameters<this[K] extends () => infer _R ? never : this[K] extends (...args: infer _A) => infer _R ? this[K] : never> extends never ? [] : Parameters<this[K] extends () => infer _R ? never : this[K] extends (...args: infer _A) => infer _R ? this[K] : never>) : Promise<void>
     {
-        await new Validator((this[`is${attribute.charAt(0).toUpperCase() + attribute.slice(1)}` as keyof this] as Function).bind(this, ...args as any[]), attribute).isTrue();
+        await new Validator((this[`is${attribute.charAt(0).toUpperCase() + attribute.slice(1)}` as keyof this] as Function).bind(this, ...args as unknown[]), attribute).isTrue();
     }
 
-    async validateIsNot<T extends Uncapitalize<keyof MethodNamesStartingWith<this, 'is'> extends string ? keyof MethodNamesStartingWith<this, 'is'> : never>, K extends `is${Capitalize<T extends string ? T : never>}` & keyof this>(attribute: T & string, ...args: Parameters<this[K] extends () => any ? never : this[K] extends (...args: any) => any ? this[K] : never> extends never ? [] : Parameters<this[K] extends () => any ? never : this[K] extends (...args: any) => any ? this[K] : never>) : Promise<void>
+    async validateIsNot<T extends Uncapitalize<keyof MethodNamesStartingWith<this, 'is'> extends string ? keyof MethodNamesStartingWith<this, 'is'> : never>, K extends `is${Capitalize<T extends string ? T : never>}` & keyof this>(attribute: T & string, ...args: Parameters<this[K] extends () => infer _R ? never : this[K] extends (...args: infer _A) => infer _R ? this[K] : never> extends never ? [] : Parameters<this[K] extends () => infer _R ? never : this[K] extends (...args: infer _A) => infer _R ? this[K] : never>) : Promise<void>
     {
-        await new Validator((this[`is${attribute.charAt(0).toUpperCase() + attribute.slice(1)}` as keyof this] as Function).bind(this, ...args as any[]), attribute).isFalse();
+        await new Validator((this[`is${attribute.charAt(0).toUpperCase() + attribute.slice(1)}` as keyof this] as Function).bind(this, ...args as unknown[]), attribute).isFalse();
     }
 
-    async evaluate<R, VarArgs extends any[] = []>(script: (element: HTMLType, ...args: { [K in keyof VarArgs]: VarArgs[K] extends WebComponent<infer T> ? T : VarArgs[K] }) => R, ...args: VarArgs) : Promise<R> {
+    async evaluate<R, VarArgs extends unknown[] = []>(script: (element: HTMLType, ...args: { [K in keyof VarArgs]: VarArgs[K] extends WebComponent<infer T> ? T : VarArgs[K] }) => R, ...args: VarArgs) : Promise<R> {
         for (let i = 0; i < args.length; i++) {
             if (args[i] instanceof WebComponent) {
                 await (args[i] as WebComponent).wait.toExist();
@@ -107,7 +111,7 @@ export class WebComponent<HTMLType extends Element = Element> {
             throw Error('Shadow root not found.');
         }
 
-        return new ShadowRootContext(this._driver, this, shadowRoot)
+        return new ShadowRootContext(this._driver, this, shadowRoot);
     }
 
     create<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>): ComponentService<T> {

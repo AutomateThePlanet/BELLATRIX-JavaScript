@@ -30,9 +30,9 @@ export abstract class BrowserAutomationTool implements SearchContext {
     abstract getCookie(name: string): Promise<Cookie | null>;
     abstract getAllCookies(): Promise<Cookie[]>;
     abstract clearCookies(): Promise<void>;
-    abstract executeJavascript<T, VarArgs extends any[] = []>(script: string | ((...args: VarArgs) => T), ...args: VarArgs): Promise<T>;
+    abstract executeJavascript<T, VarArgs extends unknown[] = []>(script: string | ((...args: VarArgs) => T), ...args: VarArgs): Promise<T>;
     abstract waitUntil(condition: (browserAutomationTool: Omit<BrowserAutomationTool, 'waitUntil'>) => boolean | Promise<boolean>, timeout: number, pollingInterval: number): Promise<void>
-    
+
     abstract acceptDialog(promptText?: string): Promise<void>;
     abstract dismissDialog(): Promise<void>;
     abstract getDialogMessage(): Promise<string>;

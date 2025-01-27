@@ -10,8 +10,8 @@ export class Progress extends WebComponent<HTMLProgressElement> {
     async getInnerText(): Promise<string> {
         return await this.wrappedElement.getInnerText();
     }
-    
+
     async getValue(): Promise<number> {
         return parseFloat(await this.getAttribute('value'));
-    } 
+    }
 }

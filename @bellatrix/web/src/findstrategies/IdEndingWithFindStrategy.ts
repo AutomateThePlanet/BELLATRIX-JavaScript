@@ -17,7 +17,7 @@ export class IdEndingWithFindStrategy extends FindStrategy {
     }
 }
 
-export function idEndingWith(strings: TemplateStringsArray, ...values: any[]): IdEndingWithFindStrategy {
+export function idEndingWith(strings: TemplateStringsArray, ...values: unknown[]): IdEndingWithFindStrategy {
     const idExpression = FindStrategy.interpolate(strings, values);
     return new IdEndingWithFindStrategy(idExpression);
 }

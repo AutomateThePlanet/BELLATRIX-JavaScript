@@ -38,8 +38,7 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
 
         nativeLibrary.test.beforeEach(async ({}, testInfo) => {
             const currentTestName = testInfo.title;
-            // @ts-ignore
-            setCurrentTest(currentTestName, testClassInstance[currentTestName], testClass.constructor);
+            setCurrentTest(currentTestName, testClassInstance[currentTestName as keyof T] as (...args: unknown[]) => (Promise<void> | void), testClass.constructor);
             await testClassSymbolMethods.beforeEach.call(testClassInstance);
         });
 
@@ -61,19 +60,18 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
                         throw error;
                     }
                 }
-            })
+            });
         }
-    })
+    });
 }
 
 function test<T extends BellatrixTest, K extends string>(target: T, key: K extends MethodNames<BellatrixTest> ? never : K): void;
 function test(name: string, fn: TestFn<TestProps>): void;
-function test<T extends BellatrixTest, K extends string>(name: any, fn: any): void {
+function test<T extends BellatrixTest, K extends string>(name: unknown, fn: unknown): void {
     if (name instanceof BellatrixTest) {
         const target = name as T;
         const key = fn as K extends MethodNames<BellatrixTest> ? never : K;
-        // @ts-ignore
-        defineTestMetadata(target[key], target.constructor as ParameterlessCtor<T>);
+        defineTestMetadata(target[key as keyof T] as (...args: unknown[]) => (Promise<void> | void), target.constructor as ParameterlessCtor<T>);
         return;
     }
     if (!currentTestClass) {
@@ -84,10 +82,10 @@ function test<T extends BellatrixTest, K extends string>(name: any, fn: any): vo
         currentTestClass.constructor.prototype.configure = globalConfigureBlock;
     }
 
-    const testFn = async () => await fn(ServiceLocator.resolve(TestProps));
+    const testFn = async () => await (fn as TestFn<TestProps>)(ServiceLocator.resolve(TestProps));
     Object.defineProperty(testFn, 'name', { value: name });
-    currentTestClass.constructor.prototype[name] = testFn;
-    test(currentTestClass, name);
+    currentTestClass.constructor.prototype[name as keyof T] = testFn;
+    test(currentTestClass, name as string);
 }
 
 function describe(title: string, fn: () => void): void {
@@ -155,4 +153,4 @@ export {
     SuiteDecorator as suite,
     SuiteDecorator as Suite,
     SuiteDecorator as TestClass,
-}
+};

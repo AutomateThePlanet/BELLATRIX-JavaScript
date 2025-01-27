@@ -2,34 +2,28 @@ import type { Ctor } from '@bellatrix/core/types';
 import { WebComponent } from '@bellatrix/web/components';
 import { ServiceLocator } from '@bellatrix/core/utilities';
 
-type ExtractAsyncMethods<T> = {
-    [K in keyof T]: T[K] extends (...args: any[]) => Promise<any> ? K : never;
+type AsyncMethods<T> = {
+    [K in keyof T]: T[K] extends (...args: infer _P) => Promise<unknown> ? K : never;
 }[keyof T];
 
-type AsyncHook<T extends WebComponent> = {
-    [K in ExtractAsyncMethods<T>]: K extends ExtractAsyncMethods<T>
-      ? `${K & string}`
-      : never;
-}[ExtractAsyncMethods<T>];
-
 export class WebComponentHooks {
-    static addListenerTo<T extends WebComponent>(component: Ctor<T>) {
+    static addListenerTo<TComponent extends WebComponent>(component: Ctor<TComponent>) {
         return {
-            before(methodName: AsyncHook<T>, method: (componentInstance: T) => (void | Promise<void>)) {
-                ServiceLocator.registerSingleton(WebComponentListener<T>, new class extends WebComponentListener<T> {} (component, method), `before|${methodName}`)
+            before<Key extends AsyncMethods<TComponent>>(methodName: Key, method: (componentInstance: TComponent, ...args: Parameters<TComponent[Key] extends (...args: infer _P) => infer _R ? TComponent[Key] : never>) => unknown) {
+                ServiceLocator.registerSingleton(WebComponentListener<TComponent>, new class extends WebComponentListener<TComponent> { }(component, method), `before|${String(methodName)}`);
             },
-            after(methodName: AsyncHook<T>, method: (componentInstance: T) => (void | Promise<void>)) {
-                ServiceLocator.registerSingleton(WebComponentListener<T>, new class extends WebComponentListener<T> {} (component, method), `after|${methodName}`)
+            after<Key extends AsyncMethods<TComponent>>(methodName: Key, method: (componentInstance: TComponent, ...args: Parameters<TComponent[Key] extends (...args: infer _P) => infer _R ? TComponent[Key] : never>) => unknown) {
+                ServiceLocator.registerSingleton(WebComponentListener<TComponent>, new class extends WebComponentListener<TComponent> { }(component, method), `after|${String(methodName)}`);
             }
-        }
+        };
     }
 }
 
-export abstract class WebComponentListener<T extends WebComponent> {
-    readonly component: Ctor<T>;
-    readonly method: (component: T) => (void | Promise<void>);
+export abstract class WebComponentListener<TComponent extends WebComponent> {
+    readonly component: Ctor<TComponent>;
+    readonly method: (component: TComponent, ...args: never) => unknown;
 
-    constructor(component: Ctor<T>, method: (component: T) => (void | Promise<void>)) {
+    constructor(component: Ctor<TComponent>, method: <T>(component: TComponent, ...args: never) => unknown) {
         this.component = component;
         this.method = method;
     }

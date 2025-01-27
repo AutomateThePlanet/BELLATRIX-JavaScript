@@ -1,8 +1,8 @@
 import { Locator as NativeLocator, ElementHandle as NativeElementHandle } from '@playwright/test';
 
 import { Utilities } from '@bellatrix/web/utilities';
-import { Locator, WebElement } from "@bellatrix/web/infrastructure/browserautomationtools/core";
-import { PlaywrightWebElement } from "./PlaywrightWebElement";
+import { Locator, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { PlaywrightWebElement } from './PlaywrightWebElement';
 
 export class PlaywrightShadowRootWebElement extends PlaywrightWebElement {
     private _shadowNodeElementHandle!: NativeElementHandle<ShadowRoot | Element>;
@@ -82,19 +82,19 @@ export class PlaywrightShadowRootWebElement extends PlaywrightWebElement {
         });
     }
 
-    override async evaluate<R, VarArgs extends any[]>(script: string, ...args: VarArgs): Promise<R> {
+    override async evaluate<R, VarArgs extends unknown[]>(script: string, ...args: VarArgs): Promise<R> {
         for (let i = 0; i < args.length; i++) {
-            if (args[i].constructor === PlaywrightWebElement) {
+            if ((args[i] as PlaywrightWebElement).constructor === PlaywrightWebElement) {
                 args[i] = await (args[i] as PlaywrightWebElement)['_locator'].elementHandle();
             }
 
-            if (args[i].constructor === PlaywrightShadowRootWebElement) {
+            if ((args[i] as PlaywrightShadowRootWebElement).constructor === PlaywrightShadowRootWebElement) {
                 args[i] = (args[i] as PlaywrightShadowRootWebElement)['_shadowNodeElementHandle'];
             }
         }
 
         const searchContext = this._shadowNodeElementHandle ?? this['_locator'];
-        return await searchContext.evaluate(new Function(`return (${script})(arguments[0], ...arguments[1])`) as any, args);
+        return await searchContext.evaluate(new Function(`return (${script})(arguments[0], ...arguments[1])`) as never, args);
     }
 
     async tryAttachShadowRoot(): Promise<boolean> {
@@ -103,7 +103,7 @@ export class PlaywrightShadowRootWebElement extends PlaywrightWebElement {
         }
 
         const shadowRoot = (await this['_locator'].evaluateHandle(el => el.shadowRoot)).asElement();
-        
+
         if (!shadowRoot) {
             return false;
         }

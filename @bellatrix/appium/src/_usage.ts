@@ -1,4 +1,4 @@
-import { AndroidDriver } from "@bellatrix/appium/android";
+import { AndroidDriver } from '@bellatrix/appium/android';
 
 const capabilities = {
     platformName: 'Android',
@@ -16,6 +16,5 @@ async function myTest() {
     await driver.deleteSession();
 }
 
-myTest();
-
+await myTest();
 

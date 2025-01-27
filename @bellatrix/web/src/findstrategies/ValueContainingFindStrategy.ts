@@ -17,7 +17,7 @@ export class ValueContainingFindStrategy extends FindStrategy {
     }
 }
 
-export function valueContaining(strings: TemplateStringsArray, ...values: any[]): ValueContainingFindStrategy {
+export function valueContaining(strings: TemplateStringsArray, ...values: unknown[]): ValueContainingFindStrategy {
     const valueExpression = FindStrategy.interpolate(strings, values);
     return new ValueContainingFindStrategy(valueExpression);
 }

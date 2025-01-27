@@ -1,4 +1,4 @@
-import { BrowserAutomationTool } from "@bellatrix/web/infrastructure/browserautomationtools/core";
+import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
 
 export abstract class WebService {
     private _driver: BrowserAutomationTool;

@@ -17,7 +17,7 @@ export class RangeInput extends WebComponent<HTMLInputElement> {
 
     async isDisabled(): Promise<boolean> {
         return (await this.getAttribute('disabled')).toLowerCase() === 'true';
-    }  
+    }
 
     async getList(): Promise<string> {
         return await this.getAttribute('list');
@@ -38,8 +38,8 @@ export class RangeInput extends WebComponent<HTMLInputElement> {
     async getStep(): Promise<number> {
         return parseFloat(await this.getAttribute('step'));
     }
-    
+
     async getValue(): Promise<string> {
         return await this.getAttribute('value');
-    } 
+    }
 }

@@ -67,7 +67,7 @@ export class Image {
             case 'tiff-le': {
                 const offset = this.buffer.indexOf('0001', this.buffer.readUInt32LE(4), 'hex');
                 const dataType = this.buffer.readUInt16LE(offset + 2);
-                const dataCount = this.buffer.readUInt32LE(offset + 4)
+                const dataCount = this.buffer.readUInt32LE(offset + 4);
                 let width = 0;
 
                 for (let i = 0; i < dataCount; i++) {
@@ -81,7 +81,7 @@ export class Image {
                         continue;
                     }
 
-                    throw new UnsupportedImageError('Unexpected opreation: Invalid data type for width in TIFF image.')
+                    throw new UnsupportedImageError('Unexpected opreation: Invalid data type for width in TIFF image.');
                 }
 
                 return width;
@@ -89,7 +89,7 @@ export class Image {
             case 'tiff-be': {
                 const offset = this.buffer.indexOf('0100', this.buffer.readUInt32BE(4), 'hex');
                 const dataType = this.buffer.readUInt16BE(offset + 2);
-                const dataCount = this.buffer.readUInt32BE(offset + 4)
+                const dataCount = this.buffer.readUInt32BE(offset + 4);
                 let width = 0;
 
                 for (let i = 0; i < dataCount; i++) {
@@ -103,7 +103,7 @@ export class Image {
                         continue;
                     }
 
-                    throw new UnsupportedImageError('Unexpected opreation: Invalid data type for width in TIFF image.')
+                    throw new UnsupportedImageError('Unexpected opreation: Invalid data type for width in TIFF image.');
                 }
 
                 return width;
@@ -126,7 +126,7 @@ export class Image {
             case 'tiff-le': {
                 const offset = this.buffer.indexOf('0101', this.buffer.readUInt32LE(4), 'hex');
                 const dataType = this.buffer.readUInt16LE(offset + 2);
-                const dataCount = this.buffer.readUInt32LE(offset + 4)
+                const dataCount = this.buffer.readUInt32LE(offset + 4);
                 let height = 0;
 
                 for (let i = 0; i < dataCount; i++) {
@@ -140,7 +140,7 @@ export class Image {
                         continue;
                     }
 
-                    throw new UnsupportedImageError('Unexpected opreation: Invalid data type for height in TIFF image.')
+                    throw new UnsupportedImageError('Unexpected opreation: Invalid data type for height in TIFF image.');
                 }
 
                 return height;
@@ -148,7 +148,7 @@ export class Image {
             case 'tiff-be': {
                 const offset = this.buffer.indexOf('0101', this.buffer.readUInt32BE(4), 'hex');
                 const dataType = this.buffer.readUInt16BE(offset + 2);
-                const dataCount = this.buffer.readUInt32BE(offset + 4)
+                const dataCount = this.buffer.readUInt32BE(offset + 4);
                 let height = 0;
 
                 for (let i = 0; i < dataCount; i++) {
@@ -162,7 +162,7 @@ export class Image {
                         continue;
                     }
 
-                    throw new UnsupportedImageError('Unexpected opreation: Invalid data type for height in TIFF image.')
+                    throw new UnsupportedImageError('Unexpected opreation: Invalid data type for height in TIFF image.');
                 }
 
                 return height;
@@ -183,6 +183,6 @@ export class Image {
             }
         }
 
-        throw new UnsupportedImageError('Unsupported image format.')
+        throw new UnsupportedImageError('Unsupported image format.');
     }
 }

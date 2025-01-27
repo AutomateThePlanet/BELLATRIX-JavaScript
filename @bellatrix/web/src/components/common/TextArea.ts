@@ -48,7 +48,7 @@ export class TextArea extends WebComponent<HTMLTextAreaElement> {
     async getRows(): Promise<number> {
         return parseInt(await this.getAttribute('rows'));
     }
-    
+
     async getCols(): Promise<number> {
         return parseInt(await this.getAttribute('cols'));
     }

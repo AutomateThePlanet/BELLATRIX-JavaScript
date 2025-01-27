@@ -1,4 +1,4 @@
-import { SuiteMetadata, TestMetadata } from "@bellatrix/core/test/props";
+import { SuiteMetadata, TestMetadata } from '@bellatrix/core/test/props';
 
 export abstract class Plugin {
     async preBeforeSuite(suiteMetadata: SuiteMetadata): Promise<void> {}

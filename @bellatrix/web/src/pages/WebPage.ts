@@ -8,11 +8,11 @@ export abstract class WebPage<TMap extends WebPageMap | null = null, TAsserts ex
     };
 
     get map(): TMap extends null ? never : TMap {
-        throw Error("Type parameters may be lost during transpile time. Use the @Page decorator to explicitly define the map class for this page.");
+        throw Error('Type parameters may be lost during transpile time. Use the @Page decorator to explicitly define the map class for this page.');
     };
 
     get asserts(): TAsserts extends null ? never : TAsserts {
-        throw Error("Type parameters may be lost during transpile time. Use the @Page decorator to explicitly define the asserts class for this page.");
+        throw Error('Type parameters may be lost during transpile time. Use the @Page decorator to explicitly define the asserts class for this page.');
     };
 
     get app(): App {

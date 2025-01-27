@@ -2,9 +2,8 @@ import { ubyte } from '@bellatrix/core/types';
 import { AppiumDriver } from '@bellatrix/appium/core';
 import { WindowsCommands } from '@bellatrix/appium/windows';
 
-
 type CreatedSessionResponse = {
-    capabilities: object;
+    capabilities: Record<string, unknown>;
     sessionId: string;
 }
 
@@ -36,7 +35,7 @@ type KeyAction = {
      * Either this property or pause or text must be provided.
      */
     virtualKeyCode: ubyte;
-  
+
     /**
      * This property only makes sense in combination with virtualKeyCode.
      * If set to true, then the corresponding key will be depressed.
@@ -55,7 +54,7 @@ type MouseButton = 'left' | 'right' | 'middle' | 'back' | 'forward'
 export class WindowsDriver extends AppiumDriver {
     private static readonly WINDOWS_PLATOFRM = 'Windows';
 
-    constructor(serverUrl: string, capabilities: object) {
+    constructor(serverUrl: string, capabilities: Record<string, unknown>) {
         super(serverUrl, AppiumDriver.validatePlatformName(capabilities, WindowsDriver.WINDOWS_PLATOFRM));
     }
 
@@ -69,7 +68,7 @@ export class WindowsDriver extends AppiumDriver {
     }
 
     async deleteSession(): Promise<void> {
-        await this.commandExecutor.execute(WindowsCommands.DELETE_SESSION)
+        await this.commandExecutor.execute(WindowsCommands.DELETE_SESSION);
         this.commandExecutor.unsetSessionId();
     }
 
@@ -78,11 +77,11 @@ export class WindowsDriver extends AppiumDriver {
             contentType: 'plaintext',
         });
 
-        return atob(response)
+        return atob(response);
     }
 
     async click(x: number, y: number, ): Promise<void> {
-        this.execute<string>('windows: click', {
+        await this.execute<string>('windows: click', {
             x,
             y,
             button: 'left',
@@ -90,7 +89,7 @@ export class WindowsDriver extends AppiumDriver {
     }
 
     async rightClick(x: number, y: number, modifierKeys: ModifierKey[] | ModifierKey | null = null): Promise<void> {
-        this.execute<string>('windows: click', {
+        await this.execute<string>('windows: click', {
             x,
             y,
             button: 'right',
@@ -102,16 +101,16 @@ export class WindowsDriver extends AppiumDriver {
     async sendKeys(actionsOrText: KeyAction | KeyAction[] | string): Promise<void> {
         if (typeof(actionsOrText) == 'string') {
             const text = actionsOrText;
-            this.execute('windows: keys', { actions: { text } });
+            await this.execute('windows: keys', { actions: { text } });
             return;
         }
 
         const actions = actionsOrText;
-        this.execute('windows: keys', { actions });
+        await this.execute('windows: keys', { actions });
     }
 
     async setClipboard(content: string) {
-        this.execute('windows: setClipboard', {
+        await this.execute('windows: setClipboard', {
             b64Content: btoa(content),
             contentType: 'plaintext',
         });
