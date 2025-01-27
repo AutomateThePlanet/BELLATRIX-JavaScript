@@ -4,6 +4,10 @@
 name: Example Tests CI
 
 on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
@@ -27,6 +31,7 @@ jobs:
     - name: Run tests in the example directory
       run: npm test
       working-directory: ./example
+      continue-on-error: true
 
     - name: Report test results
       uses: dorny/test-reporter@v1.9.1
