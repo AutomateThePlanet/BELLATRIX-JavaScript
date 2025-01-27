@@ -66,7 +66,7 @@ export class WebComponent<HTMLType extends Element = Element> {
         return await this.wrappedElement.isClickable();
     }
 
-    async scrollToVisible(): Promise<void> {
+    async scrollToVisible(): Promise<void> { // TODO: maybe rename to scrollIntoView?
         return await this.wrappedElement.scrollToVisible();
     }
 

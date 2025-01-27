@@ -1,14 +1,14 @@
 import { Test, TestClass } from '@bellatrix/web/test';
 import { WebTest } from '@bellatrix/web/infrastructure';
-import { Anchor, Button } from '@bellatrix/web/components';
+import { Button } from '@bellatrix/web/components';
+import { DefaultWebComponentHooks } from '@bellatrix/web/components/hooks';
 import { MainPage, CartPage, CheckoutPage, PurchaseInfo } from '../src/pages';
-import { WebComponentHooks } from '@bellatrix/web/components/utilities';
 
 @TestClass
-class ProductPurchaseTests extends WebTest {
+export class ProductPurchaseTests extends WebTest {
     override async configure(): Promise<void> {
         await super.configure();
-        WebComponentHooks.addListenerTo(Button).before('click', button => console.log(`clicking ${button.componentName}`));
+        DefaultWebComponentHooks.addComponentBDDLogging();
     }
 
     override async afterEach() {

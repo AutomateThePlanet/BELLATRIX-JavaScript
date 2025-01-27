@@ -3,12 +3,12 @@ import { WebComponent } from '@bellatrix/web/components';
 
 @BellatrixWebComponent
 export class RangeInput extends WebComponent<HTMLInputElement> {
-    async getRange(): Promise<number> {
+    async getValue(): Promise<number> {
         return this.evaluate(el => el.valueAsNumber);
     }
 
-    async setRange(range: number): Promise<void> {
-        await this.evaluate(el => el.value = `${range}`);
+    async setValue(value: number): Promise<void> {
+        await this.evaluate(el => el.value = String(value));
     }
 
     async isAutoComplete(): Promise<boolean> {
@@ -37,9 +37,5 @@ export class RangeInput extends WebComponent<HTMLInputElement> {
 
     async getStep(): Promise<number> {
         return parseFloat(await this.getAttribute('step'));
-    }
-
-    async getValue(): Promise<string> {
-        return await this.getAttribute('value');
     }
 }

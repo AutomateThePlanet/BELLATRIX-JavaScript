@@ -7,8 +7,8 @@ export class TimeInput extends WebComponent<HTMLInputElement> {
         return await this.getValue();
     }
 
-    async setTime(hours: number, minutes: number): Promise<void> {
-        await this.evaluate(el => el.value = `${hours}:${minutes}:00`);
+    async setTime(hours: number, minutes: number, seconds: number = 0): Promise<void> {
+        await this.evaluate(el => el.value = `${hours}:${minutes}:${seconds}`);
     }
 
     async getMax(): Promise<string> {
