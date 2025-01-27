@@ -46,7 +46,12 @@ export class BrowserAutomationToolLaunchService {
 
                         const channel = webSettings.executionSettings.browser == 'chrome' ? 'chrome' : 'msedge';
 
-                        browser = await chromium.launch({ headless, channel, args });
+                        browser = await chromium.launch({
+                            headless,
+                            channel,
+                            args,
+                            // executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe' // uncomment if Chrome is installed in Program Files (for all users)
+                        });
 
                         break;
                     case 'firefox':
