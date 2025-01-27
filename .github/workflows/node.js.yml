@@ -18,6 +18,7 @@ jobs:
       with:
         node-version: 20.6
         cache: 'npm'
+    - run: ls
     - run: npm ci
       working-directory: example
     - run: npm test
