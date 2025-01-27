@@ -18,6 +18,6 @@ jobs:
       with:
         node-version: 20.6.0
         cache: 'npm'
-    - run: npm clean-install --legacy-peer-deps
+    - run: npm install --legacy-peer-deps
       working-directory: example
     - run: npm test
