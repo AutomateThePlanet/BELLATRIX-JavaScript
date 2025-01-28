@@ -5,7 +5,7 @@ const config: BellatrixConfigurationOverride = {
         testSettings: {
             testTimeout: 300000,
             testFramework: 'vitest', // vitest, jasmine, mocha, jest, playwright
-            testReporter: 'console-only',
+            testReporter: 'junit',
             testReportDirectory: './reports',
             testReportName: `result`,
             parallelExecution: false, // not functional yet
@@ -29,9 +29,9 @@ const config: BellatrixConfigurationOverride = {
         executionSettings: {
             browserAutomationTool: 'playwright', // playwright, selenium
             browser: 'edge', // chrome, firefox, safari, edge
-            // viewport: { width: 1920, height: 1080 },
-            startMaximized: true,
-            headless: false,
+            viewport: { width: 1920, height: 1080 },
+            startMaximized: false,
+            headless: true,
             executionType: 'local', // remote
             baseUrl: 'https://demos.bellatrix.solutions/'
         },

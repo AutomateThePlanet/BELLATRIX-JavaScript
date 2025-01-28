@@ -34,7 +34,7 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
     const title = target.name; // or passed as @Suite('title') or similar
 
     nativeLibrary.describe(title, () => {
-        nativeLibrary.beforeAll(async () => await testClassSymbolMethods.beforeAll.call(testClassInstance));
+        nativeLibrary.beforeAll(async () => await testClassSymbolMethods.beforeAll.call(testClassInstance), 0);
 
         nativeLibrary.beforeEach(async () => {
             const regex = new RegExp(`.*\\b.* > ${title} > \\b(.*)`);
@@ -42,14 +42,14 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
             const currentTestName = (match?.length ?? 0) > 1 ? match![1] : '';
             setCurrentTest(currentTestName, testClassInstance[currentTestName as keyof T] as (...args: unknown[]) => (Promise<void> | void), testClass.constructor);
             await testClassSymbolMethods.beforeEach.call(testClassInstance);
-        });
+        }, 0);
 
         nativeLibrary.afterEach(async () => {
             await testClassSymbolMethods.afterEach.call(testClassInstance);
             unsetCurrentTest(testClass.constructor);
-        });
+        }, 0);
 
-        nativeLibrary.afterAll(async () => await testClassSymbolMethods.afterAll.call(testClassInstance));
+        nativeLibrary.afterAll(async () => await testClassSymbolMethods.afterAll.call(testClassInstance), 0);
 
         for (const testMethod of testMethods) {
             nativeLibrary.test(testMethod, async () => {

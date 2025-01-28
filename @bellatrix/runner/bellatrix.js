@@ -3,8 +3,8 @@
 console.log('DEBUG: starting bellatrix'); // DEBUG
 
 const nodeVersion = process.versions.node.split('.');
-if (parseInt(nodeVersion[0].replace()) < 20 || (parseInt(nodeVersion[0]) == 20 && parseInt(nodeVersion[1]) < 6)) {
-    throw Error(`You need Node runtime version 20.6.0 minimum. Current version: ${process.versions.node}`);
+if (parseInt(nodeVersion[0].replace()) < 20 || (parseInt(nodeVersion[0]) == 20 && parseInt(nodeVersion[1]) < 9)) {
+    throw Error(`You need Node runtime version 20.9.0 minimum. Current version: ${process.versions.node}`);
 }
 
 import { spawnSync } from 'child_process';
