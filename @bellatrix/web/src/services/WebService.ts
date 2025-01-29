@@ -1,13 +1,13 @@
-import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { BrowserController } from '@bellatrix/web/infrastructure/browsercontroller/core';
 
 export abstract class WebService {
-    private _driver: BrowserAutomationTool;
+    private _driver: BrowserController;
 
-    constructor(driver: BrowserAutomationTool) {
+    constructor(driver: BrowserController) {
         this._driver = driver;
     }
 
-    protected get driver(): BrowserAutomationTool {
+    protected get driver(): BrowserController {
         return this._driver;
     }
 }

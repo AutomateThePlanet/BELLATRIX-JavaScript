@@ -1,0 +1,16 @@
+{
+  "name": "@bellatrix/extras",
+  "version": "0.0.1",
+  "type": "module",
+  "exports": {
+    "./hooks": "./src/hooks/index.ts",
+    "./plugins": "./src/plugins/index.ts"
+  },
+  "dependencies": {
+    "@bellatrix/core": "file:../core",
+    "@bellatrix/web": "file:../web"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

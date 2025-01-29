@@ -1,5 +1,5 @@
 import { ServiceLocator } from '@bellatrix/core/utilities';
-import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { BrowserController } from '@bellatrix/web/infrastructure/browsercontroller/core';
 import { StringValidator, NumberValidator, BooleanValidator, UnknownValidator } from '.';
 import { BellatrixSettings } from '@bellatrix/core/settings';
 import { Assert, is } from '@bellatrix/core/assertions';
@@ -238,8 +238,8 @@ export class Validator implements StringValidator, NumberValidator, BooleanValid
         }
     }
 
-    private get driver(): BrowserAutomationTool {
-        return ServiceLocator.resolve(BrowserAutomationTool);
+    private get driver(): BrowserController {
+        return ServiceLocator.resolve(BrowserController);
     }
 
     private async getResult(): Promise<unknown> {

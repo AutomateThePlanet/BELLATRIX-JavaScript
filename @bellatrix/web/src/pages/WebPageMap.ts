@@ -2,10 +2,10 @@ import { Ctor } from '@bellatrix/core/types';
 import { ComponentService } from '@bellatrix/web/services';
 import { WebComponent } from '@bellatrix/web/components';
 import { ServiceLocator } from '@bellatrix/core/utilities';
-import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { BrowserController } from '@bellatrix/web/infrastructure/browsercontroller/core';
 
 export abstract class WebPageMap {
     create<T extends WebComponent>(type: Ctor<T, ConstructorParameters<typeof WebComponent>>) {
-        return new ComponentService(ServiceLocator.resolve(BrowserAutomationTool), type);
+        return new ComponentService(ServiceLocator.resolve(BrowserController), type);
     }
 }

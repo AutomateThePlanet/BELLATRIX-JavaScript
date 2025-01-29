@@ -1,7 +1,7 @@
 import { WebElement as NativeWebElement, WebDriver as NativeWebDriver, By } from 'selenium-webdriver';
 import { ShadowRoot as SeleniumShadowRoot } from 'selenium-webdriver/lib/webdriver';
 
-import { Locator, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { Locator, WebElement } from '@bellatrix/web/infrastructure/browsercontroller/core';
 import { SeleniumWebElement } from './SeleniumWebElement';
 
 import { Utilities } from '@bellatrix/web/utilities';

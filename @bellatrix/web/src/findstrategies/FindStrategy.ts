@@ -1,4 +1,4 @@
-import { Locator } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { Locator } from '@bellatrix/web/infrastructure/browsercontroller/core';
 
 export abstract class FindStrategy {
     private _index: number = 0;

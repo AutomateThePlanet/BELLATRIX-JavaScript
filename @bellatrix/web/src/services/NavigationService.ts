@@ -1,15 +1,15 @@
+import { BellatrixWebService } from '@bellatrix/web/services/decorators';
 import * as path from 'path';
 
-import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { BrowserController } from '@bellatrix/web/infrastructure/browsercontroller/core';
 import { WebService } from '.';
 
+@BellatrixWebService
 export class NavigationService extends WebService {
-    constructor(driver: BrowserAutomationTool) {
+    constructor(driver: BrowserController) {
         super(driver);
     }
 
-    async navigate(url: string): Promise<void>
-    async navigate(url: URL): Promise<void>
     async navigate(url: string | URL): Promise<void> {
         if (typeof url === 'string') {
             await this.driver.open(url);

@@ -5,6 +5,7 @@ import type { HtmlAttribute } from '@bellatrix/web/types';
 export abstract class WebElement implements SearchContext {
     abstract click(): Promise<void>;
     abstract hover(): Promise<void>;
+    abstract focus(): Promise<void>;
     abstract setText(value: string): Promise<void>;
     abstract clear(): Promise<void>;
     abstract getAttribute(name: HtmlAttribute): Promise<string>;
@@ -29,5 +30,5 @@ export abstract class WebElement implements SearchContext {
     abstract isVisible(): Promise<boolean>;
     abstract isClickable(): Promise<boolean>;
 
-    abstract scrollToVisible(): Promise<void>;
+    abstract scrollIntoView(): Promise<void>;
 }

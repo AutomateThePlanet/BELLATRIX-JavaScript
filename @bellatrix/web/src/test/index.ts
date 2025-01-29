@@ -5,7 +5,7 @@ import { App, WebTest } from '@bellatrix/web/infrastructure';
 
 import type { ubyte } from '@bellatrix/core/types';
 
-import type { BrowserAutomationToolType, BrowserType, ExecutionType } from '@bellatrix/web/types';
+import type { BrowserControllerType, BrowserType, ExecutionType } from '@bellatrix/web/types';
 
 class WebTestProps extends TestProps {
     app = () => ServiceLocator.resolve(App);
@@ -46,7 +46,7 @@ interface ActionSettings {
 }
 
 interface ExecutionSettings {
-    browserAutomationTool: BrowserAutomationToolType;
+    browserController: BrowserControllerType;
     browser: BrowserType,
     headless: boolean,
     viewport?: { width: number, height: number },

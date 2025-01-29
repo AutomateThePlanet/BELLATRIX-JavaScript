@@ -3,10 +3,6 @@
     "baseUrl": "src",
     "rootDir": "src",
     "outDir": "lib",
-    "paths": {
-      "*": [ "@bellatrix/appium/*" ],
-      "@bellatrix/core/*": [ "../../core/src/*" ]
-    },
     "lib": [ "ESNext" ],
     "module": "esnext",
     "target": "esnext",
@@ -24,9 +20,6 @@
     "forceConsistentCasingInFileNames": true,
     "allowJs": false
   },
-  "references": [
-    { "path": "../core" }
-  ],
   "include": ["**/*.ts"],
   "exclude": ["node_modules"]
 }

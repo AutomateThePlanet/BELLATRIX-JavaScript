@@ -1,7 +1,7 @@
 import { Locator as NativeLocator, ElementHandle as NativeElementHandle } from '@playwright/test';
 
 import { Utilities } from '@bellatrix/web/utilities';
-import { Locator, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { Locator, WebElement } from '@bellatrix/web/infrastructure/browsercontroller/core';
 import { PlaywrightWebElement } from './PlaywrightWebElement';
 
 export class PlaywrightShadowRootWebElement extends PlaywrightWebElement {

@@ -1,10 +1,10 @@
 import { By, WebDriver as NativeWebDriver, until } from 'selenium-webdriver';
 
-import { Cookie, BrowserAutomationTool, WebElement, Locator } from '@bellatrix/web/infrastructure/browserautomationtools/core';
-import { SeleniumShadowRootWebElement, SeleniumWebElement } from '@bellatrix/web/infrastructure/browserautomationtools/selenium';
+import { Cookie, BrowserController, WebElement, Locator } from '@bellatrix/web/infrastructure/browsercontroller/core';
+import { SeleniumShadowRootWebElement, SeleniumWebElement } from '@bellatrix/web/infrastructure/browsercontroller/selenium';
 import { BellatrixSettings } from '@bellatrix/core/settings';
 
-export class SeleniumBrowserAutomationTool extends BrowserAutomationTool {
+export class SeleniumBrowserController extends BrowserController {
     private _driver: NativeWebDriver;
 
     constructor(driver: NativeWebDriver) {
@@ -127,7 +127,7 @@ export class SeleniumBrowserAutomationTool extends BrowserAutomationTool {
         return await this.wrappedDriver.executeScript<T>(`return (${script})(...arguments)`, ...args);
     }
 
-    override async waitUntil(condition: (browserAutomationTool: Omit<BrowserAutomationTool, 'waitUntil'>) => boolean | Promise<boolean>, timeout: number, pollingInterval: number): Promise<void> {
+    override async waitUntil(condition: (browserController: Omit<BrowserController, 'waitUntil'>) => boolean | Promise<boolean>, timeout: number, pollingInterval: number): Promise<void> {
         await this.wrappedDriver.wait(condition.bind(this, this), timeout, 'Condition failed.' /* TODO: better message */, pollingInterval);
     }
 

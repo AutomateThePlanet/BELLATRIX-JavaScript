@@ -1,6 +1,6 @@
 import { Locator as NativeLocator, ElementHandle as NativeElementHandle } from '@playwright/test';
 
-import { Locator, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { Locator, WebElement } from '@bellatrix/web/infrastructure/browsercontroller/core';
 import { BellatrixSettings } from '@bellatrix/core/settings';
 import { PlaywrightShadowRootWebElement } from './PlaywrightShadowRootWebElement';
 
@@ -29,6 +29,10 @@ export class PlaywrightWebElement extends WebElement {
 
     override async hover(): Promise<void> {
         await this._locator.hover();
+    }
+
+    override async focus(): Promise<void> {
+        await this._locator.focus();
     }
 
     override async setText(value: string) {
@@ -151,7 +155,7 @@ export class PlaywrightWebElement extends WebElement {
         return await this._locator.isEnabled();
     }
 
-    override async scrollToVisible(): Promise<void> {
+    override async scrollIntoView(): Promise<void> {
         await this._locator.scrollIntoViewIfNeeded();
     }
 

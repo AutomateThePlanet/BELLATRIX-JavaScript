@@ -1,9 +1,14 @@
 import { WebComponent } from '@bellatrix/web/components';
+import { WebService } from './WebService';
+import { BrowserController } from '@bellatrix/web/infrastructure/browsercontroller/core';
+import { BellatrixWebService } from '@bellatrix/web/services/decorators';
 
-export class ComponentWaitService {
+@BellatrixWebService
+export class ComponentWaitService extends WebService {
     private _component: WebComponent;
 
-    constructor(component: WebComponent) {
+    constructor(driver: BrowserController, component: WebComponent) {
+        super(driver);
         this._component = component;
     }
 

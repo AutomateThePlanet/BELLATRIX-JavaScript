@@ -1,9 +1,9 @@
-import { BrowserAutomationTool, SearchContext, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { BrowserController, SearchContext, WebElement } from '@bellatrix/web/infrastructure/browsercontroller/core';
 import { ShadowRootContext, WebComponent } from '@bellatrix/web/components';
 import { WebComponentListener } from '@bellatrix/web/components/utilities';
 import { ServiceLocator } from '@bellatrix/core/utilities';
 
-export function BellatrixWebComponent<TComponent extends typeof WebComponent<Element>>(target: TComponent) {
+export function BellatrixWebComponent<TComponent extends typeof WebComponent<HTMLElement>>(target: TComponent) {
     const originalMethods = Object.getOwnPropertyNames(target.prototype).filter(method => method !== 'constructor') as (keyof typeof target.prototype)[];
 
     originalMethods.forEach((method) => {
@@ -12,12 +12,10 @@ export function BellatrixWebComponent<TComponent extends typeof WebComponent<Ele
             const isAsync = originalMethod[Symbol.toStringTag] === 'AsyncFunction';
 
             if (isAsync) {
-                // @ts-expect-error - we know that the method is async therefore it can't be read-only property
+                // @ts-expect-error - we know this is an async method therefore it can't be readonly property (getter)
                 target.prototype[method] = async function (this: typeof target.prototype, ...args: never) {
-                    const searchContext: SearchContext = this['_parentComponent'] ? await resolveParentElement(this['_parentComponent']) : ServiceLocator.resolve(BrowserAutomationTool);
+                    const searchContext: SearchContext = this['_parentComponent'] ? await resolveParentElement(this['_parentComponent']) : ServiceLocator.resolve(BrowserController);
                     this['_cachedElement'] ??= await searchContext.findElement(this.findStrategy.convert());
-
-                    let retryCount = 10; // TODO: make it configuration controlled (do we need more than 1 retry even?)
 
                     const beforeMethodListeners = ServiceLocator.resolveAll(WebComponentListener, `before|${method}`);
                     for (const beforeMethodListener of beforeMethodListeners) {
@@ -28,6 +26,7 @@ export function BellatrixWebComponent<TComponent extends typeof WebComponent<Ele
                         await beforeMethodListener.method(this, ...args);
                     }
 
+                    let hasRetried = false;
                     while (true) {
                         try {
                             const result = await originalMethod.apply(this, args);
@@ -43,9 +42,19 @@ export function BellatrixWebComponent<TComponent extends typeof WebComponent<Ele
 
                             return result;
                         } catch (e) {
-                            if (e instanceof Error && (e.name === 'StaleElementReferenceError' || e.name === 'TypeError') && --retryCount >= 0) {
+                            if (e instanceof Error && (e.name === 'StaleElementReferenceError') && !hasRetried) {
                                 this['_cachedElement'] = await searchContext.findElement(this.findStrategy.convert());
+                                hasRetried = true;
                                 continue;
+                            }
+
+                            const beforeMethodListeners = ServiceLocator.resolveAll(WebComponentListener, `onError|${method}`);
+                            for (const beforeMethodListener of beforeMethodListeners) {
+                                if (beforeMethodListener.component !== this.constructor) {
+                                    continue;
+                                }
+
+                                await beforeMethodListener.method(this, e, ...args);
                             }
 
                             throw e;
@@ -65,7 +74,7 @@ export async function resolveParentElement(parentComponent: WebComponent | Shado
     }
 
     const parentOfParentComponent = (parentComponent as WebComponent)['_parentComponent'];
-    const searchContext: SearchContext = parentOfParentComponent ? await resolveParentElement(parentOfParentComponent as (WebComponent | ShadowRootContext)) : ServiceLocator.resolve(BrowserAutomationTool);
+    const searchContext: SearchContext = parentOfParentComponent ? await resolveParentElement(parentOfParentComponent as (WebComponent | ShadowRootContext)) : ServiceLocator.resolve(BrowserController);
     (parentComponent as WebComponent)['_cachedElement'] ??= await searchContext.findElement((parentComponent as WebComponent)['_findStrategy'].convert());
     return parentComponent.wrappedElement;
 }

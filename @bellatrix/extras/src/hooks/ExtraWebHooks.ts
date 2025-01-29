@@ -1,10 +1,10 @@
 import { WebComponentHooks } from '@bellatrix/web/components/utilities';
 import { Anchor, Button, CheckBox, ColorInput, DateInput, DateTimeInput, EmailField, FileInput, MonthInput, NumberInput, PasswordField, PhoneField, RangeInput, SearchField, Select, TextArea, TextField, TimeInput, UrlField, WebComponent, WeekInput } from '@bellatrix/web/components';
 
-export class DefaultWebComponentHooks {
+// TODO: maybe decouple it in different web-extras plugin so extras does not import @bellatrix/web too?
+export class ExtraWebHooks {
     static addComponentBDDLogging(): void {
-        const locale = Intl.DateTimeFormat().resolvedOptions().locale;// TODO: make it configurable
-        const shouldObfuscatePassword = true; // TODO: add as option in configuration
+        const locale = Intl.DateTimeFormat().resolvedOptions().locale; // TODO: add locale option in the config
 
         WebComponentHooks.addListenerTo(Anchor).before('click', (anchor) => console.log(`clicking ${anchor.componentName}`));
         WebComponentHooks.addListenerTo(Button).before('click', (button) => console.log(`clicking ${button.componentName}`));
@@ -17,7 +17,7 @@ export class DefaultWebComponentHooks {
         WebComponentHooks.addListenerTo(FileInput).before('upload', (fileInput, filePath) => console.log(`uploading '${filePath}' into ${fileInput.componentName}`));
         WebComponentHooks.addListenerTo(MonthInput).before('setMonth', (monthInput, year, month) => console.log(`setting ${monthInput} to ${new Date(year, month - 1).toLocaleDateString(locale, { month: 'long', year: 'numeric' })}`));
         WebComponentHooks.addListenerTo(NumberInput).before('setNumber', (numberInput, number) => console.log(`setting ${numberInput.componentName} to ${number}`));
-        WebComponentHooks.addListenerTo(PasswordField).before('setPassword', (passwordField, password) => console.log(`typing ${shouldObfuscatePassword ? '********' : password} into ${passwordField.componentName}`));
+        WebComponentHooks.addListenerTo(PasswordField).before('setPassword', (passwordField, _) => console.log(`typing '********' into ${passwordField.componentName}`));
         WebComponentHooks.addListenerTo(PhoneField).before('setPhone', (phoneField, phone) => console.log(`typing '${phone}' into ${phoneField.componentName}`));
         WebComponentHooks.addListenerTo(RangeInput).before('setValue', (rangeInput, value) => console.log(`setting ${rangeInput.componentName} to ${value}`));
         WebComponentHooks.addListenerTo(SearchField).before('setSearch', (searchField, search) => console.log(`typing '${search}' into ${searchField.componentName}`));
@@ -29,7 +29,8 @@ export class DefaultWebComponentHooks {
         WebComponentHooks.addListenerTo(TimeInput).before('setTime', (timeInput, hours, minutes, seconds) => console.log(`setting ${timeInput.componentName} to ${[hours, minutes, seconds].map(n => String(n ?? 0).padStart(2, '0')).join(':')}`));
         WebComponentHooks.addListenerTo(UrlField).before('setUrl', (urlField, url) => console.log(`typing '${url}' into ${urlField.componentName}`));
         WebComponentHooks.addListenerTo(WeekInput).before('setWeek', (weekInput, year, weekNumber) => console.log(`setting ${weekInput.componentName} to ${year}-W${weekNumber.toString().padStart(2, '0')}`));
-        WebComponentHooks.addListenerTo(WebComponent).before('scrollToVisible', (component) => console.log(`scrolling ${component} into view`));
-        WebComponentHooks.addListenerTo(WebComponent).before('hover', (component) => console.log(`hovering ${component}`)); // TODO: add focus method?
+        WebComponentHooks.addListenerTo(WebComponent).before('scrollIntoView', (component) => console.log(`scrolling ${component} into view`));
+        WebComponentHooks.addListenerTo(WebComponent).before('hover', (component) => console.log(`hovering ${component}`));
+        WebComponentHooks.addListenerTo(WebComponent).before('focus', (component) => console.log(`focusing ${component}`));
     }
 }

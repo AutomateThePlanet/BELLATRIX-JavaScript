@@ -1,7 +1,7 @@
 import { DOMParser } from '@xmldom/xmldom';
 import { select } from 'xpath';
 
-import { WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { WebElement } from '@bellatrix/web/infrastructure/browsercontroller/core';
 
 export class Utilities {
     static async relativeToAbsoluteXpath(searchContext: WebElement, xpath: string): Promise<string[]> {
