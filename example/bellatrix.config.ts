@@ -43,6 +43,11 @@ const config: BellatrixConfigurationOverride = {
                 browserName: 'chrome'
             }
         }
+    },
+    screenshotOnFailPluginSettings: {
+        isPluginEnabled: true,
+        outputPath: `./reports/screenshots${Date.now()}`,
+        shouldCreateFolderPerSuite: true,
     }
 };
 
