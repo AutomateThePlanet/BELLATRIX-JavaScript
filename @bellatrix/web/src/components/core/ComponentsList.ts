@@ -1,7 +1,7 @@
 import { BrowserController } from '@bellatrix/web/infrastructure/browsercontroller/core';
+import { resolveParentElement } from '@bellatrix/web/components/decorators';
 import { FindStrategy } from '@bellatrix/web/findstrategies';
 import { ServiceLocator } from '@bellatrix/core/utilities';
-import { resolveParentElement } from '../decorators/BellatrixWebComponent';
 import { ShadowRootContext, WebComponent } from '.';
 
 import type { Ctor } from '@bellatrix/core/types';
