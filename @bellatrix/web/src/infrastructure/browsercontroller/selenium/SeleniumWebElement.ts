@@ -1,6 +1,6 @@
 import { WebElement as NativeWebElement, WebDriver as NativeWebDriver, By } from 'selenium-webdriver';
 
-import { Locator, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { Locator, WebElement } from '@bellatrix/web/infrastructure/browsercontroller/core';
 import { SeleniumShadowRootWebElement } from './SeleniumShadowRootWebElement';
 
 import type { HtmlAttribute } from '@bellatrix/web/types';
@@ -24,6 +24,10 @@ export class SeleniumWebElement extends WebElement {
         await actions
             .move({origin: this._element})
             .perform();
+    }
+
+    override async focus() {
+        await this.evaluate((el: HTMLElement) => el.focus());
     }
 
     override async setText(value: string) {
@@ -150,7 +154,7 @@ export class SeleniumWebElement extends WebElement {
         return await this._element.isEnabled();
     }
 
-    override async scrollToVisible(): Promise<void> {
+    override async scrollIntoView(): Promise<void> {
         await this.evaluate('el => el.scrollIntoView(true);');
     }
 

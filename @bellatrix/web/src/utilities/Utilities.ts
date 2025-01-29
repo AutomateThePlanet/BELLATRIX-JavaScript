@@ -1,7 +1,7 @@
 import { DOMParser } from '@xmldom/xmldom';
 import { select } from 'xpath';
 
-import { WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { WebElement } from '@bellatrix/web/infrastructure/browsercontroller/core';
 
 export class Utilities {
     static async relativeToAbsoluteXpath(searchContext: WebElement, xpath: string): Promise<string[]> {
@@ -25,7 +25,7 @@ export class Utilities {
                 el = parentNode;
             }
 
-            return [`${paths.toReversed().join('/')}`, (el as unknown as InnerHTML).innerHTML] as const;
+            return [`${paths.toReversed().join('/')}`, (el as HTMLElement).innerHTML] as const;
         });
 
         const xpathToStartFrom = data[0];

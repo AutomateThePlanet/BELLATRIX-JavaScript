@@ -4,21 +4,21 @@ import * as mozillaFirefox from 'selenium-webdriver/firefox';
 import * as microsoftEdge from 'selenium-webdriver/edge';
 import { chromium, firefox, webkit } from '@playwright/test';
 
-import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
-import { SeleniumBrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/selenium';
-import { PlaywrightBrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/playwright';
+import { BrowserController } from '@bellatrix/web/infrastructure/browsercontroller/core';
+import { SeleniumBrowserController } from '@bellatrix/web/infrastructure/browsercontroller/selenium';
+import { PlaywrightBrowserController } from '@bellatrix/web/infrastructure/browsercontroller/playwright';
 import { BellatrixSettings } from '@bellatrix/core/settings';
 import { HttpClient } from '@bellatrix/core/http';
 
-import type { BrowserAutomationToolType, BrowserType } from '@bellatrix/web/types';
+import type { BrowserControllerType, BrowserType } from '@bellatrix/web/types';
 
 export type BrowserConfiguration = {
-    type: BrowserAutomationToolType;
+    type: BrowserControllerType;
     browser: BrowserType;
 }
 
-export class BrowserAutomationToolLaunchService {
-    static async launch(): Promise<BrowserAutomationTool> {
+export class BrowserControllerLifecycleManager {
+    static async launch(): Promise<BrowserController> {
         const webSettings = BellatrixSettings.get().webSettings;
 
         if (webSettings.executionSettings.executionType === 'remote') {
@@ -32,7 +32,7 @@ export class BrowserAutomationToolLaunchService {
         const headless = webSettings.executionSettings.headless;
         const shouldStartMaximized = webSettings.executionSettings.startMaximized;
 
-        switch (webSettings.executionSettings.browserAutomationTool.toLowerCase()) {
+        switch (webSettings.executionSettings.browserController.toLowerCase()) {
             case 'playwright': {
                 let browser;
                 switch (webSettings.executionSettings.browser.toLowerCase()) {
@@ -77,7 +77,7 @@ export class BrowserAutomationToolLaunchService {
 
                 const page = await context.newPage();
 
-                const webBrowser = new PlaywrightBrowserAutomationTool(browser, context, page);
+                const webBrowser = new PlaywrightBrowserController(browser, context, page);
 
                 await webBrowser.open(baseUrl);
                 return webBrowser;
@@ -132,7 +132,7 @@ export class BrowserAutomationToolLaunchService {
                     await driver.manage().window().setRect({ x: 0, y: 0, ...viewport });
                 }
 
-                const webBrowser = new SeleniumBrowserAutomationTool(driver);
+                const webBrowser = new SeleniumBrowserController(driver);
 
                 await webBrowser.open(baseUrl);
                 return webBrowser;
@@ -142,7 +142,7 @@ export class BrowserAutomationToolLaunchService {
         }
     }
 
-    static async launchRemote(): Promise<BrowserAutomationTool> {
+    static async launchRemote(): Promise<BrowserController> {
         const webSettings = BellatrixSettings.get().webSettings;
 
         const timeoutSettings = webSettings.timeoutSettings;
@@ -151,7 +151,7 @@ export class BrowserAutomationToolLaunchService {
         const viewport = webSettings.executionSettings.viewport;
         const shouldStartMaximized = webSettings.executionSettings.startMaximized;
 
-        switch (webSettings.executionSettings.browserAutomationTool.toLowerCase()) {
+        switch (webSettings.executionSettings.browserController.toLowerCase()) {
             case 'playwright': {
                 let browser;
                 if (!webSettings.remoteExecutionSettings) {
@@ -234,7 +234,7 @@ export class BrowserAutomationToolLaunchService {
 
                 const page = await context.newPage();
 
-                const webBrowser = new PlaywrightBrowserAutomationTool(browser, context, page);
+                const webBrowser = new PlaywrightBrowserController(browser, context, page);
                 webBrowser.setGridSessionId(gridSessionId);
 
                 await webBrowser.open(baseUrl);
@@ -296,13 +296,13 @@ export class BrowserAutomationToolLaunchService {
                     await driver.manage().window().setRect({ x: 0, y: 0, ...viewport });
                 }
 
-                const webBrowser = new SeleniumBrowserAutomationTool(driver);
+                const webBrowser = new SeleniumBrowserController(driver);
 
                 await webBrowser.open(baseUrl);
                 return webBrowser;
             }
             default:
-                throw new Error(`Unknown browser automation tool: ${webSettings.executionSettings.browserAutomationTool}`);
+                throw new Error(`Unknown browser automation tool: ${webSettings.executionSettings.browserController}`);
         }
     }
 }

@@ -1,7 +1,7 @@
-import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { BrowserController } from '@bellatrix/web/infrastructure/browsercontroller/core';
+import { resolveParentElement } from '@bellatrix/web/components/decorators';
 import { FindStrategy } from '@bellatrix/web/findstrategies';
 import { ServiceLocator } from '@bellatrix/core/utilities';
-import { resolveParentElement } from '../decorators/BellatrixWebComponent';
 import { ShadowRootContext, WebComponent } from '.';
 
 import type { Ctor } from '@bellatrix/core/types';
@@ -11,11 +11,11 @@ export class ComponentsList<T extends WebComponent> {
     private _foundAll: boolean = false;
     private _type: Ctor<T, ConstructorParameters<typeof WebComponent>>;
     private _findStrategy: FindStrategy;
-    private _driver: BrowserAutomationTool;
+    private _driver: BrowserController;
     private _parentComponent?: WebComponent | ShadowRootContext;
     private _componentName?: string;
 
-    constructor(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, findStrategy: FindStrategy, driver: BrowserAutomationTool, parentComponent?: WebComponent | ShadowRootContext, componentName?: string) {
+    constructor(type: Ctor<T, ConstructorParameters<typeof WebComponent>>, findStrategy: FindStrategy, driver: BrowserController, parentComponent?: WebComponent | ShadowRootContext, componentName?: string) {
         this._type = type;
         this._findStrategy = findStrategy;
         this._driver = driver;
@@ -31,7 +31,7 @@ export class ComponentsList<T extends WebComponent> {
     async get(index: number): Promise<T>;
     async get(index?: number): Promise<T | T[]> {
         if (index === undefined && !this._foundAll) {
-            const searchContext = this._parentComponent ? await resolveParentElement(this._parentComponent) : ServiceLocator.resolve(BrowserAutomationTool);
+            const searchContext = this._parentComponent ? await resolveParentElement(this._parentComponent) : ServiceLocator.resolve(BrowserController);
             const elements = await searchContext.findElements(this._findStrategy.convert());
             const components = elements.map((element, index) => {
                 const findStrategy = this.cloneFindStrategyWithUpdatedIndex(this._findStrategy, index);

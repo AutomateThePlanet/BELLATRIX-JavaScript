@@ -1,9 +1,11 @@
-import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
-import { WebService } from '.';
+import { BrowserController } from '@bellatrix/web/infrastructure/browsercontroller/core';
 import { BellatrixSettings } from '@bellatrix/core/settings';
+import { BellatrixWebService } from '@bellatrix/web/services/decorators';
+import { WebService } from '.';
 
+@BellatrixWebService
 export class BrowserService extends WebService {
-    constructor(driver: BrowserAutomationTool) {
+    constructor(driver: BrowserController) {
         super(driver);
     }
 

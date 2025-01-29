@@ -1,6 +1,8 @@
+import { BellatrixWebService } from '@bellatrix/web/services/decorators';
 import { WebComponent } from '@bellatrix/web/components';
 import { WebService } from '.';
 
+@BellatrixWebService
 export class ScriptService extends WebService {
     async execute<R, VarArgs extends unknown[] = []>(script: string | ((...args: {
         [K in keyof VarArgs]: VarArgs[K] extends WebComponent<infer T> ? T : VarArgs[K]

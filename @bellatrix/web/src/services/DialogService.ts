@@ -1,5 +1,7 @@
+import { BellatrixWebService } from '@bellatrix/web/services/decorators';
 import { WebService } from '.';
 
+@BellatrixWebService
 export class DialogService extends WebService {
     async accept(promptText?: string | undefined): Promise<void> {
         await this.driver.acceptDialog(promptText);

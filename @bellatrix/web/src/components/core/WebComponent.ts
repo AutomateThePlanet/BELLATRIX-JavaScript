@@ -1,4 +1,4 @@
-import { BrowserAutomationTool, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { BrowserController, WebElement } from '@bellatrix/web/infrastructure/browsercontroller/core';
 import { Validator, StringValidator, NumberValidator, UnknownValidator, BooleanValidator } from '@bellatrix/web/validators';
 import { BellatrixWebComponent } from '@bellatrix/web/components/decorators';
 import { FindStrategy } from '@bellatrix/web/findstrategies';
@@ -9,21 +9,21 @@ import type { Ctor, MethodNamesStartingWith } from '@bellatrix/core/types';
 import type { HtmlAttribute } from '@bellatrix/web/types';
 
 @BellatrixWebComponent
-export class WebComponent<HTMLType extends Element = Element> {
+export class WebComponent<HTMLType extends HTMLElement = HTMLElement> {
     private _cachedElement!: WebElement;
     private _wait: ComponentWaitService;
     private _findStrategy: FindStrategy;
-    private _driver: BrowserAutomationTool;
+    private _driver: BrowserController;
     private _parentComponent?: WebComponent | ShadowRootContext;
     private _componentName?: string;
 
-    constructor(findStrategy: FindStrategy, driver: BrowserAutomationTool, parentComponent?: WebComponent | ShadowRootContext, cachedElement?: WebElement, componentName?: string) {
+    constructor(findStrategy: FindStrategy, driver: BrowserController, parentComponent?: WebComponent | ShadowRootContext, cachedElement?: WebElement, componentName?: string) {
         this._findStrategy = findStrategy;
         this._driver = driver;
         this._parentComponent = parentComponent;
         this._cachedElement = cachedElement!;
         this._componentName = componentName;
-        this._wait = new ComponentWaitService(this);
+        this._wait = new ComponentWaitService(driver, this);
     };
 
     get wrappedElement(): WebElement {
@@ -50,6 +50,10 @@ export class WebComponent<HTMLType extends Element = Element> {
         await this.wrappedElement.hover();
     }
 
+    async focus(): Promise<void> {
+        await this.wrappedElement.focus();
+    }
+
     async getAttribute(name: HtmlAttribute): Promise<string> {
         return await this.wrappedElement.getAttribute(name);
     }
@@ -66,8 +70,8 @@ export class WebComponent<HTMLType extends Element = Element> {
         return await this.wrappedElement.isClickable();
     }
 
-    async scrollToVisible(): Promise<void> { // TODO: maybe rename to scrollIntoView?
-        return await this.wrappedElement.scrollToVisible();
+    async scrollIntoView(): Promise<void> {
+        return await this.wrappedElement.scrollIntoView();
     }
 
     async getOuterHtml(): Promise<string> {

@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "@bellatrix/core": "file:../@bellatrix/core",
+    "@bellatrix/extras": "file:../@bellatrix/extras",
     "@bellatrix/web": "file:../@bellatrix/web",
     "@bellatrix/runner": "file:../@bellatrix/runner"
   },

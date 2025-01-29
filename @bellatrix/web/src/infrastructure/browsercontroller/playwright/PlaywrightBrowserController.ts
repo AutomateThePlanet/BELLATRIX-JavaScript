@@ -1,11 +1,11 @@
 import { Browser, BrowserContext, Page, Locator as NativeLocator, Dialog } from '@playwright/test';
 
-import { Cookie, BrowserAutomationTool, WebElement, Locator } from '@bellatrix/web/infrastructure/browserautomationtools/core';
-import { PlaywrightWebElement } from '@bellatrix/web/infrastructure/browserautomationtools/playwright';
+import { Cookie, BrowserController, WebElement, Locator } from '@bellatrix/web/infrastructure/browsercontroller/core';
+import { PlaywrightWebElement } from '@bellatrix/web/infrastructure/browsercontroller/playwright';
 import { BellatrixSettings } from '@bellatrix/core/settings';
 import { HttpClient } from '@bellatrix/core/http';
 
-export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
+export class PlaywrightBrowserController extends BrowserController {
     private _browser: Browser;
     private _context: BrowserContext;
     private _page: Page;
@@ -155,7 +155,7 @@ export class PlaywrightBrowserAutomationTool extends BrowserAutomationTool {
         return await this._page.evaluate<R, VarArgs>(new Function(`return (${script})(...arguments[0])`) as never, args);
     }
 
-    override async waitUntil(condition: (browserAutomationTool: Omit<BrowserAutomationTool, 'waitUntil'>) => boolean | Promise<boolean>, timeout: number, pollingInterval: number): Promise<void> {
+    override async waitUntil(condition: (browserController: Omit<BrowserController, 'waitUntil'>) => boolean | Promise<boolean>, timeout: number, pollingInterval: number): Promise<void> {
         const startTime = Date.now();
         const hasTimeoutEnded = () => Date.now() - startTime > timeout;
         let error: Error | undefined;

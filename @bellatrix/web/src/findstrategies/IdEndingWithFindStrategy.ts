@@ -1,4 +1,4 @@
-import { Locator } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { Locator } from '@bellatrix/web/infrastructure/browsercontroller/core';
 import { FindStrategy } from '.';
 
 export class IdEndingWithFindStrategy extends FindStrategy {

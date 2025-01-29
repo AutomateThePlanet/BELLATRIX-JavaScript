@@ -1,17 +1,19 @@
 import { CssFindStrategy, XpathFindStrategy, NameFindStrategy, IdFindStrategy, ClassFindStrategy, FindStrategy, AttributeContainingFindStrategy, AttributeFindStrategy, ClassContainingFindStrategy, IdContainingFindStrategy, IdEndingWithFindStrategy, InnerTextContainingFindStrategy, LinkTextContainingFindStrategy, LinkTextFindStrategy, ValueContainingFindStrategy, TagFindStrategy, NameEndingWithFindStrategy } from '@bellatrix/web/findstrategies';
 import { ComponentsList, ShadowRootContext, WebComponent } from '@bellatrix/web/components';
-import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { BrowserController } from '@bellatrix/web/infrastructure/browsercontroller/core';
+import { BellatrixWebService } from '@bellatrix/web/services/decorators';
 import { get as stackTrace } from 'stack-trace';
 import { WebService } from '.';
 
 import type { Ctor } from '@bellatrix/core/types';
 
+@BellatrixWebService
 export class ComponentService<T extends WebComponent> extends WebService {
     private _type: Ctor<T>;
     private _parentComponent?: WebComponent | ShadowRootContext;
     private _componentName?: string;
 
-    constructor(driver: BrowserAutomationTool, type: Ctor<T>, parentComponent?: WebComponent | ShadowRootContext) {
+    constructor(driver: BrowserController, type: Ctor<T>, parentComponent?: WebComponent | ShadowRootContext) {
         super(driver);
         this._type = type;
         this._parentComponent = parentComponent;

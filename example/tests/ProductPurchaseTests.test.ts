@@ -1,14 +1,20 @@
 import { Test, TestClass } from '@bellatrix/web/test';
 import { WebTest } from '@bellatrix/web/infrastructure';
 import { Button } from '@bellatrix/web/components';
-import { DefaultWebComponentHooks } from '@bellatrix/web/components/hooks';
+import { ExtraWebHooks } from '@bellatrix/extras/hooks';
+import { LogLifecyclePlugin } from '@bellatrix/extras/plugins';
 import { MainPage, CartPage, CheckoutPage, PurchaseInfo } from '../src/pages';
+import { PluginExecutionEngine } from '@bellatrix/core/infrastructure';
+import { WebServiceHooks } from '@bellatrix/web/services/utilities';
+import { NavigationService } from '@bellatrix/web/services';
 
 @TestClass
 export class ProductPurchaseTests extends WebTest {
     override async configure(): Promise<void> {
         await super.configure();
-        DefaultWebComponentHooks.addComponentBDDLogging();
+        ExtraWebHooks.addComponentBDDLogging();
+        PluginExecutionEngine.addPlugin(LogLifecyclePlugin);
+        WebServiceHooks.addListenerTo(NavigationService).before('navigate', (_, url) => console.log(`navigating to ${url}`));
     }
 
     override async afterEach() {

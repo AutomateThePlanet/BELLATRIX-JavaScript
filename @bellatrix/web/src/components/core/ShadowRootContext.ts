@@ -1,4 +1,4 @@
-import { BrowserAutomationTool, WebElement } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { BrowserController, WebElement } from '@bellatrix/web/infrastructure/browsercontroller/core';
 import { ComponentService } from '@bellatrix/web/services';
 
 import type { Ctor } from '@bellatrix/core/types';
@@ -6,10 +6,10 @@ import { WebComponent } from '.';
 
 export class ShadowRootContext<DOMType extends ShadowRoot = ShadowRoot> {
     private _cachedElement: WebElement;
-    private _driver: BrowserAutomationTool;
+    private _driver: BrowserController;
     private _parentComponent: WebComponent | ShadowRootContext;
 
-    constructor(driver: BrowserAutomationTool, parentComponent: WebComponent | ShadowRootContext, cachedElement: WebElement) {
+    constructor(driver: BrowserController, parentComponent: WebComponent | ShadowRootContext, cachedElement: WebElement) {
         this._driver = driver;
         this._parentComponent = parentComponent;
         this._cachedElement = cachedElement;

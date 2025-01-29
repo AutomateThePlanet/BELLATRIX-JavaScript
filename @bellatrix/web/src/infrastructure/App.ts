@@ -1,6 +1,6 @@
 
 import { ComponentService, CookiesService, NavigationService, BrowserService, ScriptService, DialogService } from '@bellatrix/web/services';
-import { BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { BrowserController } from '@bellatrix/web/infrastructure/browsercontroller/core';
 import { ServiceLocator, SingletonFactory } from '@bellatrix/core/utilities';
 import { WebComponent } from '@bellatrix/web/components';
 import { WebPage, WebPageAsserts, WebPageMap } from '@bellatrix/web/pages';
@@ -8,10 +8,10 @@ import { WebPage, WebPageAsserts, WebPageMap } from '@bellatrix/web/pages';
 import type { Ctor, ParameterlessCtor } from '@bellatrix/core/types';
 
 export class App {
-    private _driver: BrowserAutomationTool;
+    private _driver: BrowserController;
 
     constructor() { // make them in named container, to be context aware? and dispose method to unregister all with that name?
-        this._driver = ServiceLocator.resolve(BrowserAutomationTool);
+        this._driver = ServiceLocator.resolve(BrowserController);
         ServiceLocator.registerSingleton(NavigationService, new NavigationService(this._driver));
         ServiceLocator.registerSingleton(CookiesService, new CookiesService(this._driver));
         ServiceLocator.registerSingleton(BrowserService, new BrowserService(this._driver));

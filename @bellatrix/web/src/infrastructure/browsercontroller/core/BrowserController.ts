@@ -11,7 +11,7 @@ export type Cookie = {
     sameSite?: 'Strict' | 'Lax' | 'None';
 }
 
-export abstract class BrowserAutomationTool implements SearchContext {
+export abstract class BrowserController implements SearchContext {
     abstract get type(): string;
 
     abstract getUrl(): Promise<string>;
@@ -31,7 +31,7 @@ export abstract class BrowserAutomationTool implements SearchContext {
     abstract getAllCookies(): Promise<Cookie[]>;
     abstract clearCookies(): Promise<void>;
     abstract executeJavascript<T, VarArgs extends unknown[] = []>(script: string | ((...args: VarArgs) => T), ...args: VarArgs): Promise<T>;
-    abstract waitUntil(condition: (browserAutomationTool: Omit<BrowserAutomationTool, 'waitUntil'>) => boolean | Promise<boolean>, timeout: number, pollingInterval: number): Promise<void>
+    abstract waitUntil(condition: (browserController: Omit<BrowserController, 'waitUntil'>) => boolean | Promise<boolean>, timeout: number, pollingInterval: number): Promise<void>
 
     abstract acceptDialog(promptText?: string): Promise<void>;
     abstract dismissDialog(): Promise<void>;

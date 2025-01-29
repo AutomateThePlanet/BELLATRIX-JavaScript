@@ -1,5 +1,4 @@
 export * from './WebService';
-export * from './BrowserAutomationToolLaunchService';
 export * from './ComponentService';
 export * from './NavigationService';
 export * from './CookiesService';

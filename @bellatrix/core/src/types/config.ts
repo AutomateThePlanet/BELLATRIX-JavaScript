@@ -45,7 +45,7 @@ export type BellatrixConfigurationOverride = BellatrixConfiguration
 //             "delayBeforeAction": 0
 //         },
 //         "executionSettings": {
-//             "browserAutomationTool": "playwright", // selenium, cypress
+//             "browserController": "playwright", // selenium, cypress
 //             "browser": "chrome", // firefox, safari, edge
 //             "headless": false,
 //             "executionType": "local" // remote

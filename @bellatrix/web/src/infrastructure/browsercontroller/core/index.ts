@@ -1,4 +1,4 @@
 export * from './Locator';
-export * from './BrowserAutomationTool';
+export * from './BrowserController';
 export * from './WebElement';
 export * from './SearchContext';

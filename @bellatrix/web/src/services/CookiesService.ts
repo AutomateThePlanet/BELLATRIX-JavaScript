@@ -1,8 +1,10 @@
-import { Cookie, BrowserAutomationTool } from '@bellatrix/web/infrastructure/browserautomationtools/core';
+import { Cookie, BrowserController } from '@bellatrix/web/infrastructure/browsercontroller/core';
+import { BellatrixWebService } from '@bellatrix/web/services/decorators';
 import { WebService } from '.';
 
+@BellatrixWebService
 export class CookiesService extends WebService {
-    constructor(driver: BrowserAutomationTool) {
+    constructor(driver: BrowserController) {
         super(driver);
     }
 
