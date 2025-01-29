@@ -7,16 +7,18 @@ import * as path from 'path';
 
 export class ScreenshotOnFailPlugin extends Plugin {
     override async preAfterTest(metadata: TestMetadata): Promise<void> {
-        if(metadata.error !== undefined) {
-            const app = ServiceLocator.resolve(App);
-            const screenshotImage = await app.browser.getScreenshot();
-            // Save the screenshot as an image file
-            try {
-                const savePath = this.saveImageFromBase64(screenshotImage.base64, '../reports/screenshots/' + metadata.testName); // TODO: take from config
-                console.info('\n Screenshot for failed test ' + metadata.testName + ': ' + savePath + '\n');
-            } catch (error) {
-                console.error('Error saving screenshot:', (error as Error).message);
-            }
+        if (!metadata.error) {
+            return;
+        }
+
+        const app = ServiceLocator.resolve(App);
+        const screenshotImage = await app.browser.getScreenshot();
+        // Save the screenshot as an image file
+        try {
+            const savePath = this.saveImageFromBase64(screenshotImage.base64, '../reports/screenshots/' + metadata.testName); // TODO: take from config
+            console.info('\n Screenshot for failed test ' + metadata.testName + ': ' + savePath + '\n');
+        } catch (error) {
+            console.error('Error saving screenshot:', (error as Error).message);
         }
     }
 
