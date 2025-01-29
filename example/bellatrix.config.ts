@@ -47,7 +47,7 @@ const config: BellatrixConfigurationOverride = {
     screenshotOnFailPluginSettings: {
         isPluginEnabled: true,
         outputPath: `./reports/screenshots${Date.now()}`,
-        shouldCreateFolderPerSuite: true,
+        shouldCreateFolderPerSuite: false,
     }
 };
 
