@@ -1,4 +1,5 @@
 import { Locator, SearchContext, WebElement } from '.';
+import { Image } from '@bellatrix/core/image';
 
 export type Cookie = {
     name: string;
@@ -30,6 +31,7 @@ export abstract class BrowserController implements SearchContext {
     abstract getCookie(name: string): Promise<Cookie | null>;
     abstract getAllCookies(): Promise<Cookie[]>;
     abstract clearCookies(): Promise<void>;
+    abstract getScreenshot(): Promise<Image>;
     abstract executeJavascript<T, VarArgs extends unknown[] = []>(script: string | ((...args: VarArgs) => T), ...args: VarArgs): Promise<T>;
     abstract waitUntil(condition: (browserController: Omit<BrowserController, 'waitUntil'>) => boolean | Promise<boolean>, timeout: number, pollingInterval: number): Promise<void>
 

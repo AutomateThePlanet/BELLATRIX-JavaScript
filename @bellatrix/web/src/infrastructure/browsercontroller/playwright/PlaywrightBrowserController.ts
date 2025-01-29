@@ -4,6 +4,7 @@ import { Cookie, BrowserController, WebElement, Locator } from '@bellatrix/web/i
 import { PlaywrightWebElement } from '@bellatrix/web/infrastructure/browsercontroller/playwright';
 import { BellatrixSettings } from '@bellatrix/core/settings';
 import { HttpClient } from '@bellatrix/core/http';
+import { Image } from '@bellatrix/core/image';
 
 export class PlaywrightBrowserController extends BrowserController {
     private _browser: Browser;
@@ -46,6 +47,10 @@ export class PlaywrightBrowserController extends BrowserController {
 
     override async getPageSource(): Promise<string> {
         return await this._page.content();
+    }
+
+    override async getScreenshot(): Promise<Image> {
+        return await Image.fromBase64((await this._page.screenshot()).toString('base64'));
     }
 
     override async back(): Promise<void> {

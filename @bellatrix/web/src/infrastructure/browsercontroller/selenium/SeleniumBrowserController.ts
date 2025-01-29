@@ -3,6 +3,7 @@ import { By, WebDriver as NativeWebDriver, until } from 'selenium-webdriver';
 import { Cookie, BrowserController, WebElement, Locator } from '@bellatrix/web/infrastructure/browsercontroller/core';
 import { SeleniumShadowRootWebElement, SeleniumWebElement } from '@bellatrix/web/infrastructure/browsercontroller/selenium';
 import { BellatrixSettings } from '@bellatrix/core/settings';
+import { Image } from '@bellatrix/core/image';
 
 export class SeleniumBrowserController extends BrowserController {
     private _driver: NativeWebDriver;
@@ -30,6 +31,11 @@ export class SeleniumBrowserController extends BrowserController {
 
     override async getPageSource(): Promise<string> {
         return await this.wrappedDriver.getPageSource();
+    }
+
+    override async getScreenshot(): Promise<Image> {
+        const base64image = (await this.wrappedDriver.takeScreenshot());
+        return Image.fromBase64(base64image);
     }
 
     override async back(): Promise<void> {
