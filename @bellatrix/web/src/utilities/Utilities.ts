@@ -25,7 +25,7 @@ export class Utilities {
                 el = parentNode;
             }
 
-            return [`${paths.toReversed().join('/')}`, (el as unknown as InnerHTML).innerHTML] as const;
+            return [`${paths.toReversed().join('/')}`, (el as HTMLElement).innerHTML] as const;
         });
 
         const xpathToStartFrom = data[0];
