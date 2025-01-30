@@ -135,7 +135,7 @@ export class AndroidDriver extends AppiumDriver {
         });
     }
 
-    async getScreenshot(): Promise<Image> {
+    async takeScreenshot(): Promise<Image> {
         const base64image = await this.commandExecutor.execute<Promise<string>>(MobileCommands.SCREENSHOT);
         return Image.fromBase64(base64image);
     }

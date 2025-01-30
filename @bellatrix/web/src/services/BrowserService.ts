@@ -1,6 +1,7 @@
 import { BrowserController } from '@bellatrix/web/infrastructure/browsercontroller/core';
 import { BellatrixSettings } from '@bellatrix/core/settings';
 import { BellatrixWebService } from '@bellatrix/web/services/decorators';
+import { Image } from '@bellatrix/core/image';
 import { WebService } from '.';
 
 @BellatrixWebService
@@ -19,6 +20,11 @@ export class BrowserService extends WebService {
 
     async getPageSource(): Promise<string> {
         return await this.driver.getPageSource();
+    }
+
+    async takeScreenshot(): Promise<Image> {
+        const base64image = (await this.driver.takeScreenshot()).base64;
+        return Image.fromBase64(base64image);
     }
 
     async back(): Promise<void> {

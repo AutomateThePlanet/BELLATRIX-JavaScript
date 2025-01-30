@@ -81,7 +81,9 @@ const configs = [
     '.bellatrix.json',
 ];
 
-const configFileURL = pathToFileURL(findFilePath(configs));
+const configFilePath = findFilePath(configs);
+const configFileURL = pathToFileURL(configFilePath);
+process.env.BELLATRIX_CONFIGURAITON_ROOT = dirname(configFilePath);
 let config;
 
 if (configFileURL.href.endsWith('.ts') || configFileURL.href.endsWith('.mts')) {

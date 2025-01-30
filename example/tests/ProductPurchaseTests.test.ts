@@ -2,7 +2,7 @@ import { Test, TestClass } from '@bellatrix/web/test';
 import { WebTest } from '@bellatrix/web/infrastructure';
 import { Button } from '@bellatrix/web/components';
 import { ExtraWebHooks } from '@bellatrix/extras/hooks';
-import { LogLifecyclePlugin } from '@bellatrix/extras/plugins';
+import { LogLifecyclePlugin, ScreenshotOnFailPlugin } from '@bellatrix/extras/plugins';
 import { MainPage, CartPage, CheckoutPage, PurchaseInfo } from '../src/pages';
 import { PluginExecutionEngine } from '@bellatrix/core/infrastructure';
 import { WebServiceHooks } from '@bellatrix/web/services/utilities';
@@ -14,6 +14,7 @@ export class ProductPurchaseTests extends WebTest {
         await super.configure();
         ExtraWebHooks.addComponentBDDLogging();
         PluginExecutionEngine.addPlugin(LogLifecyclePlugin);
+        PluginExecutionEngine.addPlugin(ScreenshotOnFailPlugin);
         WebServiceHooks.addListenerTo(NavigationService).before('navigate', (_, url) => console.log(`navigating to ${url}`));
     }
 

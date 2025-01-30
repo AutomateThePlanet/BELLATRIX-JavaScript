@@ -54,6 +54,10 @@ export class Image {
         return `data:image/${this.type};base64,${this.base64}`;
     }
 
+    get buffer() {
+        return this._buffer;
+    }
+
     get width(): number {
         switch (this._type) {
             case 'png':
@@ -170,10 +174,6 @@ export class Image {
             default:
                 throw new UnsupportedImageError('Unsupported operation: Image dimensions not supported by format.');
         }
-    }
-
-    protected get buffer() {
-        return this._buffer;
     }
 
     protected determineType(buffer: Buffer): keyof typeof this.SIGNATURES {
