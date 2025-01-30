@@ -33,7 +33,7 @@ export class SeleniumBrowserController extends BrowserController {
         return await this.wrappedDriver.getPageSource();
     }
 
-    override async getScreenshot(): Promise<Image> {
+    override async takeScreenshot(): Promise<Image> {
         const base64image = (await this.wrappedDriver.takeScreenshot());
         return Image.fromBase64(base64image);
     }

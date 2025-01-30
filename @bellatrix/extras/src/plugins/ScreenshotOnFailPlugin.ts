@@ -20,7 +20,7 @@ export class ScreenshotOnFailPlugin extends Plugin {
         }
 
         const app = ServiceLocator.resolve(App);
-        const screenshotImage = await app.browser.getScreenshot();
+        const screenshotImage = await app.browser.takeScreenshot();
 
         const outputPath = pluginSettings?.outputPath;
 
@@ -77,4 +77,5 @@ interface ScreenshotOnFailPluginSettings {
     isPluginEnabled: boolean;
     outputPath: string,
     shouldCreateFolderPerSuite?: boolean,
+    shouldCaptureFullPage?: boolean,
 }

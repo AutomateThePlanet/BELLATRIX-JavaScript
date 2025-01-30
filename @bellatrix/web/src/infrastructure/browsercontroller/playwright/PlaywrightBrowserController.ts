@@ -49,7 +49,7 @@ export class PlaywrightBrowserController extends BrowserController {
         return await this._page.content();
     }
 
-    override async getScreenshot(): Promise<Image> {
+    override async takeScreenshot(): Promise<Image> {
         return await Image.fromBase64((await this._page.screenshot()).toString('base64'));
     }
 

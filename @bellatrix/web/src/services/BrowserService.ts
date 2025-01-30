@@ -22,8 +22,8 @@ export class BrowserService extends WebService {
         return await this.driver.getPageSource();
     }
 
-    async getScreenshot(): Promise<Image> {
-        const base64image = (await this.driver.getScreenshot()).base64;
+    async takeScreenshot(): Promise<Image> {
+        const base64image = (await this.driver.takeScreenshot()).base64;
         return Image.fromBase64(base64image);
     }
 
