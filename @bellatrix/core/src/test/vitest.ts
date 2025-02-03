@@ -39,18 +39,40 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
         const testMetadata = getTestMetadata(testClass[testMethod]);
 
         let shouldSkipTest = false;
-        for (const [key, value] of Object.entries(testFilters)) {
-            if (key == 'suiteName') {
-                continue;
+        for (const [filterKey, filterValue] of Object.entries(testFilters)) {
+            if (filterKey == 'suiteName') {
+                if (Array.isArray(filterValue)) {
+                    throw new Error('no more than one --suiteName argument allowed as it equals to AND operator, use regex');
+                }
+
+                if (!(new RegExp(String(filterValue), 'i').test(testMetadata[filterKey]))) {
+                    return;
+                }
             }
 
-            if (key == 'testName') {
-                if (!(new RegExp(String(value), 'i').test(testMetadata[key]))) {
+            if (filterKey == 'testName') {
+                if (Array.isArray(filterValue)) {
+                    throw new Error('no more than one --testName argument allowed as it equals to AND operator, use regex');
+                }
+
+                if (!(new RegExp(String(filterValue), 'i').test(testMetadata[filterKey]))) {
                     shouldSkipTest = true;
                     break;
                 }
             } else {
-                if (!(new RegExp(String(value), 'i').test(String(testMetadata.customData.get(key))))) {
+                if (Array.isArray(filterValue)) {
+                    let remainingMatches = filterValue.length;
+                    filterValue.forEach(singleFilterValue => {
+                        if (new RegExp(String(singleFilterValue), 'i').test(String(testMetadata.customData.get(filterKey)))) {
+                            remainingMatches--;
+                        }
+                    });
+
+                    if (remainingMatches > 0) {
+                        shouldSkipTest = true;
+                        break;
+                    }
+                } else if (!(new RegExp(String(filterValue), 'i').test(String(testMetadata.customData.get(filterKey))))) {
                     shouldSkipTest = true;
                     break;
                 }
