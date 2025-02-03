@@ -12,7 +12,8 @@
     "./test": "./src/test/index.ts",
     "./test/props": "./src/test/props.ts",
     "./settings": "./src/settings/index.ts",
-    "./assertions": "./src/assertions/index.ts"
+    "./assertions": "./src/assertions/index.ts",
+    "./decorators": "./src/decorators/index.ts"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
