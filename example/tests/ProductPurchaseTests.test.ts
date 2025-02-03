@@ -1,4 +1,5 @@
 import { Test, TestClass } from '@bellatrix/web/test';
+import { Category } from '@bellatrix/core/decorators';
 import { WebTest } from '@bellatrix/web/infrastructure';
 import { Button } from '@bellatrix/web/components';
 import { ExtraWebHooks } from '@bellatrix/extras/hooks';
@@ -9,6 +10,7 @@ import { WebServiceHooks } from '@bellatrix/web/services/utilities';
 import { NavigationService } from '@bellatrix/web/services';
 
 @TestClass
+@Category('CI') // TODO: make it order independent
 export class ProductPurchaseTests extends WebTest {
     override async configure(): Promise<void> {
         await super.configure();
