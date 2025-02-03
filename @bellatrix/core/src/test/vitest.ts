@@ -11,6 +11,7 @@ import type { ConfigureFn, Method, MethodNames, ParameterlessCtor, TestFn } from
 
 const BaseTest = ServiceLocator.resolveType(BellatrixTest);
 const testSettings = BellatrixSettings.get().frameworkSettings.testSettings;
+const testFilters = JSON.parse(process.env.BELLATRIX_TEST_FILTER!);
 
 function getSymbolMethods<T extends BellatrixTest>(type: ParameterlessCtor<T>) {
     return {
@@ -33,6 +34,49 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
     const testMethods = Object.getOwnPropertyNames(testClass).filter(method => typeof testClass[method] === 'function' && Reflect.hasMetadata(Symbols.TEST, testClass[method]));
     const title = target.name; // or passed as @Suite('title') or similar
 
+    const tests: Map<string, unknown> = new Map;
+    for (const testMethod of testMethods) {
+        const testMetadata = getTestMetadata(testClass[testMethod]);
+
+        let shouldSkipTest = false;
+        for (const [key, value] of Object.entries(testFilters)) {
+            if (key == 'suiteName') {
+                continue;
+            }
+
+            if (key == 'testName') {
+                if (!(new RegExp(String(value), 'i').test(testMetadata[key]))) {
+                    shouldSkipTest = true;
+                    break;
+                }
+            } else {
+                if (!(new RegExp(String(value), 'i').test(String(testMetadata.customData.get(key))))) {
+                    shouldSkipTest = true;
+                    break;
+                }
+            }
+        }
+
+        if (shouldSkipTest) {
+            continue;
+        }
+
+        tests.set(testMethod, async () => {
+            try {
+                await testClass[testMethod].call(testClassInstance);
+            } catch (error) {
+                if (error instanceof Error) {
+                    testMetadata.error = error;
+                    throw error;
+                }
+            }
+        });
+    }
+
+    if (tests.size < 1) {
+        return;
+    }
+
     nativeLibrary.describe(title, () => {
         nativeLibrary.beforeAll(async () => await testClassSymbolMethods.beforeAll.call(testClassInstance), 0);
 
@@ -51,18 +95,9 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
 
         nativeLibrary.afterAll(async () => await testClassSymbolMethods.afterAll.call(testClassInstance), 0);
 
-        for (const testMethod of testMethods) {
-            nativeLibrary.test(testMethod, async () => {
-                try {
-                    await testClass[testMethod].call(testClassInstance);
-                } catch (error) {
-                    if (error instanceof Error) {
-                        getTestMetadata(testClass[testMethod]).error = error;
-                        throw error;
-                    }
-                }
-            }, { timeout: testSettings.testTimeout });
-        }
+        tests.forEach((testFunction, testName) => {
+            nativeLibrary.test(testName, testFunction as never, { timeout: testSettings.testTimeout });
+        });
     });
 }
 
