@@ -58,7 +58,6 @@ export class ProductPurchaseTests extends WebTest {
     }
 
     @Test
-    @TestCategory(Categories.Flaky)
     async purchaseFalcon9WithoutFacade() {
         const mainPage = await this.app.goTo(MainPage);
         await mainPage.addRocketToShoppingCart('Falcon 9');
@@ -89,7 +88,6 @@ export class ProductPurchaseTests extends WebTest {
     }
 
     @Test
-    @TestCategory(Categories.Flaky)
     async purchaseSaturnVWithoutFacade() {
         const mainPage = await this.app.goTo(MainPage);
         await mainPage.addRocketToShoppingCart('Saturn V');
