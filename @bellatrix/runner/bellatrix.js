@@ -16,9 +16,30 @@ import ts from 'typescript';
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 
-const argv = yargs(hideBin(process.argv)).argv;
+const argvArray = hideBin(process.argv);
 
-const testsDirectory = argv._[0];
+const Keywords = Object.freeze({
+    Filter: 'filter',
+});
+
+const filterIndex = argvArray.lastIndexOf(Keywords.Filter);
+let filterArgs = {};
+if (filterIndex !== -1) {
+    filterArgs = yargs(argvArray.slice(filterIndex + 1)).argv;
+    if (filterArgs._[0]){
+        const nextArgIndex = argvArray.indexOf(filterArgs._[0]);
+        filterArgs = yargs(argvArray.slice(filterIndex + 1, nextArgIndex)).argv;
+    }
+
+    const cliFilters = Object.entries(filterArgs)
+        .filter(([key]) => key !== '_' && key !== '$0') // Ignore positional args and script name
+        .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
+
+    process.env.BELLATRIX_TEST_FILTER = JSON.stringify(cliFilters);
+}
+
+const argv = yargs(argvArray).argv;
+const testsDirectory = argv._.find(arg => !Object.values(Keywords).includes(arg));
 
 try {
     process.chdir(testsDirectory ?? '.');
