@@ -56,7 +56,7 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
                     await testClass[testMethod].call(testClassInstance);
                 } catch (error) {
                     if (error instanceof Error) {
-                        getTestMetadata(testClass[testMethod]).error = error;
+                        getTestMetadata(testClass[testMethod], testClass).error = error;
                         throw error;
                     }
                 }

@@ -36,9 +36,8 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
 
     const tests: Map<string, unknown> = new Map;
     for (const testMethod of testMethods) {
-        const testMetadata = getTestMetadata(testClass[testMethod]);
+        const testMetadata = getTestMetadata(testClass[testMethod], testClass);
 
-        let shouldSkipTest = false;
         for (const [filterKey, filterValue] of Object.entries(testFilters)) {
             if (filterKey == 'suiteName') {
                 if (Array.isArray(filterValue)) {
@@ -46,7 +45,8 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
                 }
 
                 if (!(new RegExp(String(filterValue), 'i').test(testMetadata[filterKey]))) {
-                    return;
+                    testMetadata.shouldSkip = true;
+                    break;
                 }
             }
 
@@ -56,7 +56,7 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
                 }
 
                 if (!(new RegExp(String(filterValue), 'i').test(testMetadata[filterKey]))) {
-                    shouldSkipTest = true;
+                    testMetadata.shouldSkip = true;
                     break;
                 }
             } else {
@@ -69,21 +69,17 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
                     });
 
                     if (remainingMatches > 0) {
-                        shouldSkipTest = true;
+                        testMetadata.shouldSkip = true;
                         break;
                     }
                 } else if (!(new RegExp(String(filterValue), 'i').test(String(testMetadata.customData.get(filterKey))))) {
-                    shouldSkipTest = true;
+                    testMetadata.shouldSkip = true;
                     break;
                 }
             }
         }
 
-        if (shouldSkipTest) {
-            continue;
-        }
-
-        tests.set(testMethod, async () => {
+        const currentTest = async () => {
             try {
                 await testClass[testMethod].call(testClassInstance);
             } catch (error) {
@@ -92,7 +88,10 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
                     throw error;
                 }
             }
-        });
+        };
+
+        Object.defineProperty(currentTest, 'name', { value: testMethod }); // !!! Important
+        tests.set(testMethod, currentTest);
     }
 
     if (tests.size < 1) {
@@ -103,7 +102,7 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
         nativeLibrary.beforeAll(async () => await testClassSymbolMethods.beforeAll.call(testClassInstance), 0);
 
         nativeLibrary.beforeEach(async () => {
-            const regex = new RegExp(`.*\\b.* > ${title} > \\b(.*)`);
+            const regex = new RegExp(`${title} > \\b(.*)`);
             const match = regex.exec(nativeLibrary.expect.getState().currentTestName ?? '');
             const currentTestName = (match?.length ?? 0) > 1 ? match![1] : '';
             setCurrentTest(currentTestName, testClassInstance[currentTestName as keyof T] as (...args: unknown[]) => (Promise<void> | void), testClass.constructor);
@@ -118,7 +117,14 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
         nativeLibrary.afterAll(async () => await testClassSymbolMethods.afterAll.call(testClassInstance), 0);
 
         tests.forEach((testFunction, testName) => {
-            nativeLibrary.test(testName, testFunction as never, { timeout: testSettings.testTimeout });
+            const testMetadata = getTestMetadata(testClass[(testFunction as Function).name], testClass);
+            if (testMetadata.shouldSkip) {
+                nativeLibrary.test.skip(testName, { timeout: testSettings.testTimeout }, testFunction as never);
+            } else if (testMetadata.only) {
+                nativeLibrary.test.only(testName, { timeout: testSettings.testTimeout }, testFunction as never);
+            } else {
+                nativeLibrary.test(testName, { timeout: testSettings.testTimeout }, testFunction as never);
+            }
         });
     });
 }
@@ -129,9 +135,7 @@ function test<T extends BellatrixTest, K extends string>(nameOrTarget: unknown, 
     if (nameOrTarget instanceof BellatrixTest) {
         const target = nameOrTarget as T;
         const key = fn as K extends MethodNames<BellatrixTest> ? never : K;
-        if (!getTestMetadata(target[key as keyof T] as (...args: unknown[]) => (Promise<void> | void))) {
-            defineTestMetadata(target[key as keyof T] as (...args: unknown[]) => (Promise<void> | void), target.constructor as ParameterlessCtor<T>);
-        }
+        defineTestMetadata(target[key as keyof T] as (...args: unknown[]) => (Promise<void> | void), target.constructor as ParameterlessCtor<T>);
         return;
     }
     if (!currentTestClass) {

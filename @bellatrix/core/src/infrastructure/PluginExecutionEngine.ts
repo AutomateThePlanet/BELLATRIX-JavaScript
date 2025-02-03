@@ -27,7 +27,7 @@ export class PluginExecutionEngine {
     }
 
     static async executeBeforeTestHook<T>(beforeTestFn: Function | undefined, testClass: typeof BellatrixTest): Promise<T> {
-        const testMetadata = getTestMetadata(getCurrentTest(testClass).method);
+        const testMetadata = getTestMetadata(getCurrentTest(testClass).method, testClass);
         try {
             await PluginExecutionEngine.executeAll(plugin => plugin.preBeforeTest(testMetadata));
             const result = await beforeTestFn?.();
@@ -40,7 +40,7 @@ export class PluginExecutionEngine {
     }
 
     static async executeAfterTestHook<T>(afterTestFn: Function | undefined, testClass: typeof BellatrixTest): Promise<T> {
-        const testMetadata = getTestMetadata(getCurrentTest(testClass).method);
+        const testMetadata = getTestMetadata(getCurrentTest(testClass).method, testClass);
         try {
             await PluginExecutionEngine.executeAll(plugin => plugin.preAfterTest(testMetadata));
             const result = await afterTestFn?.();

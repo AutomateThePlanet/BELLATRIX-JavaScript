@@ -25,6 +25,8 @@ export type TestMetadata = {
     suiteName: string;
     testMethod: (...args: unknown[]) => (Promise<void> | void);
     suiteClass: typeof BellatrixTest;
+    shouldSkip: boolean,
+    only: boolean,
     error?: Error;
     customData: Map<string | symbol, unknown>;
 }
@@ -40,8 +42,21 @@ export type CurrentTest = {
     method: (...args: unknown[]) => (Promise<void> | void);
 }
 
-export function getTestMetadata(testMethod: (...args: unknown[]) => (Promise<void> | void)): TestMetadata {
-    return Reflect.getMetadata(Symbols.TEST, testMethod);
+export function getTestMetadata(testMethod: (...args: unknown[]) => (Promise<void> | void), suiteClass: typeof BellatrixTest): TestMetadata {
+    let metadata: TestMetadata | null = null;
+
+    try {
+        metadata = Reflect.getMetadata(Symbols.TEST, testMethod);
+    } catch {
+        // ignore
+    }
+
+    if (metadata) {
+        return metadata;
+    } else {
+        defineTestMetadata(testMethod, suiteClass);
+        return Reflect.getMetadata(Symbols.TEST, testMethod);
+    }
 }
 
 export function getSuiteMetadata(suiteClass: typeof BellatrixTest): TestMetadata {
@@ -61,7 +76,9 @@ export function getCurrentTest(suiteClass: typeof BellatrixTest): CurrentTest {
 }
 
 export function defineTestMetadata(testMethod: (...args: unknown[]) => (Promise<void> | void), suiteClass: typeof BellatrixTest) {
-    Reflect.defineMetadata(Symbols.TEST, { testName: testMethod.name, suiteName: suiteClass.name, testMethod: testMethod, suiteClass: suiteClass, customData: new Map } satisfies TestMetadata, testMethod); // <<<<<< !!!!!!! DEFINE TEST METADATA
+    if (!Reflect.getMetadata(Symbols.TEST, testMethod)) {
+        Reflect.defineMetadata(Symbols.TEST, { testName: testMethod.name, suiteName: suiteClass.name, testMethod: testMethod, suiteClass: suiteClass, shouldSkip: false, only: false, customData: new Map } satisfies TestMetadata, testMethod); // <<<<<< !!!!!!! DEFINE TEST METADATA
+    }
 }
 
 export function defineSuiteMetadata(suiteClass: typeof BellatrixTest) {

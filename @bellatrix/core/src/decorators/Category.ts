@@ -1,7 +1,7 @@
 import { Symbols } from '@bellatrix/core/constants';
 import { BellatrixTest } from '@bellatrix/core/infrastructure';
-import { defineTestMetadata, getTestMetadata, TestMetadata } from '@bellatrix/core/test/props';
-import { MethodNames, ParameterlessCtor } from '@bellatrix/core/types';
+import { getTestMetadata } from '@bellatrix/core/test/props';
+import { ParameterlessCtor } from '@bellatrix/core/types';
 
 export function Category<T extends BellatrixTest>(name: string): (target: ParameterlessCtor<T>) => void {
     return (target: ParameterlessCtor<T>) => {
@@ -9,7 +9,7 @@ export function Category<T extends BellatrixTest>(name: string): (target: Parame
         const testMethods = Object.getOwnPropertyNames(testClass).filter(method => typeof testClass[method] === 'function' && Reflect.hasMetadata(Symbols.TEST, testClass[method]));
 
         for (const testMethod of testMethods) {
-            const metadata = getTestMetadata(testClass[testMethod]);
+            const metadata = getTestMetadata(testClass[testMethod], testClass);
 
             if (metadata.customData.has('category')) {
                 const categories = metadata.customData.get('category');
@@ -25,14 +25,9 @@ export function Category<T extends BellatrixTest>(name: string): (target: Parame
     };
 }
 
-export function TestCategory<T extends BellatrixTest>(name: string): <K extends keyof T>(testClass: T, methodName: string) => void {
+export function TestCategory<T extends BellatrixTest>(name: string): (testClass: T, methodName: string) => void {
     return (testClass: T, methodName: string) => {
-        let metadata = getTestMetadata(testClass[methodName as keyof T] as (...args: unknown[]) => (Promise<void> | void));
-
-        if (!metadata) {
-            defineTestMetadata(testClass[methodName as keyof T] as (...args: unknown[]) => (Promise<void> | void), testClass.constructor as ParameterlessCtor<T>);
-            metadata = getTestMetadata(testClass[methodName as keyof T] as (...args: unknown[]) => (Promise<void> | void));
-        }
+        const metadata = getTestMetadata(testClass[methodName as keyof T] as (...args: unknown[]) => (Promise<void> | void), testClass.constructor as ParameterlessCtor<T>);
 
         if (metadata.customData.has('category')) {
             const categories = metadata.customData.get('category');

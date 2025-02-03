@@ -2,7 +2,7 @@ import * as nativeLibrary from '@jest/globals';
 import 'reflect-metadata';
 
 import { Symbols } from '@bellatrix/core/constants';
-import { TestProps, defineTestMetadata, setCurrentTest, getCurrentTest, getTestMetadata, unsetCurrentTest, defineSuiteMetadata } from '@bellatrix/core/test/props';
+import { TestProps, defineTestMetadata, setCurrentTest, getTestMetadata, unsetCurrentTest, defineSuiteMetadata } from '@bellatrix/core/test/props';
 import { ServiceLocator } from '@bellatrix/core/utilities';
 import { BellatrixSettings } from '@bellatrix/core/settings';
 import { BellatrixTest, PluginExecutionEngine } from '@bellatrix/core/infrastructure';
@@ -57,7 +57,7 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
                     await testClass[testMethod].call(testClassInstance);
                 } catch (error) {
                     if (error instanceof Error) {
-                        getTestMetadata(testClass[testMethod]).error = error;
+                        getTestMetadata(testClass[testMethod], testClass).error = error;
                         throw error;
                     }
                 }
