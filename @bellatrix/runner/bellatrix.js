@@ -13,9 +13,10 @@ import { join, dirname, isAbsolute, relative } from 'path';
 import { pathToFileURL } from 'url';
 import { tmpdir } from 'os';
 import ts from 'typescript';
-import minimist from 'minimist';
+import yargs from 'yargs/yargs';
+import { hideBin } from 'yargs/helpers';
 
-const argv = minimist(process.argv.slice(2));
+const argv = yargs(hideBin(process.argv)).argv;
 
 const testsDirectory = argv._[0];
 
