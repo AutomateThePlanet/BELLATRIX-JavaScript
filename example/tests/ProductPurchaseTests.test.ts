@@ -32,8 +32,7 @@ export class ProductPurchaseTests extends WebTest {
         const addToCartFalcon9 = this.app.create(Button).byCss('[data-product_id*="28"]');
         const blogLink = this.app.create(Button).byInnerTextContaining('Blog');
 
-        // await addToCartFalcon9.click();
-        await this.app.create(Button).byCss('[data-product_id*="28"]').click();
+        await addToCartFalcon9.click();
         // blogLink.above(addToCartFalcon9).validate(); // layout assert
         await new MainPage().asserts.productBoxLink('Falcon 9', 'https://demos.bellatrix.solutions/product/falcon-9/');
     }
