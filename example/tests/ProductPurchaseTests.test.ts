@@ -1,5 +1,5 @@
 import { Test, TestClass } from '@bellatrix/web/test';
-import { TestCategory, Category } from '@bellatrix/core/decorators';
+import { Category } from '@bellatrix/core/decorators';
 import { WebTest } from '@bellatrix/web/infrastructure';
 import { Button } from '@bellatrix/web/components';
 import { ExtraWebHooks } from '@bellatrix/extras/hooks';

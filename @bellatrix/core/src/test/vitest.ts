@@ -94,10 +94,6 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
         tests.set(testMethod, currentTest);
     }
 
-    if (tests.size < 1) {
-        return;
-    }
-
     nativeLibrary.describe(title, () => {
         nativeLibrary.beforeAll(async () => await testClassSymbolMethods.beforeAll.call(testClassInstance), 0);
 
