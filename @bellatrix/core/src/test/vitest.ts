@@ -125,11 +125,13 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
 
 function test<T extends BellatrixTest, K extends string>(target: T, key: K extends MethodNames<BellatrixTest> ? never : K): void;
 function test(name: string, fn: TestFn<TestProps>): void;
-function test<T extends BellatrixTest, K extends string>(name: unknown, fn: unknown): void {
-    if (name instanceof BellatrixTest) {
-        const target = name as T;
+function test<T extends BellatrixTest, K extends string>(nameOrTarget: unknown, fn: unknown): void {
+    if (nameOrTarget instanceof BellatrixTest) {
+        const target = nameOrTarget as T;
         const key = fn as K extends MethodNames<BellatrixTest> ? never : K;
-        defineTestMetadata(target[key as keyof T] as (...args: unknown[]) => (Promise<void> | void), target.constructor as ParameterlessCtor<T>);
+        if (!getTestMetadata(target[key as keyof T] as (...args: unknown[]) => (Promise<void> | void))) {
+            defineTestMetadata(target[key as keyof T] as (...args: unknown[]) => (Promise<void> | void), target.constructor as ParameterlessCtor<T>);
+        }
         return;
     }
     if (!currentTestClass) {
@@ -141,9 +143,9 @@ function test<T extends BellatrixTest, K extends string>(name: unknown, fn: unkn
     }
 
     const testFn = async () => await (fn as TestFn<TestProps>)(ServiceLocator.resolve(TestProps));
-    Object.defineProperty(testFn, 'name', { value: name });
-    currentTestClass.constructor.prototype[name as keyof T] = testFn;
-    test(currentTestClass, name as string);
+    Object.defineProperty(testFn, 'name', { value: nameOrTarget });
+    currentTestClass.constructor.prototype[nameOrTarget as keyof T] = testFn;
+    test(currentTestClass, nameOrTarget as string);
 }
 
 function describe(title: string, fn: () => void): void {

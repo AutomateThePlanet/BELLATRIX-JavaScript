@@ -1,16 +1,18 @@
 import { Test, TestClass } from '@bellatrix/web/test';
-import { Category } from '@bellatrix/core/decorators';
+import { TestCategory, Category } from '@bellatrix/core/decorators';
 import { WebTest } from '@bellatrix/web/infrastructure';
 import { Button } from '@bellatrix/web/components';
 import { ExtraWebHooks } from '@bellatrix/extras/hooks';
 import { LogLifecyclePlugin, ScreenshotOnFailPlugin } from '@bellatrix/extras/plugins';
-import { MainPage, CartPage, CheckoutPage, PurchaseInfo } from '../src/pages';
 import { PluginExecutionEngine } from '@bellatrix/core/infrastructure';
 import { WebServiceHooks } from '@bellatrix/web/services/utilities';
 import { NavigationService } from '@bellatrix/web/services';
 
+import { Categories } from '../src/Categories';
+import { MainPage, CartPage, CheckoutPage, PurchaseInfo } from '../src/pages';
+
 @TestClass
-@Category('CI') // TODO: make it order independent
+@Category(Categories.CI) // TODO: make it order independent
 export class ProductPurchaseTests extends WebTest {
     override async configure(): Promise<void> {
         await super.configure();
@@ -57,6 +59,7 @@ export class ProductPurchaseTests extends WebTest {
     }
 
     @Test
+    @TestCategory(Categories.Flaky)
     async purchaseFalcon9WithoutFacade() {
         const mainPage = await this.app.goTo(MainPage);
         await mainPage.addRocketToShoppingCart('Falcon 9');
@@ -87,6 +90,7 @@ export class ProductPurchaseTests extends WebTest {
     }
 
     @Test
+    @TestCategory(Categories.Flaky)
     async purchaseSaturnVWithoutFacade() {
         const mainPage = await this.app.goTo(MainPage);
         await mainPage.addRocketToShoppingCart('Saturn V');
