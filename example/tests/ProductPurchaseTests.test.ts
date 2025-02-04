@@ -12,7 +12,7 @@ import { Categories } from '../src/Categories';
 import { MainPage, CartPage, CheckoutPage, PurchaseInfo } from '../src/pages';
 
 @TestClass
-@Category(Categories.CI) // TODO: make it order independent
+@Category(Categories.CI)
 export class ProductPurchaseTests extends WebTest {
     override async configure(): Promise<void> {
         await super.configure();
