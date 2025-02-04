@@ -30,14 +30,13 @@ export class ScreenshotOnFailPlugin extends Plugin {
         }
 
         try {
-            const projectRoot = process.env['BELLATRIX_CONFIGURAITON_ROOT']!; // TODO: find a better way to get the project root
-            const pathArray = [projectRoot, outputPath];
+            const pathArray = [outputPath];
             if (pluginSettings?.shouldCreateFolderPerSuite) {
                 pathArray.push(metadata.suiteName);
             }
             pathArray.push(metadata.testName);
             const savePath = this.saveImageToFile(screenshotImage, join(...pathArray));
-            console.info('\n Screenshot for failed test ' + metadata.testName + ': ' + savePath + '\n');
+            console.info(`\nScreenshot for failed test ${metadata.testName}: ${savePath}\n`);
         } catch (error) {
             if (error instanceof Error) {
                 console.error('Error saving screenshot:', error.message);

@@ -39,13 +39,7 @@ if (filterIndex !== -1) {
 }
 
 const argv = yargs(argvArray).argv;
-const testsDirectory = argv._.find(arg => !Object.values(Keywords).includes(arg));
-
-try {
-    process.chdir(testsDirectory ?? '.');
-} catch {
-    throw Error(`No such directory: ${isAbsolute(testsDirectory) ? testsDirectory : join(process.cwd(), testsDirectory)}`);
-}
+const testsDirectory = argv._.find(arg => !Object.values(Keywords).includes(arg)) ?? '.';
 
 async function getTypescriptConfig(filePath) {
     const fileContents = readFileSync(filePath instanceof URL ? filePath : new URL(filePath), 'utf-8');
@@ -103,25 +97,24 @@ const configs = [
     '.bellatrix.json',
 ];
 
-const configFilePath = findFilePath(configs);
-const configFileURL = pathToFileURL(configFilePath);
-process.env.BELLATRIX_CONFIGURAITON_ROOT = dirname(configFilePath);
+const configFileURI = pathToFileURL(findFilePath(configs));
+
 let config;
 
-if (configFileURL.href.endsWith('.ts') || configFileURL.href.endsWith('.mts')) {
-    const configImport = await getTypescriptConfig(configFileURL);
+if (configFileURI.href.endsWith('.ts') || configFileURI.href.endsWith('.mts')) {
+    const configImport = await getTypescriptConfig(configFileURI);
     config = configImport.default;
     process.env.BELLATRIX_CONFIGURAITON = JSON.stringify(config);
 }
 
-if (configFileURL.href.endsWith('.js') || configFileURL.href.endsWith('.mjs') || configFileURL.href.endsWith('.cjs')) {
-    const configImport = await import(configFileURL);
+if (configFileURI.href.endsWith('.js') || configFileURI.href.endsWith('.mjs') || configFileURI.href.endsWith('.cjs')) {
+    const configImport = await import(configFileURI);
     config = configImport.default;
     process.env.BELLATRIX_CONFIGURAITON = JSON.stringify(config);
 }
 
-if (configFileURL.href.endsWith('.json')) {
-    config = readJsonConfigFile(configFileURL);
+if (configFileURI.href.endsWith('.json')) {
+    config = readJsonConfigFile(configFileURI);
     process.env.BELLATRIX_CONFIGURAITON = JSON.stringify(config);
 }
 
@@ -145,7 +138,7 @@ if ((!reportDirectory || !reportName) && reporter !== 'console-only') {
 }
 
 const reportPath = reporter !== 'console-only'
-    ? isAbsolute(reportDirectory) ? reportDirectory : join(dirname(configFileURL.pathname), reportDirectory)
+    ? isAbsolute(reportDirectory) ? reportDirectory : join(dirname(configFileURI.pathname), reportDirectory)
     : null;
 
 switch (config.frameworkSettings.testSettings.testFramework) {
@@ -153,7 +146,7 @@ switch (config.frameworkSettings.testSettings.testFramework) {
         const { createVitest } = await import('vitest/node');
 
         const config = {
-            include: [ '**/*.test.ts' ],
+            include: [ join(testsDirectory, '**/*.test.ts') ],
             config: false,
             watch: false,
             passWithNoTests: true,
