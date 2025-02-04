@@ -30,10 +30,8 @@ export class ProductPurchaseTests extends WebTest {
     async completePurchaseSuccessfully_first() {
         await this.app.navigation.navigate('https://demos.bellatrix.solutions/');
         const addToCartFalcon9 = this.app.create(Button).byCss('[data-product_id*="28"]');
-        const blogLink = this.app.create(Button).byInnerTextContaining('Blog');
 
         await addToCartFalcon9.click();
-        // blogLink.above(addToCartFalcon9).validate(); // layout assert
         await new MainPage().asserts.productBoxLink('Falcon 9', 'https://demos.bellatrix.solutions/product/falcon-9/');
     }
 
