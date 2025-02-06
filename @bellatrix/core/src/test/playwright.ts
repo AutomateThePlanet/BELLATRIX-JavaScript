@@ -102,6 +102,10 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
         tests.set(testMethod, currentTest);
     }
 
+    nativeLibrary.defineConfig({
+        timeout: testSettings.testTimeout,
+    });
+
     nativeLibrary.test.describe(title, () => {
         nativeLibrary.test.beforeAll(async () => await testClassSymbolMethods.beforeAll.call(testClassInstance));
 
