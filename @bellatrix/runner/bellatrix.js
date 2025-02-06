@@ -237,7 +237,7 @@ switch (config.frameworkSettings.testSettings.testFramework) {
         const tsPathsEsmLoaderPath = new URL(import.meta.resolve('ts-paths-esm-loader')).pathname;
         const cliPath = findFilePath([ 'node_modules/jasmine/bin/jasmine.js' ]);
         const jasmineConfigPath = new URL(import.meta.resolve('./jasmine/config.json')).pathname;
-        const cliArgs = [ cliPath, `--config=${jasmineConfigPath}` ];
+        const cliArgs = [ `--config=${jasmineConfigPath}` ];
 
         switch (reporter) {
             case 'json': throw new Error('Jasmine does not have default JSON reporter');
@@ -265,12 +265,18 @@ switch (config.frameworkSettings.testSettings.testFramework) {
             case 'xunit': throw new Error('Jasmine does not have xUnit reporter');
         }
 
-        spawnSync('node', cliArgs, {
+        const child = fork(cliPath, cliArgs, {
             stdio: 'inherit',
             env: {
                 ...process.env,
                 NODE_OPTIONS: `--loader=${tsPathsEsmLoaderPath} --experimental-specifier-resolution=node --no-warnings`,
             },
+            execArgv: ['--inspect=12016'],
+        });
+
+        // Handle child process events (optional)
+        child.on('exit', (code) => {
+            console.log(`Child process exited with code ${code}`);
         });
 
         break;
@@ -278,7 +284,7 @@ switch (config.frameworkSettings.testSettings.testFramework) {
     case 'mocha': {
         const tsPathsEsmLoaderPath = new URL(import.meta.resolve('ts-paths-esm-loader')).pathname;
         const cliPath = findFilePath([ 'node_modules/mocha/bin/mocha.js' ]);
-        const cliArgs = [ cliPath, '**/*.test.?(m){ts,js}' ];
+        const cliArgs = [ '**/*.test.?(m){ts,js}' ];
 
         switch (reporter) {
             case 'json': {
@@ -307,12 +313,18 @@ switch (config.frameworkSettings.testSettings.testFramework) {
             }
         }
 
-        spawnSync('node', cliArgs, {
+        const child = fork(cliPath, cliArgs, {
             stdio: 'inherit',
             env: {
                 ...process.env,
                 NODE_OPTIONS: `--loader=${tsPathsEsmLoaderPath} --experimental-specifier-resolution=node --no-warnings`,
-            }
+            },
+            execArgv: ['--inspect=12016'],
+        });
+
+        // Handle child process events (optional)
+        child.on('exit', (code) => {
+            console.log(`Child process exited with code ${code}`);
         });
 
         break;
@@ -322,7 +334,7 @@ switch (config.frameworkSettings.testSettings.testFramework) {
         const tsPathsEsmLoaderPath = new URL(import.meta.resolve('ts-paths-esm-loader')).pathname;
         const cliPath = join(new URL(import.meta.resolve('jest-cli')).pathname, '..', '..', 'bin', 'jest.js');
         const testMatch = '\\.test\\.(ts|js)';
-        const cliArgs = [ cliPath ];
+        const cliArgs = [];
 
         switch (reporter) {
             case 'json': throw new Error('Jest does not have default JSON reporter');
@@ -367,12 +379,18 @@ switch (config.frameworkSettings.testSettings.testFramework) {
             }
         }
 
-        spawnSync('node', cliArgs, {
+        const child = fork(cliPath, cliArgs, {
             stdio: 'inherit',
             env: {
                 ...process.env,
                 NODE_OPTIONS: `--loader=${tsPathsEsmLoaderPath} --experimental-vm-modules --no-warnings`,
-            }
+            },
+            execArgv: ['--inspect=12016'],
+        });
+
+        // Handle child process events (optional)
+        child.on('exit', (code) => {
+            console.log(`Child process exited with code ${code}`);
         });
 
         break;
