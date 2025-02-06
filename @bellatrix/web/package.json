@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@bellatrix/core": "file:../core",
+    "@playwright/test": "^1.41.0",
     "@xmldom/xmldom": "^0.8.10",
     "selenium-webdriver": "^4.16.0",
     "stack-trace": "^1.0.0-pre2",

@@ -1,3 +1,11 @@
+import inspector from 'inspector';
+
+let isDebuggerAttached = false;
+if (inspector.url() !== undefined && new URL(inspector.url()!).port === '12016' && !isDebuggerAttached) {
+    inspector.waitForDebugger();
+    isDebuggerAttached = true;
+}
+
 import * as nativeLibrary from 'mocha';
 import 'reflect-metadata';
 
@@ -23,6 +31,7 @@ function getSymbolMethods<T extends BellatrixTest>(type: ParameterlessCtor<T>) {
 
 let currentTestClass: BellatrixTest | undefined;
 let globalConfigureBlock: Method<BellatrixTest, 'configure'> | undefined;
+const testFilters = JSON.parse(process.env.BELLATRIX_TEST_FILTER!);
 
 export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCtor<T>): void {
     const testClass = target.prototype;
@@ -33,7 +42,67 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
     const testMethods = Object.getOwnPropertyNames(testClass).filter(method => typeof testClass[method] === 'function' && Reflect.hasMetadata(Symbols.TEST, testClass[method]));
     const title = target.name; // or passed as @Suite('title') or similar
 
-    nativeLibrary.describe(title, function() {
+    const tests: Map<string, unknown> = new Map;
+    for (const testMethod of testMethods) {
+        const testMetadata = getTestMetadata(testClass[testMethod], testClass);
+
+        for (const [filterKey, filterValue] of Object.entries(testFilters)) {
+            if (filterKey == 'suiteName') {
+                if (Array.isArray(filterValue)) {
+                    throw new Error('no more than one --suiteName argument allowed as it equals to AND operator, use regex');
+                }
+
+                if (!(new RegExp(String(filterValue), 'i').test(testMetadata[filterKey]))) {
+                    testMetadata.shouldSkip = true;
+                    break;
+                }
+            }
+
+            if (filterKey == 'testName') {
+                if (Array.isArray(filterValue)) {
+                    throw new Error('no more than one --testName argument allowed as it equals to AND operator, use regex');
+                }
+
+                if (!(new RegExp(String(filterValue), 'i').test(testMetadata[filterKey]))) {
+                    testMetadata.shouldSkip = true;
+                    break;
+                }
+            } else {
+                if (Array.isArray(filterValue)) {
+                    let remainingMatches = filterValue.length;
+                    filterValue.forEach(singleFilterValue => {
+                        if (new RegExp(String(singleFilterValue), 'i').test(String(testMetadata.customData.get(filterKey)))) {
+                            remainingMatches--;
+                        }
+                    });
+
+                    if (remainingMatches > 0) {
+                        testMetadata.shouldSkip = true;
+                        break;
+                    }
+                } else if (!(new RegExp(String(filterValue), 'i').test(String(testMetadata.customData.get(filterKey))))) {
+                    testMetadata.shouldSkip = true;
+                    break;
+                }
+            }
+        }
+
+        const currentTest = async () => {
+            try {
+                await testClass[testMethod].call(testClassInstance);
+            } catch (error) {
+                if (error instanceof Error) {
+                    testMetadata.error = error;
+                    throw error;
+                }
+            }
+        };
+
+        Object.defineProperty(currentTest, 'name', { value: testMethod }); // !!! Important
+        tests.set(testMethod, currentTest);
+    }
+
+    nativeLibrary.describe(title, function () {
         this.timeout(testSettings.testTimeout!);
 
         nativeLibrary.before(async () => await testClassSymbolMethods.beforeAll.call(testClassInstance));
@@ -51,26 +120,24 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
 
         nativeLibrary.after(async () => await testClassSymbolMethods.afterAll.call(testClassInstance));
 
-        for (const testMethod of testMethods) {
-            nativeLibrary.test(testMethod, async () => {
-                try {
-                    await testClass[testMethod].call(testClassInstance);
-                } catch (error) {
-                    if (error instanceof Error) {
-                        getTestMetadata(testClass[testMethod], testClass).error = error;
-                        throw error;
-                    }
-                }
-            });
-        }
+        tests.forEach((testFunction, testName) => {
+            const testMetadata = getTestMetadata(testClass[(testFunction as Function).name], testClass);
+            if (testMetadata.shouldSkip) {
+                nativeLibrary.test.skip(testName, testFunction as never);
+            } else if (testMetadata.only) {
+                nativeLibrary.test.only(testName, testFunction as never);
+            } else {
+                nativeLibrary.test(testName, testFunction as never);
+            }
+        });
     });
 }
 
 function test<T extends BellatrixTest, K extends string>(target: T, key: K extends MethodNames<BellatrixTest> ? never : K): void;
 function test(name: string, fn: TestFn<TestProps>): void;
-function test<T extends BellatrixTest, K extends string>(name: unknown, fn: unknown): void {
-    if (name instanceof BellatrixTest) {
-        const target = name as T;
+function test<T extends BellatrixTest, K extends string>(nameOrTarget: unknown, fn: unknown): void {
+    if (nameOrTarget instanceof BellatrixTest) {
+        const target = nameOrTarget as T;
         const key = fn as K extends MethodNames<BellatrixTest> ? never : K;
         defineTestMetadata(target[key as keyof T] as (...args: unknown[]) => (Promise<void> | void), target.constructor as ParameterlessCtor<T>);
         return;
@@ -84,13 +151,13 @@ function test<T extends BellatrixTest, K extends string>(name: unknown, fn: unkn
     }
 
     const testFn = async () => await (fn as TestFn<TestProps>)(ServiceLocator.resolve(TestProps));
-    Object.defineProperty(testFn, 'name', { value: name });
-    currentTestClass.constructor.prototype[name as keyof T] = testFn;
-    test(currentTestClass, name as string);
+    Object.defineProperty(testFn, 'name', { value: nameOrTarget });
+    currentTestClass.constructor.prototype[nameOrTarget as keyof T] = testFn;
+    test(currentTestClass, nameOrTarget as string);
 }
 
 function describe(title: string, fn: () => void): void {
-    currentTestClass = new class extends BaseTest {};
+    currentTestClass = new class extends BaseTest { };
     Object.defineProperty(currentTestClass.constructor, 'name', { value: title });
 
     fn();

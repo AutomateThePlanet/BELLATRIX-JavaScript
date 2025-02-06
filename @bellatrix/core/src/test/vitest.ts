@@ -115,11 +115,11 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
         tests.forEach((testFunction, testName) => {
             const testMetadata = getTestMetadata(testClass[(testFunction as Function).name], testClass);
             if (testMetadata.shouldSkip) {
-                nativeLibrary.test.skip(testName, { timeout: testSettings.testTimeout }, testFunction as never);
+                nativeLibrary.test.skip(testName, testFunction as never, testSettings.testTimeout);
             } else if (testMetadata.only) {
-                nativeLibrary.test.only(testName, { timeout: testSettings.testTimeout }, testFunction as never);
+                nativeLibrary.test.only(testName, testFunction as never, testSettings.testTimeout);
             } else {
-                nativeLibrary.test(testName, { timeout: testSettings.testTimeout }, testFunction as never);
+                nativeLibrary.test(testName, testFunction as never, testSettings.testTimeout);
             }
         });
     });

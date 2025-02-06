@@ -1,3 +1,12 @@
+import inspector from 'inspector';
+
+let isDebuggerAttached = false;
+if (inspector.url() !== undefined && new URL(inspector.url()!).port === '12016' && !isDebuggerAttached) {
+    inspector.waitForDebugger();
+    isDebuggerAttached = true;
+}
+
+// WARNING: do not install @types/jasmine as it will flood the global scope with types that are not needed
 // @ts-expect-error - jasmine-core does not have a declaration file
 import jasmineModule from 'jasmine-core';
 import 'reflect-metadata';
@@ -13,6 +22,7 @@ import type { ConfigureFn, Method, MethodNames, ParameterlessCtor, TestFn } from
 const nativeLibrary: JasmineModule = jasmineModule.noGlobals();
 const BaseTest = ServiceLocator.resolveType(BellatrixTest);
 const testSettings = BellatrixSettings.get().frameworkSettings.testSettings;
+const testFilters = JSON.parse(process.env.BELLATRIX_TEST_FILTER!);
 
 function getSymbolMethods<T extends BellatrixTest>(type: ParameterlessCtor<T>) {
     return {
@@ -46,6 +56,66 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
     const testMethods = Object.getOwnPropertyNames(testClass).filter(method => typeof testClass[method] === 'function' && Reflect.hasMetadata(Symbols.TEST, testClass[method]));
     const title = target.name; // or passed as @Suite('title') or similar
 
+    const tests: Map<string, unknown> = new Map;
+    for (const testMethod of testMethods) {
+        const testMetadata = getTestMetadata(testClass[testMethod], testClass);
+
+        for (const [filterKey, filterValue] of Object.entries(testFilters)) {
+            if (filterKey == 'suiteName') {
+                if (Array.isArray(filterValue)) {
+                    throw new Error('no more than one --suiteName argument allowed as it equals to AND operator, use regex');
+                }
+
+                if (!(new RegExp(String(filterValue), 'i').test(testMetadata[filterKey]))) {
+                    testMetadata.shouldSkip = true;
+                    break;
+                }
+            }
+
+            if (filterKey == 'testName') {
+                if (Array.isArray(filterValue)) {
+                    throw new Error('no more than one --testName argument allowed as it equals to AND operator, use regex');
+                }
+
+                if (!(new RegExp(String(filterValue), 'i').test(testMetadata[filterKey]))) {
+                    testMetadata.shouldSkip = true;
+                    break;
+                }
+            } else {
+                if (Array.isArray(filterValue)) {
+                    let remainingMatches = filterValue.length;
+                    filterValue.forEach(singleFilterValue => {
+                        if (new RegExp(String(singleFilterValue), 'i').test(String(testMetadata.customData.get(filterKey)))) {
+                            remainingMatches--;
+                        }
+                    });
+
+                    if (remainingMatches > 0) {
+                        testMetadata.shouldSkip = true;
+                        break;
+                    }
+                } else if (!(new RegExp(String(filterValue), 'i').test(String(testMetadata.customData.get(filterKey))))) {
+                    testMetadata.shouldSkip = true;
+                    break;
+                }
+            }
+        }
+
+        const currentTest = async () => {
+            try {
+                await testClass[testMethod].call(testClassInstance);
+            } catch (error) {
+                if (error instanceof Error) {
+                    testMetadata.error = error;
+                    throw error;
+                }
+            }
+        };
+
+        Object.defineProperty(currentTest, 'name', { value: testMethod }); // !!! Important
+        tests.set(testMethod, currentTest);
+    }
+
     nativeLibrary.describe(title, () => {
         nativeLibrary.beforeAll(async () => await testClassSymbolMethods.beforeAll.call(testClassInstance));
 
@@ -63,18 +133,16 @@ export function SuiteDecorator<T extends BellatrixTest>(target: ParameterlessCto
 
         nativeLibrary.afterAll(async () => await testClassSymbolMethods.afterAll.call(testClassInstance));
 
-        for (const testMethod of testMethods) {
-            nativeLibrary.it(testMethod, async () => {
-                try {
-                    await testClass[testMethod].call(testClassInstance);
-                } catch (error) {
-                    if (error instanceof Error) {
-                        getTestMetadata(testClass[testMethod], testClass).error = error;
-                        throw error;
-                    }
-                }
-            }, testSettings.testTimeout!);
-        }
+        tests.forEach((testFunction, testName) => {
+            const testMetadata = getTestMetadata(testClass[(testFunction as Function).name], testClass);
+            if (testMetadata.shouldSkip) {
+                nativeLibrary.xit(testName, testFunction as never, testSettings.testTimeout);
+            } else if (testMetadata.only) {
+                nativeLibrary.fit(testName, testFunction as never, testSettings.testTimeout);
+            } else {
+                nativeLibrary.it(testName, testFunction as never, testSettings.testTimeout);
+            }
+        });
     });
 }
 
@@ -172,85 +240,64 @@ export {
 
 type JasmineModule = {
     /**
-     * Run some shared setup once before all of the specs in the {@link describe} are run.
-     *
-     * _Note:_ Be careful, sharing the setup from a beforeAll makes it easy to accidentally leak state between your specs so that they erroneously pass or fail.
-     * @name beforeAll
-     * @since 2.1.0
-     * @function
-     * @global
-     * @param {implementationCallback} [function] Function that contains the code to setup your specs.
-     * @param {Int} [timeout={@link jasmine.DEFAULT_TIMEOUT_INTERVAL}] Custom timeout for an async beforeAll.
-     * @see async
+     * Run some shared setup once before all of the specs in the describe are run.
+     * Note: Be careful, sharing the setup from a beforeAll makes it easy to accidentally leak state between your specs so that they erroneously pass or fail.
+     * @param action Function that contains the code to setup your specs.
+     * @param timeout Custom timeout for an async beforeAll.
      */
-    beforeAll: (fn: () => void, timeout?: number) => void;
+    beforeAll: (action: () => void, timeout?: number) => void;
 
     /**
-     * Run some shared teardown once after all of the specs in the {@link describe} are run.
-     *
-     * _Note:_ Be careful, sharing the teardown from a afterAll makes it easy to accidentally leak state between your specs so that they erroneously pass or fail.
-     * @name afterAll
-     * @since 2.1.0
-     * @function
-     * @global
-     * @param {implementationCallback} [function] Function that contains the code to teardown your specs.
-     * @param {Int} [timeout={@link jasmine.DEFAULT_TIMEOUT_INTERVAL}] Custom timeout for an async afterAll.
-     * @see async
+     * Run some shared teardown once after all of the specs in the describe are run.
+     * Note: Be careful, sharing the teardown from a afterAll makes it easy to accidentally leak state between your specs so that they erroneously pass or fail.
+     * @param action Function that contains the code to teardown your specs.
+     * @param timeout Custom timeout for an async afterAll
      */
-    afterAll: (fn: () => void, timeout?: number) => void;
+    afterAll: (action: () => void, timeout?: number) => void;
 
     /**
      * Create a group of specs (often called a suite).
-     *
-     * Calls to `describe` can be nested within other calls to compose your suite as a tree.
-     * @name describe
-     * @since 1.3.0
-     * @function
-     * @global
-     * @param {String} description Textual description of the group
-     * @param {Function} specDefinitions Function for Jasmine to invoke that will define inner suites and specs
+     * @param description Textual description of the group
+     * @param specDefinitions Function for Jasmine to invoke that will define inner suites a specs
      */
     describe: (description: string, specDefinitions: () => void) => void;
 
     /**
-     * Run some shared setup before each of the specs in the {@link describe} in which it is called.
-     * @name beforeEach
-     * @since 1.3.0
-     * @function
-     * @global
-     * @param {implementationCallback} [function] Function that contains the code to setup your specs.
-     * @param {Int} [timeout={@link jasmine.DEFAULT_TIMEOUT_INTERVAL}] Custom timeout for an async beforeEach.
-     * @see async
+     * Run some shared setup before each of the specs in the describe in which it is called.
+     * @param action Function that contains the code to setup your specs.
+     * @param timeout Custom timeout for an async beforeEach.
      */
-    beforeEach: (fn: () => void, timeout?: number) => void;
+    beforeEach: (action: () => void, timeout?: number) => void;
 
     /**
-     * Run some shared teardown after each of the specs in the {@link describe} in which it is called.
-     * @name afterEach
-     * @since 1.3.0
-     * @function
-     * @global
-     * @param {implementationCallback} [function] Function that contains the code to teardown your specs.
-     * @param {Int} [timeout={@link jasmine.DEFAULT_TIMEOUT_INTERVAL}] Custom timeout for an async afterEach.
-     * @see async
+     * Run some shared teardown after each of the specs in the describe in which it is called.
+     * @param action Function that contains the code to teardown your specs.
+     * @param timeout Custom timeout for an async afterEach.
      */
-    afterEach: (fn: () => void, timeout?: number) => void;
+    afterEach: (action: () => void, timeout?: number) => void;
 
     /**
-     * Define a single spec. A spec should contain one or more {@link expect|expectations} that test the state of the code.
-     *
+     * Define a single spec. A spec should contain one or more expectations that test the state of the code.
      * A spec whose expectations all succeed will be passing and a spec with any failures will fail.
-     * The name `it` is a pronoun for the test target, not an abbreviation of anything. It makes the
-     * spec more readable by connecting the function name `it` and the argument `description` as a
-     * complete sentence.
-     * @name it
-     * @since 1.3.0
-     * @function
-     * @global
-     * @param {String} description Textual description of what this spec is checking
-     * @param {implementationCallback} [testFunction] Function that contains the code of your test. If not provided the test will be `pending`.
-     * @param {Int} [timeout={@link jasmine.DEFAULT_TIMEOUT_INTERVAL}] Custom timeout for an async spec.
-     * @see async
+     * @param expectation Textual description of what this spec is checking
+     * @param assertion Function that contains the code of your test. If not provided the test will be pending.
+     * @param timeout Custom timeout for an async spec.
      */
-    it: (description: string, testFunction?: () => void, timeout?: number) => void;
+    it: (expectation: string, assertion?: () => void, timeout?: number) => void;
+
+    /**
+     * A focused `it`. If suites or specs are focused, only those that are focused will be executed.
+     * @param expectation Textual description of what this spec is checking
+     * @param assertion Function that contains the code of your test. If not provided the test will be pending.
+     * @param timeout Custom timeout for an async spec.
+     */
+    fit: (expectation: string, assertion?: () => void, timeout?: number) => void;
+
+    /**
+     * A temporarily disabled `it`. The spec will report as pending and will not be executed.
+     * @param expectation Textual description of what this spec is checking
+     * @param assertion Function that contains the code of your test. If not provided the test will be pending.
+     * @param timeout Custom timeout for an async spec.
+     */
+    xit: (expectation: string, assertion?: () => void, timeout?: number) => void;
 };

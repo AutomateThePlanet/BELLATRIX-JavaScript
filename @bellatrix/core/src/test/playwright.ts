@@ -150,13 +150,13 @@ function test<T extends BellatrixTest, K extends string>(nameOrTarget: T | strin
     }
 
     if (globalConfigureBlock) {
-    //     currentTestClass.constructor.prototype.configure = globalConfigureBlock;
+        currentTestClass.constructor.prototype.configure = globalConfigureBlock;
     }
 
     const testFn = async () => await (fn as TestFn<TestProps>)(ServiceLocator.resolve(TestProps));
     Object.defineProperty(testFn, 'name', { value: nameOrTarget });
-    // currentTestClass.constructor.prototype[nameOrTarget as keyof T] = testFn;
-    // test(currentTestClass, nameOrTarget as string);
+    currentTestClass.constructor.prototype[nameOrTarget as keyof T] = testFn;
+    test(currentTestClass, nameOrTarget as string);
 }
 
 function describe(title: string, fn: () => void): void {
