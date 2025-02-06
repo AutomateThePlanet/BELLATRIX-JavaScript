@@ -4,7 +4,7 @@ const config: BellatrixConfigurationOverride = {
     frameworkSettings: {
         testSettings: {
             testTimeout: 300000,
-            testFramework: 'vitest', // vitest, jasmine, mocha, jest, playwright
+            testFramework: 'playwright', // vitest, jasmine, mocha, jest, playwright
             testReporter: 'junit',
             testReportDirectory: './reports',
             testReportName: `result`,
@@ -27,11 +27,11 @@ const config: BellatrixConfigurationOverride = {
             delayBeforeAction: 0,
         },
         executionSettings: {
-            browserController: 'playwright', // playwright, selenium
+            browserController: 'selenium', // playwright, selenium
             browser: 'edge', // chrome, firefox, safari, edge
             viewport: { width: 1920, height: 1080 },
             startMaximized: false,
-            headless: true,
+            headless: false,
             executionType: 'local', // remote
             baseUrl: 'https://demos.bellatrix.solutions/'
         },

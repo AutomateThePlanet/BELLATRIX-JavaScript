@@ -7,7 +7,7 @@ if (parseInt(nodeVersion[0].replace()) < 20 || (parseInt(nodeVersion[0]) == 20 &
     throw Error(`You need Node runtime version 20.9.0 minimum. Current version: ${process.versions.node}`);
 }
 
-import { spawnSync } from 'child_process';
+import { spawnSync, fork } from 'child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, unlinkSync } from 'fs';
 import { join, dirname, isAbsolute, relative } from 'path';
 import { pathToFileURL } from 'url';
@@ -192,7 +192,7 @@ switch (config.frameworkSettings.testSettings.testFramework) {
         const tsPathsEsmLoaderPath = new URL(import.meta.resolve('ts-paths-esm-loader')).pathname;
         const cliPath = findFilePath([ 'node_modules/playwright/cli.js' ]);
 
-        const cliArgs = [ cliPath, 'test' ];
+        const cliArgs = [ 'test', testsDirectory ];
 
         switch (reporter) {
             case 'json': {
@@ -215,14 +215,20 @@ switch (config.frameworkSettings.testSettings.testFramework) {
             case 'xunit': throw new Error('Playwright does not have xUnit reporter');
         }
 
-        // cliArgs.push('--ui'); // TODO: make it an option
+        cliArgs.push('--ui'); // TODO: make it an option
 
-        spawnSync('node', cliArgs, {
+        const child = fork(cliPath, cliArgs, {
             stdio: 'inherit',
             env: {
                 ...process.env,
                 NODE_OPTIONS: `--loader=${tsPathsEsmLoaderPath} --experimental-specifier-resolution=node --no-warnings`,
-            }
+            },
+            execArgv: ['--inspect=12016'],
+        });
+
+        // Handle child process events (optional)
+        child.on('exit', (code) => {
+            console.log(`Child process exited with code ${code}`);
         });
 
         break;
@@ -264,7 +270,7 @@ switch (config.frameworkSettings.testSettings.testFramework) {
             env: {
                 ...process.env,
                 NODE_OPTIONS: `--loader=${tsPathsEsmLoaderPath} --experimental-specifier-resolution=node --no-warnings`,
-            }
+            },
         });
 
         break;

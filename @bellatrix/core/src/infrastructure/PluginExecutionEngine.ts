@@ -1,4 +1,4 @@
-import { TestMetadata, getCurrentTest, getSuiteMetadata, getTestMetadata } from '@bellatrix/core/test/props';
+import { getCurrentTest, getSuiteMetadata, getTestMetadata } from '@bellatrix/core/test/props';
 import { ServiceLocator } from '@bellatrix/core/utilities';
 import { BellatrixTest, Plugin } from '.';
 
