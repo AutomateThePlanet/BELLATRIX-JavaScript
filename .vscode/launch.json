@@ -4,21 +4,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Run Tests",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": [
-                "run",
-                "test"
-            ],
-            "cwd": "${workspaceFolder}/example",
-            "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen",
-            "noDebug": true, // ignore VSCode warning
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Debug main process",
+            "name": "example: debug main process",
             "runtimeExecutable": "npm",
             "runtimeArgs": [
                 "run",
@@ -37,7 +23,7 @@
         {
             "type": "node",
             "request": "attach",
-            "name": "Debug child process",
+            "name": "try debug child process",
             "port": 12016,
             "skipFiles": [
                 "<node_internals>/**"
@@ -47,12 +33,17 @@
             "presentation": {
                 "hidden": true
             },
-        }
+        },
     ],
     "compounds": [
         {
-            "name": "Debug Tests",
-            "configurations": ["Debug main process", "Debug child process"]
+            "name": "(example) debug tests",
+            "configurations": ["example: debug main process", "try debug child process"],
+            "presentation": {
+                "hidden": false,
+                "group": "",
+                "order": 1
+            },
         }
     ]
 }
