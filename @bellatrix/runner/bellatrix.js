@@ -215,7 +215,7 @@ switch (config.frameworkSettings.testSettings.testFramework) {
             case 'xunit': throw new Error('Playwright does not have xUnit reporter');
         }
 
-        cliArgs.push('--ui'); // TODO: make it an option
+        // cliArgs.push('--ui'); // TODO: make it an option
 
         const child = fork(cliPath, cliArgs, {
             stdio: 'inherit',
