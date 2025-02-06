@@ -27,7 +27,7 @@ const config: BellatrixConfigurationOverride = {
             delayBeforeAction: 0,
         },
         executionSettings: {
-            browserController: 'playwright', // playwright, selenium
+            browserController: 'selenium', // playwright, selenium
             browser: 'edge', // chrome, firefox, safari, edge
             viewport: { width: 1920, height: 1080 },
             startMaximized: false,

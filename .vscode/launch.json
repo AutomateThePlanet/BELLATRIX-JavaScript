@@ -10,12 +10,49 @@
                 "run",
                 "test"
             ],
+            "cwd": "${workspaceFolder}/example",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "noDebug": true, // ignore VSCode warning
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug main process",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "test"
+            ],
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "cwd": "${workspaceFolder}/example",
             "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen"
+            "internalConsoleOptions": "neverOpen",
+            "presentation": {
+                "hidden": true
+            },
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Debug child process",
+            "port": 12016,
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "timeout": 5000,
+            "restart": false,
+            "presentation": {
+                "hidden": true
+            },
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Debug Tests",
+            "configurations": ["Debug main process", "Debug child process"]
         }
     ]
 }

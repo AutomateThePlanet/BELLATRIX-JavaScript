@@ -19,7 +19,7 @@ export class ProductPurchaseTests extends WebTest {
         ExtraWebHooks.addComponentBDDLogging();
         PluginExecutionEngine.addPlugin(LogLifecyclePlugin);
         PluginExecutionEngine.addPlugin(ScreenshotOnFailPlugin);
-        WebServiceHooks.addListenerTo(NavigationService).before('navigate', (_, url) => console.log(`navigating to ${url}`));
+        WebServiceHooks.addListenerTo(NavigationService).before('navigate', (url) => console.log(`navigating to ${url}`));
     }
 
     override async afterEach() {

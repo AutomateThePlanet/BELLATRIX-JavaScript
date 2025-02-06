@@ -134,6 +134,7 @@ function test<T extends BellatrixTest, K extends string>(nameOrTarget: unknown, 
         defineTestMetadata(target[key as keyof T] as (...args: unknown[]) => (Promise<void> | void), target.constructor as ParameterlessCtor<T>);
         return;
     }
+
     if (!currentTestClass) {
         throw Error('test cannot be called outside of describe block.');
     }
