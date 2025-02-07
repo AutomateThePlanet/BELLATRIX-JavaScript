@@ -7,23 +7,39 @@ if (parseInt(nodeVersion[0].replace()) < 20 || (parseInt(nodeVersion[0]) == 20 &
     throw Error(`You need Node runtime version 20.9.0 minimum. Current version: ${process.versions.node}`);
 }
 
-import { spawnSync } from 'child_process';
+import { spawnSync, fork } from 'child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, unlinkSync } from 'fs';
 import { join, dirname, isAbsolute, relative } from 'path';
 import { pathToFileURL } from 'url';
 import { tmpdir } from 'os';
 import ts from 'typescript';
-import minimist from 'minimist';
+import yargs from 'yargs/yargs';
+import { hideBin } from 'yargs/helpers';
 
-const argv = minimist(process.argv.slice(2));
+const argvArray = hideBin(process.argv);
 
-const testsDirectory = argv._[0];
+const Keywords = Object.freeze({
+    Filter: 'filter',
+});
 
-try {
-    process.chdir(testsDirectory ?? '.');
-} catch {
-    throw Error(`No such directory: ${isAbsolute(testsDirectory) ? testsDirectory : join(process.cwd(), testsDirectory)}`);
+const filterIndex = argvArray.lastIndexOf(Keywords.Filter);
+let filterArgs = {};
+if (filterIndex !== -1) {
+    filterArgs = yargs(argvArray.slice(filterIndex + 1)).argv;
+    if (filterArgs._[0]){
+        const nextArgIndex = argvArray.indexOf(filterArgs._[0]);
+        filterArgs = yargs(argvArray.slice(filterIndex + 1, nextArgIndex)).argv;
+    }
+
+    const cliFilters = Object.entries(filterArgs)
+        .filter(([key]) => key !== '_' && key !== '$0') // Ignore positional args and script name
+        .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
+
+    process.env.BELLATRIX_TEST_FILTER = JSON.stringify(cliFilters);
 }
+
+const argv = yargs(argvArray).argv;
+const testsDirectory = argv._.find(arg => !Object.values(Keywords).includes(arg)) ?? '.';
 
 async function getTypescriptConfig(filePath) {
     const fileContents = readFileSync(filePath instanceof URL ? filePath : new URL(filePath), 'utf-8');
@@ -81,25 +97,25 @@ const configs = [
     '.bellatrix.json',
 ];
 
-const configFilePath = findFilePath(configs);
-const configFileURL = pathToFileURL(configFilePath);
-process.env.BELLATRIX_CONFIGURAITON_ROOT = dirname(configFilePath);
+const configFileURI = pathToFileURL(findFilePath(configs));
+const debugPort = 12016;
+
 let config;
 
-if (configFileURL.href.endsWith('.ts') || configFileURL.href.endsWith('.mts')) {
-    const configImport = await getTypescriptConfig(configFileURL);
+if (configFileURI.href.endsWith('.ts') || configFileURI.href.endsWith('.mts')) {
+    const configImport = await getTypescriptConfig(configFileURI);
     config = configImport.default;
     process.env.BELLATRIX_CONFIGURAITON = JSON.stringify(config);
 }
 
-if (configFileURL.href.endsWith('.js') || configFileURL.href.endsWith('.mjs') || configFileURL.href.endsWith('.cjs')) {
-    const configImport = await import(configFileURL);
+if (configFileURI.href.endsWith('.js') || configFileURI.href.endsWith('.mjs') || configFileURI.href.endsWith('.cjs')) {
+    const configImport = await import(configFileURI);
     config = configImport.default;
     process.env.BELLATRIX_CONFIGURAITON = JSON.stringify(config);
 }
 
-if (configFileURL.href.endsWith('.json')) {
-    config = readJsonConfigFile(configFileURL);
+if (configFileURI.href.endsWith('.json')) {
+    config = readJsonConfigFile(configFileURI);
     process.env.BELLATRIX_CONFIGURAITON = JSON.stringify(config);
 }
 
@@ -123,7 +139,7 @@ if ((!reportDirectory || !reportName) && reporter !== 'console-only') {
 }
 
 const reportPath = reporter !== 'console-only'
-    ? isAbsolute(reportDirectory) ? reportDirectory : join(dirname(configFileURL.pathname), reportDirectory)
+    ? isAbsolute(reportDirectory) ? reportDirectory : join(dirname(configFileURI.pathname), reportDirectory)
     : null;
 
 switch (config.frameworkSettings.testSettings.testFramework) {
@@ -131,7 +147,7 @@ switch (config.frameworkSettings.testSettings.testFramework) {
         const { createVitest } = await import('vitest/node');
 
         const config = {
-            include: [ '**/*.test.ts' ],
+            include: [ join(testsDirectory, '**/*.test.ts') ],
             config: false,
             watch: false,
             passWithNoTests: true,
@@ -177,7 +193,7 @@ switch (config.frameworkSettings.testSettings.testFramework) {
         const tsPathsEsmLoaderPath = new URL(import.meta.resolve('ts-paths-esm-loader')).pathname;
         const cliPath = findFilePath([ 'node_modules/playwright/cli.js' ]);
 
-        const cliArgs = [ cliPath, 'test' ];
+        const cliArgs = [ 'test', testsDirectory ];
 
         switch (reporter) {
             case 'json': {
@@ -202,12 +218,25 @@ switch (config.frameworkSettings.testSettings.testFramework) {
 
         // cliArgs.push('--ui'); // TODO: make it an option
 
-        spawnSync('node', cliArgs, {
+        const execArgv = [];
+        const inspector = await import('inspector');
+
+        if (inspector.url() !== undefined) {
+            execArgv.push(`--inspect=${debugPort}`);
+        }
+
+        const child = fork(cliPath, cliArgs, {
             stdio: 'inherit',
             env: {
                 ...process.env,
                 NODE_OPTIONS: `--loader=${tsPathsEsmLoaderPath} --experimental-specifier-resolution=node --no-warnings`,
-            }
+            },
+            execArgv,
+        });
+
+        // Handle child process events (optional)
+        child.on('exit', (code) => {
+            console.log(`Child process exited with code ${code}`);
         });
 
         break;
@@ -216,7 +245,7 @@ switch (config.frameworkSettings.testSettings.testFramework) {
         const tsPathsEsmLoaderPath = new URL(import.meta.resolve('ts-paths-esm-loader')).pathname;
         const cliPath = findFilePath([ 'node_modules/jasmine/bin/jasmine.js' ]);
         const jasmineConfigPath = new URL(import.meta.resolve('./jasmine/config.json')).pathname;
-        const cliArgs = [ cliPath, `--config=${jasmineConfigPath}` ];
+        const cliArgs = [ `--config=${jasmineConfigPath}` ];
 
         switch (reporter) {
             case 'json': throw new Error('Jasmine does not have default JSON reporter');
@@ -244,12 +273,25 @@ switch (config.frameworkSettings.testSettings.testFramework) {
             case 'xunit': throw new Error('Jasmine does not have xUnit reporter');
         }
 
-        spawnSync('node', cliArgs, {
+        const execArgv = [];
+        const inspector = await import('inspector');
+
+        if (inspector.url() !== undefined) {
+            execArgv.push(`--inspect=${debugPort}`);
+        }
+
+        const child = fork(cliPath, cliArgs, {
             stdio: 'inherit',
             env: {
                 ...process.env,
                 NODE_OPTIONS: `--loader=${tsPathsEsmLoaderPath} --experimental-specifier-resolution=node --no-warnings`,
-            }
+            },
+            execArgv,
+        });
+
+        // Handle child process events (optional)
+        child.on('exit', (code) => {
+            console.log(`Child process exited with code ${code}`);
         });
 
         break;
@@ -257,7 +299,7 @@ switch (config.frameworkSettings.testSettings.testFramework) {
     case 'mocha': {
         const tsPathsEsmLoaderPath = new URL(import.meta.resolve('ts-paths-esm-loader')).pathname;
         const cliPath = findFilePath([ 'node_modules/mocha/bin/mocha.js' ]);
-        const cliArgs = [ cliPath, '**/*.test.?(m){ts,js}' ];
+        const cliArgs = [ '**/*.test.?(m){ts,js}' ];
 
         switch (reporter) {
             case 'json': {
@@ -286,12 +328,25 @@ switch (config.frameworkSettings.testSettings.testFramework) {
             }
         }
 
-        spawnSync('node', cliArgs, {
+        const execArgv = [];
+        const inspector = await import('inspector');
+
+        if (inspector.url() !== undefined) {
+            execArgv.push(`--inspect=${debugPort}`);
+        }
+
+        const child = fork(cliPath, cliArgs, {
             stdio: 'inherit',
             env: {
                 ...process.env,
                 NODE_OPTIONS: `--loader=${tsPathsEsmLoaderPath} --experimental-specifier-resolution=node --no-warnings`,
-            }
+            },
+            execArgv,
+        });
+
+        // Handle child process events (optional)
+        child.on('exit', (code) => {
+            console.log(`Child process exited with code ${code}`);
         });
 
         break;
@@ -301,7 +356,7 @@ switch (config.frameworkSettings.testSettings.testFramework) {
         const tsPathsEsmLoaderPath = new URL(import.meta.resolve('ts-paths-esm-loader')).pathname;
         const cliPath = join(new URL(import.meta.resolve('jest-cli')).pathname, '..', '..', 'bin', 'jest.js');
         const testMatch = '\\.test\\.(ts|js)';
-        const cliArgs = [ cliPath ];
+        const cliArgs = [];
 
         switch (reporter) {
             case 'json': throw new Error('Jest does not have default JSON reporter');
@@ -346,12 +401,25 @@ switch (config.frameworkSettings.testSettings.testFramework) {
             }
         }
 
-        spawnSync('node', cliArgs, {
+        const execArgv = [];
+        const inspector = await import('inspector');
+
+        if (inspector.url() !== undefined) {
+            execArgv.push(`--inspect=${debugPort}`);
+        }
+
+        const child = fork(cliPath, cliArgs, {
             stdio: 'inherit',
             env: {
                 ...process.env,
                 NODE_OPTIONS: `--loader=${tsPathsEsmLoaderPath} --experimental-vm-modules --no-warnings`,
-            }
+            },
+            execArgv,
+        });
+
+        // Handle child process events (optional)
+        child.on('exit', (code) => {
+            console.log(`Child process exited with code ${code}`);
         });
 
         break;

@@ -20,20 +20,20 @@ export function BellatrixWebService<TService extends AbstractCtor<WebService>>(t
                             continue;
                         }
 
-                        await beforeMethodListener.method(this, ...args);
+                        await beforeMethodListener.method.apply(this, args);
                     }
 
                     let result;
                     try {
                         result = await originalMethod.apply(this, args);
                     } catch (e) {
-                        const beforeMethodListeners = ServiceLocator.resolveAll(WebServiceListener, `onError|${method}`);
-                        for (const beforeMethodListener of beforeMethodListeners) {
-                            if (beforeMethodListener.service !== this.constructor) {
+                        const onErrorMethodListeners = ServiceLocator.resolveAll(WebServiceListener, `onError|${method}`);
+                        for (const onErrorMethodListener of onErrorMethodListeners) {
+                            if (onErrorMethodListener.service !== this.constructor) {
                                 continue;
                             }
 
-                            await beforeMethodListener.method(this, e, ...args);
+                            await onErrorMethodListener.method.apply(this, [e, ...args] as never);
                         }
 
                         throw e;
@@ -45,7 +45,7 @@ export function BellatrixWebService<TService extends AbstractCtor<WebService>>(t
                             continue;
                         }
 
-                        await afterMethodListener.method(this, ...args);
+                        await afterMethodListener.method.apply(this, args);
                     }
 
                     return result;
@@ -58,20 +58,20 @@ export function BellatrixWebService<TService extends AbstractCtor<WebService>>(t
                             continue;
                         }
 
-                        beforeMethodListener.method(this, ...args);
+                        beforeMethodListener.method.apply(this, args);
                     }
 
                     let result;
                     try {
                         result = originalMethod.apply(this, args);
                     } catch (e) {
-                        const beforeMethodListeners = ServiceLocator.resolveAll(WebServiceListener, `onError|${method}`);
-                        for (const beforeMethodListener of beforeMethodListeners) {
-                            if (beforeMethodListener.service !== this.constructor) {
+                        const onErrorMethodListeners = ServiceLocator.resolveAll(WebServiceListener, `onError|${method}`);
+                        for (const onErrorMethodListener of onErrorMethodListeners) {
+                            if (onErrorMethodListener.service !== this.constructor) {
                                 continue;
                             }
 
-                            beforeMethodListener.method(this, e, ...args);
+                            onErrorMethodListener.method.apply(this, [e, ...args] as never);
                         }
 
                         throw e;
@@ -83,7 +83,7 @@ export function BellatrixWebService<TService extends AbstractCtor<WebService>>(t
                             continue;
                         }
 
-                        afterMethodListener.method(this, ...args);
+                        afterMethodListener.method.apply(this, args);
                     }
 
                     return result;

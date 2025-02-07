@@ -83,13 +83,14 @@ export class BrowserControllerLifecycleManager {
                 return webBrowser;
             }
             case 'selenium': {
-                let builder;
+                let builder: Builder;
                 switch (webSettings.executionSettings.browser.toLowerCase()) {
                     case 'chrome':
                         builder = new Builder().forBrowser(Browser.CHROME);
 
                         if (headless) {
-                            const options = new googleChrome.Options().addArguments('--headless=new');
+                            const options = new googleChrome.Options();
+                            options.addArguments('--headless=new');
                             builder.setChromeOptions(options);
                         }
                         break;
@@ -97,7 +98,8 @@ export class BrowserControllerLifecycleManager {
                         builder = new Builder().forBrowser(Browser.EDGE);
 
                         if (headless) {
-                            const options = new microsoftEdge.Options().addArguments('--headless=new');
+                            const options = new microsoftEdge.Options();
+                            options.addArguments('--headless=new');
                             builder.setEdgeOptions(options);
                         }
                         break;
@@ -105,7 +107,8 @@ export class BrowserControllerLifecycleManager {
                         builder = new Builder().forBrowser(Browser.FIREFOX);
 
                         if (headless) {
-                            const options = new mozillaFirefox.Options().addArguments('--headless');
+                            const options = new mozillaFirefox.Options();
+                            options.addArguments('--headless');
                             builder.setFirefoxOptions(options);
                         }
                         break;

@@ -23,7 +23,7 @@ export function BellatrixWebComponent<TComponent extends typeof WebComponent<HTM
                             continue;
                         }
 
-                        await beforeMethodListener.method(this, ...args);
+                        await beforeMethodListener.method.apply(this, args);
                     }
 
                     let hasRetried = false;
@@ -37,7 +37,7 @@ export function BellatrixWebComponent<TComponent extends typeof WebComponent<HTM
                                     continue;
                                 }
 
-                                await afterMethodListener.method(this, ...args);
+                                await afterMethodListener.method.apply(this, args);
                             }
 
                             return result;
@@ -48,13 +48,13 @@ export function BellatrixWebComponent<TComponent extends typeof WebComponent<HTM
                                 continue;
                             }
 
-                            const beforeMethodListeners = ServiceLocator.resolveAll(WebComponentListener, `onError|${method}`);
-                            for (const beforeMethodListener of beforeMethodListeners) {
-                                if (beforeMethodListener.component !== this.constructor) {
+                            const onErrorMethodListeners = ServiceLocator.resolveAll(WebComponentListener, `onError|${method}`);
+                            for (const onErrorMethodListener of onErrorMethodListeners) {
+                                if (onErrorMethodListener.component !== this.constructor) {
                                     continue;
                                 }
 
-                                await beforeMethodListener.method(this, e, ...args);
+                                await onErrorMethodListener.method.apply(this, [e, ...args] as never);
                             }
 
                             throw e;

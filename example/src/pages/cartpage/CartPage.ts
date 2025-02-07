@@ -24,6 +24,7 @@ export class CartPage extends WebPage<CartPageMap, CartPageAsserts> {
             throw new Error('There are less added items in the cart. Please specify smaller product number.');
         }
 
+        await this.app.browser.waitForAjax();
         const quantityBox = await this.map.quantityBoxes.get(productNumber - 1);
 
         await quantityBox.setText(newQuantity.toString());

@@ -97,8 +97,8 @@ export class SeleniumBrowserController extends BrowserController {
     }
 
     override async addCookie(cookie: Cookie): Promise<void> {
-        const { name, value, path, domain, secure, httpOnly, expires: expiry } = cookie;
-        await this.wrappedDriver.manage().addCookie({ name, value, path, domain, secure, httpOnly, expiry }); // sameSite unsupported in selenium javascript?
+        const { name, value, path, domain, secure, httpOnly, expires: expiry, sameSite } = cookie;
+        await this.wrappedDriver.manage().addCookie({ name, value, path, domain, secure, httpOnly, expiry, sameSite }); // sameSite unsupported in selenium javascript?
     }
 
     override async clearCookies(): Promise<void> {
@@ -107,12 +107,12 @@ export class SeleniumBrowserController extends BrowserController {
 
     override async getCookie(name: string): Promise<Cookie> {
         const cookie = await this.wrappedDriver.manage().getCookie(name);
-        return cookie;
+        return cookie as Cookie;
     }
 
     override async getAllCookies(): Promise<Cookie[]> {
         const cookies = await this.wrappedDriver.manage().getCookies();
-        return cookies;
+        return cookies as Cookie[];
     }
 
     override async deleteCookie(name: string): Promise<void> {

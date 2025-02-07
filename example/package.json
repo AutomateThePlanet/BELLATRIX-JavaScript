@@ -11,7 +11,7 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "test": "bellatrix ./tests"
+    "test": "bellatrix ./tests filter --category CI"
   },
   "type": "module"
 }

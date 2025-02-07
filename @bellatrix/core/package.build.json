@@ -1,5 +1,5 @@
 {
-  "USE THIS REGEX TO SELECT THE EXPORTS, THEN CHANGE THEM WITH JS OR STH": "YOU ARE AN IDIOT, JUST IMPORT, MODIFY THE JS OBJECT AND STRINGIFY",
+  "USE THIS REGEX TO SELECT THE EXPORTS, THEN CHANGE THEM WITH JS OR STH": "JUST IMPORT, MODIFY THE JS OBJECT AND STRINGIFY",
   "######": ".*\"exports\": (?=\\{((?:[^{}]++)++)\\})",
   "name": "@bellatrix/core",
   "version": "0.0.1",
@@ -44,7 +44,7 @@
     "jasmine-core": "^5.1.1",
     "mocha": "^10.2.0",
     "reflect-metadata": "^0.2.1",
-    "vitest": "^1.2.1"
+    "vitest": "^3.0.5"
   },
   "devDependencies": {
     "fix-esm-import-path": "^1.5.0"

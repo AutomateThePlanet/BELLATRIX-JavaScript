@@ -4,7 +4,7 @@ const config: BellatrixConfigurationOverride = {
     frameworkSettings: {
         testSettings: {
             testTimeout: 300000,
-            testFramework: 'vitest', // vitest, jasmine, mocha, jest, playwright
+            testFramework: 'playwright', // vitest, jasmine, mocha, jest, playwright
             testReporter: 'junit',
             testReportDirectory: './reports',
             testReportName: `result`,
