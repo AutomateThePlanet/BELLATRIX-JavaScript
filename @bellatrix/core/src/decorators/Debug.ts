@@ -1,8 +1,17 @@
 import { BellatrixTest } from '@bellatrix/core/infrastructure';
-import { getTestMetadata } from '@bellatrix/core/test/props';
-import { ParameterlessCtor } from '@bellatrix/core/types';
+import { Method, Result } from '@bellatrix/core/types';
+import { DecoratorUtilities } from '@bellatrix/core/utilities';
 
-export function Debug<T extends BellatrixTest>(target: T, methodName?: string): void {
-    const metadata = getTestMetadata(target[methodName as keyof T] as (...args: unknown[]) => (Promise<void> | void), target.constructor as ParameterlessCtor<T>);
-    metadata.only = true;
+function Debug<
+    This extends BellatrixTest = BellatrixTest,
+    Args extends unknown[] = unknown[],
+    ClassMethod extends (this: This, ...args: Args) => void = (this: This, ...args: Args) => Result<void>
+>(target: ClassMethod, _context: ClassMethodDecoratorContext<This, ClassMethod>): void {
+    const testMetadata = DecoratorUtilities.getMetadata(target as () => Result<void>);
+    testMetadata.only = true;
 }
+
+export {
+    Debug,
+    Debug as debug,
+};

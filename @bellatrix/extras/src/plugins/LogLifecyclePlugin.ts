@@ -1,5 +1,6 @@
 import { Plugin } from '@bellatrix/core/infrastructure';
-import { TestMetadata } from '@bellatrix/core/test/props';
+
+import type { TestMetadata } from '@bellatrix/core/types';
 
 export class LogLifecyclePlugin extends Plugin {
     override async preBeforeTest(testMetadata: TestMetadata): Promise<void> {

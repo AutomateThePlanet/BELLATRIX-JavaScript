@@ -4,7 +4,7 @@ const config: BellatrixConfigurationOverride = {
     frameworkSettings: {
         testSettings: {
             testTimeout: 300000,
-            testFramework: 'playwright', // vitest, jasmine, mocha, jest, playwright
+            testFramework: 'playwright', // vitest, playwright
             testReporter: 'junit',
             testReportDirectory: './reports',
             testReportName: `result`,
@@ -44,11 +44,11 @@ const config: BellatrixConfigurationOverride = {
             }
         }
     },
-    screenshotOnFailPluginSettings: {
-        isPluginEnabled: true,
-        outputPath: `./reports/screenshots${Date.now()}`,
-        shouldCreateFolderPerSuite: false,
-    }
+    // screenshotOnFailPluginSettings: {
+    //     isPluginEnabled: true,
+    //     outputPath: `./reports/screenshots${Date.now()}`,
+    //     shouldCreateFolderPerSuite: false,
+    // }
 };
 
 export default config;

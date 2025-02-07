@@ -1,23 +1,17 @@
-import { TestProps, type BellatrixTestMethods } from '@bellatrix/core/test/props';
 import { ServiceLocator } from '@bellatrix/core/utilities';
-import { BellatrixTest } from '@bellatrix/core/infrastructure';
+import { BellatrixTest, TestProps } from '@bellatrix/core/infrastructure';
 import { App, WebTest } from '@bellatrix/web/infrastructure';
 
-import type { ubyte } from '@bellatrix/core/types';
+import type { BellatrixTestMethods, ubyte } from '@bellatrix/core/types';
 
 import type { BrowserControllerType, BrowserType, ExecutionType } from '@bellatrix/web/types';
 
-class WebTestProps extends TestProps {
-    app = () => ServiceLocator.resolve(App);
-}
-
 ServiceLocator.registerType(BellatrixTest, WebTest);
-ServiceLocator.registerTransient(TestProps, WebTestProps);
 
 import * as bellatrixTest from '@bellatrix/core/test';
 
-const { configure, describe, beforeAll, beforeEach, afterAll, afterEach, test, it, Suite, suite, TestClass, Test } = bellatrixTest as unknown as BellatrixTestMethods<WebTestProps, WebTest>;
-export { configure, describe, beforeAll, beforeEach, afterAll, afterEach, test, it, Suite, suite, TestClass, Test };
+const { Test, test, Suite, suite, TestClass, testClass } = bellatrixTest as unknown as BellatrixTestMethods<WebTest>;
+export { Test, test, Suite, suite, TestClass, testClass };
 
 declare module '@bellatrix/core/types' {
     interface BellatrixConfiguration {

@@ -44,7 +44,7 @@ export class BrowserControllerLifecycleManager {
                             args.push('--start-maximized');
                         }
 
-                        const channel = webSettings.executionSettings.browser == 'chrome' ? 'chrome' : 'msedge';
+                        const channel = webSettings.executionSettings.browser === 'chrome' ? 'chrome' : 'msedge';
 
                         browser = await chromium.launch({
                             headless,

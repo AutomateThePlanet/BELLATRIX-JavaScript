@@ -1,43 +1,60 @@
-import { Symbols } from '@bellatrix/core/constants';
 import { BellatrixTest } from '@bellatrix/core/infrastructure';
-import { getTestMetadata } from '@bellatrix/core/test/props';
-import { ParameterlessCtor } from '@bellatrix/core/types';
+import { Method, ParameterlessCtor } from '@bellatrix/core/types';
+import { DecoratorUtilities } from '@bellatrix/core/utilities';
+import { BellatrixSymbol } from '../test/_common';
 
-export function Category<T extends BellatrixTest>(name: string): (target: ParameterlessCtor<T>) => void {
-    return (target: ParameterlessCtor<T>) => {
-        const testClass = target.prototype;
-        const testMethods = Object.getOwnPropertyNames(testClass).filter(method => typeof testClass[method] === 'function' && Reflect.hasMetadata(Symbols.TEST, testClass[method]));
+const categoryKeyword = 'category';
 
-        for (const testMethod of testMethods) {
-            const metadata = getTestMetadata(testClass[testMethod], testClass);
+function Category<
+    This extends BellatrixTest = BellatrixTest,
+    Class extends ParameterlessCtor<This> = ParameterlessCtor<This>,
+    ClassMethod extends Method<This> = Method<This>
+>(name: string) {
+    return function(testMethodOrClass: Class | ClassMethod, context: ClassMethodDecoratorContext | ClassDecoratorContext) {
+        if (context.kind === 'class') {
+            const testClass = testMethodOrClass as Class;
+            const testMethods = Object.getOwnPropertyNames(testClass.prototype)
+                .filter(method => typeof testClass.prototype[method] === 'function' &&
+                    DecoratorUtilities.getMetadata(testClass.prototype[method])?.[BellatrixSymbol.hasTestDecorator]);
 
-            if (metadata.customData.has('category')) {
-                const categories = metadata.customData.get('category');
-                if (!Array.isArray(categories)) {
-                    metadata.customData.set('category', [categories, name]);
-                } else {
-                    categories.push(name);
+            for (const testMethod of testMethods) {
+                const testMetadata = DecoratorUtilities.getMetadata(testClass.prototype[testMethod]);
+
+                if (!testMetadata.customData.has(categoryKeyword)) {
+                    testMetadata.customData.set(categoryKeyword, []);
                 }
-            } else {
-                metadata.customData.set('category', name);
+
+                if (!Array.isArray(testMetadata.customData.get(categoryKeyword))) {
+                    throw new Error(`Custom metadata '${categoryKeyword}' MUST be array. Another plugin or decorator may have changed it.`);
+                }
+
+                const categoryArray = testMetadata.customData.get(categoryKeyword) as string[];
+                categoryArray.push(name);
             }
+
+            return;
+        }
+
+        if (context.kind === 'method') {
+            const testMethod = testMethodOrClass as ClassMethod;
+            const testMetadata = DecoratorUtilities.getMetadata(testMethod);
+
+            if (!testMetadata.customData.has(categoryKeyword)) {
+                testMetadata.customData.set(categoryKeyword, []);
+            }
+
+            if (!Array.isArray(testMetadata.customData.get(categoryKeyword))) {
+                throw new Error(`Custom metadata '${categoryKeyword}' MUST be array. Another plugin or decorator may have changed it.`);
+            }
+
+            const categoryArray = testMetadata.customData.get(categoryKeyword) as string[];
+            categoryArray.push(name);
+            return;
         }
     };
 }
 
-export function TestCategory<T extends BellatrixTest>(name: string): (testClass: T, methodName: string) => void {
-    return (testClass: T, methodName: string) => {
-        const metadata = getTestMetadata(testClass[methodName as keyof T] as (...args: unknown[]) => (Promise<void> | void), testClass.constructor as ParameterlessCtor<T>);
-
-        if (metadata.customData.has('category')) {
-            const categories = metadata.customData.get('category');
-            if (!Array.isArray(categories)) {
-                metadata.customData.set('category', [categories, name]);
-            } else {
-                categories.push(name);
-            }
-        } else {
-            metadata.customData.set('category', name);
-        }
-    };
-}
+export {
+    Category,
+    Category as category,
+};

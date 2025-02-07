@@ -1,7 +1,8 @@
-import { Symbols } from '@bellatrix/core/constants';
 import { Plugin, PluginExecutionEngine } from '@bellatrix/core/infrastructure';
 
-import type { InstanceOrParameterlessCtor } from '@bellatrix/core/types';
+import type { InstanceOrParameterlessCtor, ParameterlessCtor } from '@bellatrix/core/types';
+
+import { BellatrixSymbol } from '../test/_common';
 
 let isConfigExecuted = false;
 
@@ -12,28 +13,30 @@ export abstract class BellatrixTest {
     async afterEach(): Promise<void> {};
     async afterAll(): Promise<void> {};
 
-    async [Symbols.BEFORE_ALL](): Promise<void> {
+    async [BellatrixSymbol.beforeAll](): Promise<void> {
         if (!isConfigExecuted) {
             await this.configure();
             isConfigExecuted = true;
         }
 
-        await PluginExecutionEngine.executeBeforeSuiteHook(this.beforeAll.bind(this), this.constructor as typeof BellatrixTest);
+        await PluginExecutionEngine.executeBeforeSuiteHook(this.beforeAll.bind(this), this.constructor as ParameterlessCtor<BellatrixTest>);
     }
 
-    async [Symbols.BEFORE_EACH](): Promise<void> {
-        await PluginExecutionEngine.executeBeforeTestHook(this.beforeEach.bind(this), this.constructor as typeof BellatrixTest);
+    async [BellatrixSymbol.beforeEach](): Promise<void> {
+        await PluginExecutionEngine.executeBeforeTestHook(this.beforeEach.bind(this), this.constructor as ParameterlessCtor<BellatrixTest>);
     }
 
-    async [Symbols.AFTER_EACH](): Promise<void> {
-        await PluginExecutionEngine.executeAfterTestHook(this.afterEach.bind(this), this.constructor as typeof BellatrixTest);
+    async [BellatrixSymbol.afterEach](): Promise<void> {
+        await PluginExecutionEngine.executeAfterTestHook(this.afterEach.bind(this), this.constructor as ParameterlessCtor<BellatrixTest>);
     }
 
-    async [Symbols.AFTER_ALL](): Promise<void> {
-        await PluginExecutionEngine.executeAfterSuiteHook(this.afterAll.bind(this), this.constructor as typeof BellatrixTest);
+    async [BellatrixSymbol.afterAll](): Promise<void> {
+        await PluginExecutionEngine.executeAfterSuiteHook(this.afterAll.bind(this), this.constructor as ParameterlessCtor<BellatrixTest>);
     }
 
     addPlugin(plugin: InstanceOrParameterlessCtor<Plugin>) {
         PluginExecutionEngine.addPlugin(plugin);
     }
 }
+
+export abstract class TestProps { }

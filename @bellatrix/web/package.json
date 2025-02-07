@@ -30,13 +30,12 @@
   },
   "dependencies": {
     "@bellatrix/core": "file:../core",
-    "@playwright/test": "^1.41.0",
     "@xmldom/xmldom": "^0.8.10",
     "selenium-webdriver": "^4.16.0",
     "stack-trace": "^1.0.0-pre2",
     "xpath": "^0.0.34"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.7.3"
   }
 }

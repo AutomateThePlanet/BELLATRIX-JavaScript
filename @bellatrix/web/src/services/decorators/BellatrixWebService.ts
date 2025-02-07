@@ -4,7 +4,10 @@ import { WebServiceListener } from '@bellatrix/web/services/utilities';
 
 import type { AbstractCtor } from '@bellatrix/core/types';
 
-export function BellatrixWebService<TService extends AbstractCtor<WebService>>(target: TService) {
+export function BellatrixWebService<
+    This extends WebService,
+    TService extends AbstractCtor<This>
+>(target: TService, _context: ClassDecoratorContext<TService>): TService {
     const originalMethods = Object.getOwnPropertyNames(target.prototype).filter(method => method !== 'constructor') as (keyof typeof target.prototype & string)[];
 
     originalMethods.forEach((method) => {
@@ -91,4 +94,6 @@ export function BellatrixWebService<TService extends AbstractCtor<WebService>>(t
             }
         }
     });
+
+    return target;
 }

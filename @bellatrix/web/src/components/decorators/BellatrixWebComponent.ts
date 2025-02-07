@@ -2,8 +2,12 @@ import { BrowserController, SearchContext, WebElement } from '@bellatrix/web/inf
 import { ShadowRootContext, WebComponent } from '@bellatrix/web/components';
 import { WebComponentListener } from '@bellatrix/web/components/utilities';
 import { ServiceLocator } from '@bellatrix/core/utilities';
+import { Ctor } from '@bellatrix/core/types';
 
-export function BellatrixWebComponent<TComponent extends typeof WebComponent<HTMLElement>>(target: TComponent) {
+export function BellatrixWebComponent<
+    This extends WebComponent<HTMLElement>,
+    TComponent extends Ctor<This> = Ctor<This, ConstructorParameters<typeof WebComponent<HTMLElement>>>
+>(target: TComponent, _context: ClassDecoratorContext<TComponent>): TComponent {
     const originalMethods = Object.getOwnPropertyNames(target.prototype).filter(method => method !== 'constructor') as (keyof typeof target.prototype)[];
 
     originalMethods.forEach((method) => {
@@ -12,12 +16,11 @@ export function BellatrixWebComponent<TComponent extends typeof WebComponent<HTM
             const isAsync = originalMethod[Symbol.toStringTag] === 'AsyncFunction';
 
             if (isAsync) {
-                // @ts-expect-error - we know this is an async method therefore it can't be readonly property (getter)
                 target.prototype[method] = async function (this: typeof target.prototype, ...args: never) {
                     const searchContext: SearchContext = this['_parentComponent'] ? await resolveParentElement(this['_parentComponent']) : ServiceLocator.resolve(BrowserController);
                     this['_cachedElement'] ??= await searchContext.findElement(this.findStrategy.convert());
 
-                    const beforeMethodListeners = ServiceLocator.resolveAll(WebComponentListener, `before|${method}`);
+                    const beforeMethodListeners = ServiceLocator.resolveAll(WebComponentListener, `before|${String(method)}`);
                     for (const beforeMethodListener of beforeMethodListeners) {
                         if (beforeMethodListener.component !== this.constructor) {
                             continue;
@@ -31,7 +34,7 @@ export function BellatrixWebComponent<TComponent extends typeof WebComponent<HTM
                         try {
                             const result = await originalMethod.apply(this, args);
 
-                            const afterMethodListeners = ServiceLocator.resolveAll(WebComponentListener, `after|${method}`);
+                            const afterMethodListeners = ServiceLocator.resolveAll(WebComponentListener, `after|${String(method)}`);
                             for (const afterMethodListener of afterMethodListeners) {
                                 if (afterMethodListener.component !== this.constructor) {
                                     continue;
@@ -48,7 +51,7 @@ export function BellatrixWebComponent<TComponent extends typeof WebComponent<HTM
                                 continue;
                             }
 
-                            const onErrorMethodListeners = ServiceLocator.resolveAll(WebComponentListener, `onError|${method}`);
+                            const onErrorMethodListeners = ServiceLocator.resolveAll(WebComponentListener, `onError|${String(method)}`);
                             for (const onErrorMethodListener of onErrorMethodListeners) {
                                 if (onErrorMethodListener.component !== this.constructor) {
                                     continue;
@@ -61,7 +64,7 @@ export function BellatrixWebComponent<TComponent extends typeof WebComponent<HTM
                         }
                     }
                 };
-            } // do we need to do something with non-async methods?
+            }
         }
     });
 

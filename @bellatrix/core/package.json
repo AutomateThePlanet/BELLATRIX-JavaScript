@@ -3,27 +3,22 @@
   "version": "0.0.1",
   "type": "module",
   "exports": {
-    "./constants": "./src/constants/index.ts",
     "./image": "./src/image/index.ts",
     "./infrastructure": "./src/infrastructure/index.ts",
     "./types": "./src/types/index.ts",
     "./http": "./src/http/index.ts",
     "./utilities": "./src/utilities/index.ts",
     "./test": "./src/test/index.ts",
-    "./test/props": "./src/test/props.ts",
+    "./test/metadata": "./src/test/metadata.ts",
     "./settings": "./src/settings/index.ts",
     "./assertions": "./src/assertions/index.ts",
     "./decorators": "./src/decorators/index.ts"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@jest/globals": "^29.7.0",
-    "@playwright/test": "^1.41.0",
-    "jasmine": "^5.1.0",
-    "jasmine-core": "^5.1.1",
-    "mocha": "^10.2.0",
+    "@playwright/test": "^1.50.1",
     "vitest": "^3.0.5"
   },
   "devDependencies": {

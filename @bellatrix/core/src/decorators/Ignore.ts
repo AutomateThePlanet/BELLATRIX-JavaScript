@@ -1,21 +1,39 @@
-import { Symbols } from '@bellatrix/core/constants';
 import { BellatrixTest } from '@bellatrix/core/infrastructure';
-import { getTestMetadata } from '@bellatrix/core/test/props';
-import { ParameterlessCtor } from '@bellatrix/core/types';
+import { Method, ParameterlessCtor } from '@bellatrix/core/types';
+import { DecoratorUtilities } from '@bellatrix/core/utilities';
+import { BellatrixSymbol } from '../test/_common';
 
-export function Ignore<T extends BellatrixTest>(target: T, methodName: string): void;
-export function Ignore<T extends BellatrixTest>(target: ParameterlessCtor<T>): void;
-export function Ignore<T extends BellatrixTest>(target: T | ParameterlessCtor<T>, methodName?: string): void {
-    if (typeof target === 'function') {
-        const testClass = target.prototype;
-        const testMethods = Object.getOwnPropertyNames(testClass).filter(method => typeof testClass[method] === 'function' && Reflect.hasMetadata(Symbols.TEST, testClass[method]));
+function Ignore<
+    This extends BellatrixTest = BellatrixTest,
+    Class extends ParameterlessCtor<This> = ParameterlessCtor<This>,
+    ClassMethod extends Method<This> = Method<This>
+>(testMethodOrClass: Class | ClassMethod, context: ClassMethodDecoratorContext | ClassDecoratorContext) {
+    if (context.kind === 'class') {
+        const testClass = testMethodOrClass as Class;
+        const testMethods = Object.getOwnPropertyNames(testClass.prototype)
+            .filter(method => typeof testClass.prototype[method] === 'function' &&
+                DecoratorUtilities.getMetadata(testClass.prototype[method])?.[BellatrixSymbol.hasTestDecorator]);
 
         for (const testMethod of testMethods) {
-            const metadata = getTestMetadata(testClass[testMethod], testClass);
-            metadata.shouldSkip = true;
+            const testMetadata = DecoratorUtilities.getMetadata(testClass.prototype[testMethod]);
+
+            testMetadata.shouldSkip = true;
+            return;
         }
-    } else {
-        const metadata = getTestMetadata(target[methodName as keyof T] as (...args: unknown[]) => (Promise<void> | void), target.constructor as ParameterlessCtor<T>);
-        metadata.shouldSkip = true;
     }
+
+    if (context.kind === 'method') {
+        const testMethod = testMethodOrClass as ClassMethod;
+        const testMetadata = DecoratorUtilities.getMetadata(testMethod);
+
+        testMetadata.shouldSkip = true;
+        return;
+    }
+
+    throw new Error(`invalid context '${context.kind}'.`);
 }
+
+export {
+    Ignore,
+    Ignore as ignore,
+};

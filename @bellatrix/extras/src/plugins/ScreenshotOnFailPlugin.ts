@@ -1,5 +1,5 @@
 import { Plugin } from '@bellatrix/core/infrastructure';
-import { TestMetadata } from '@bellatrix/core/test/props';
+import { TestMetadata } from '@bellatrix/core/test/metadata';
 import { ServiceLocator } from '@bellatrix/core/utilities';
 import { Image } from '@bellatrix/core/image';
 import { App } from '@bellatrix/web/infrastructure';

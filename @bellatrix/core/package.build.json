@@ -5,10 +5,6 @@
   "version": "0.0.1",
   "type": "module",
   "exports": {
-    "./constants": {
-      "import": "./lib/constants/index.js",
-      "types": "./lib/constants/index.d.ts"
-    },
     "./infrastructure": {
       "import": "./lib/infrastructure/index.js",
       "types": "./lib/infrastructure/index.d.ts"
@@ -25,9 +21,9 @@
       "import": "./lib/test/index.js",
       "types": "./lib/test/index.d.ts"
     },
-    "./test/props": {
-      "import": "./lib/test/props.js",
-      "types": "./lib/test/props.d.ts"
+    "./test/metadata": {
+      "import": "./lib/test/metadata.js",
+      "types": "./lib/test/metadata.d.ts"
     },
     "./settings": {
       "import": "./lib/settings/index.js",
@@ -35,7 +31,7 @@
     }
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.7.3"
   },
   "dependencies": {
     "@jest/globals": "^29.7.0",
