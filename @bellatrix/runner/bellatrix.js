@@ -98,6 +98,7 @@ const configs = [
 ];
 
 const configFileURI = pathToFileURL(findFilePath(configs));
+const debugPort = 12016;
 
 let config;
 
@@ -217,13 +218,20 @@ switch (config.frameworkSettings.testSettings.testFramework) {
 
         // cliArgs.push('--ui'); // TODO: make it an option
 
+        const execArgv = [];
+        const inspector = await import('inspector');
+
+        if (inspector.url() !== undefined) {
+            execArgv.push(`--inspect=${debugPort}`);
+        }
+
         const child = fork(cliPath, cliArgs, {
             stdio: 'inherit',
             env: {
                 ...process.env,
                 NODE_OPTIONS: `--loader=${tsPathsEsmLoaderPath} --experimental-specifier-resolution=node --no-warnings`,
             },
-            execArgv: ['--inspect=12016'],
+            execArgv,
         });
 
         // Handle child process events (optional)
@@ -265,13 +273,20 @@ switch (config.frameworkSettings.testSettings.testFramework) {
             case 'xunit': throw new Error('Jasmine does not have xUnit reporter');
         }
 
+        const execArgv = [];
+        const inspector = await import('inspector');
+
+        if (inspector.url() !== undefined) {
+            execArgv.push(`--inspect=${debugPort}`);
+        }
+
         const child = fork(cliPath, cliArgs, {
             stdio: 'inherit',
             env: {
                 ...process.env,
                 NODE_OPTIONS: `--loader=${tsPathsEsmLoaderPath} --experimental-specifier-resolution=node --no-warnings`,
             },
-            execArgv: ['--inspect=12016'],
+            execArgv,
         });
 
         // Handle child process events (optional)
@@ -313,13 +328,20 @@ switch (config.frameworkSettings.testSettings.testFramework) {
             }
         }
 
+        const execArgv = [];
+        const inspector = await import('inspector');
+
+        if (inspector.url() !== undefined) {
+            execArgv.push(`--inspect=${debugPort}`);
+        }
+
         const child = fork(cliPath, cliArgs, {
             stdio: 'inherit',
             env: {
                 ...process.env,
                 NODE_OPTIONS: `--loader=${tsPathsEsmLoaderPath} --experimental-specifier-resolution=node --no-warnings`,
             },
-            execArgv: ['--inspect=12016'],
+            execArgv,
         });
 
         // Handle child process events (optional)
@@ -379,13 +401,20 @@ switch (config.frameworkSettings.testSettings.testFramework) {
             }
         }
 
+        const execArgv = [];
+        const inspector = await import('inspector');
+
+        if (inspector.url() !== undefined) {
+            execArgv.push(`--inspect=${debugPort}`);
+        }
+
         const child = fork(cliPath, cliArgs, {
             stdio: 'inherit',
             env: {
                 ...process.env,
                 NODE_OPTIONS: `--loader=${tsPathsEsmLoaderPath} --experimental-vm-modules --no-warnings`,
             },
-            execArgv: ['--inspect=12016'],
+            execArgv,
         });
 
         // Handle child process events (optional)
