@@ -82,7 +82,7 @@ export class BrowserService extends WebService {
                 // @ts-expect-error - added property to global window object
                 window.$openHTTPs++;
                 this.addEventListener('readystatechange', function() {
-                    if (this.readyState == 4) {
+                    if (this.readyState === 4) {
                         // @ts-expect-error - added property to global window object
                         window.$openHTTPs--;
                     }

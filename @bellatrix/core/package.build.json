@@ -1,14 +1,10 @@
 {
-  "USE THIS REGEX TO SELECT THE EXPORTS, THEN CHANGE THEM WITH JS OR STH": "YOU ARE AN IDIOT, JUST IMPORT, MODIFY THE JS OBJECT AND STRINGIFY",
+  "USE THIS REGEX TO SELECT THE EXPORTS, THEN CHANGE THEM WITH JS OR STH": "JUST IMPORT, MODIFY THE JS OBJECT AND STRINGIFY",
   "######": ".*\"exports\": (?=\\{((?:[^{}]++)++)\\})",
   "name": "@bellatrix/core",
   "version": "0.0.1",
   "type": "module",
   "exports": {
-    "./constants": {
-      "import": "./lib/constants/index.js",
-      "types": "./lib/constants/index.d.ts"
-    },
     "./infrastructure": {
       "import": "./lib/infrastructure/index.js",
       "types": "./lib/infrastructure/index.d.ts"
@@ -25,9 +21,9 @@
       "import": "./lib/test/index.js",
       "types": "./lib/test/index.d.ts"
     },
-    "./test/props": {
-      "import": "./lib/test/props.js",
-      "types": "./lib/test/props.d.ts"
+    "./test/metadata": {
+      "import": "./lib/test/metadata.js",
+      "types": "./lib/test/metadata.d.ts"
     },
     "./settings": {
       "import": "./lib/settings/index.js",
@@ -35,7 +31,7 @@
     }
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.7.3"
   },
   "dependencies": {
     "@jest/globals": "^29.7.0",
@@ -44,7 +40,7 @@
     "jasmine-core": "^5.1.1",
     "mocha": "^10.2.0",
     "reflect-metadata": "^0.2.1",
-    "vitest": "^1.2.1"
+    "vitest": "^3.0.5"
   },
   "devDependencies": {
     "fix-esm-import-path": "^1.5.0"

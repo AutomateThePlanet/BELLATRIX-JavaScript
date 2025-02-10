@@ -32,6 +32,7 @@ export class CheckoutPage extends WebPage<CheckoutPageMap, CheckoutPageAsserts> 
             await this.map.checkPaymentsRadioButton.click();
         }
 
+        await this.app.browser.waitForAjax();
         await this.map.placeOrderButton.click();
         await this.app.browser.waitForAjax();
     }
