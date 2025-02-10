@@ -9,9 +9,9 @@ if (parseInt(nodeVersion[0].replace()) < 20 || (parseInt(nodeVersion[0]) === 20 
 
 import { fork } from 'child_process';
 import { existsSync, readFileSync, writeFileSync, unlinkSync } from 'fs';
-import { join, dirname, isAbsolute } from 'path';
+import { join, dirname, isAbsolute, win32 } from 'path';
 import { pathToFileURL } from 'url';
-import { tmpdir } from 'os';
+import { tmpdir, platform } from 'os';
 import ts from 'typescript';
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
@@ -138,9 +138,13 @@ if ((!reportDirectory || !reportName) && reporter !== 'console-only') {
     throw new Error(`Properties testReportDirectory and testReportName should be specified unless testReporter is 'console-only'.`);
 }
 
-const reportPath = reporter !== 'console-only'
+let reportPath = reporter !== 'console-only'
     ? isAbsolute(reportDirectory) ? reportDirectory : join(dirname(configFileURI.pathname), reportDirectory)
     : null;
+
+if (platform() === 'win32') {
+    reportPath = win32.normalize(reportPath);
+}
 
 switch (config.frameworkSettings.testSettings.testFramework) {
     case 'vitest': {
