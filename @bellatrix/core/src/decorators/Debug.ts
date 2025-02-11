@@ -2,7 +2,7 @@ import { BellatrixTest } from '@bellatrix/core/infrastructure';
 import { Method, Result } from '@bellatrix/core/types';
 import { DecoratorUtilities } from '@bellatrix/core/utilities';
 
-function Debug<
+function Only<
     This extends BellatrixTest = BellatrixTest,
     Args extends unknown[] = unknown[],
     ClassMethod extends (this: This, ...args: Args) => void = (this: This, ...args: Args) => Result<void>
@@ -12,6 +12,6 @@ function Debug<
 }
 
 export {
-    Debug,
-    Debug as debug,
+    Only,
+    Only as only,
 };
