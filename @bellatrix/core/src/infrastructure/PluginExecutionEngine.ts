@@ -42,7 +42,7 @@ export class PluginExecutionEngine {
             await PluginExecutionEngine.executeAll(plugin => plugin.postBeforeTest(testMetadata));
             return result;
         } catch (error) {
-            await PluginExecutionEngine.executeAll(plugin => plugin.onBeforeTesstError(testMetadata, error as Error));
+            await PluginExecutionEngine.executeAll(plugin => plugin.onBeforeTestError(testMetadata, error as Error));
             throw error;
         }
     }

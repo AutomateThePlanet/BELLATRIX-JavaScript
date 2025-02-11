@@ -6,7 +6,7 @@ export abstract class Plugin {
     async onBeforeSuiteError(suiteMetadata: SuiteMetadata, beforeSuiteFailedReason: Error): Promise<void> {}
     async preBeforeTest(testMetadata: TestMetadata): Promise<void> {}
     async postBeforeTest(testMetadata: TestMetadata): Promise<void> {}
-    async onBeforeTesstError(testMetadata: TestMetadata, beforeTestFailedReason: Error): Promise<void> {}
+    async onBeforeTestError(testMetadata: TestMetadata, beforeTestFailedReason: Error): Promise<void> {}
     async preAfterTest(testMetadata: TestMetadata): Promise<void> {}
     async postAfterTest(testMetadata: TestMetadata): Promise<void> {}
     async onAfterTestError(testMetadata: TestMetadata, afterTestFailedReason: Error): Promise<void> {}
