@@ -2,9 +2,9 @@ import { Test, TestClass } from '@bellatrix/web/test';
 import { Category } from '@bellatrix/core/decorators';
 import { WebTest } from '@bellatrix/web/infrastructure';
 import { Button } from '@bellatrix/web/components';
-import { ExtraWebHooks } from '@bellatrix/extras/hooks';
-import { LogLifecyclePlugin, ScreenshotOnFailPlugin } from '@bellatrix/extras/plugins';
-import { PluginExecutionEngine } from '@bellatrix/core/infrastructure';
+import { ExtraWebHooks } from '@bellatrix/extras-web/hooks';
+import { LogLifecyclePlugin, ScreenshotOnFailPlugin } from '@bellatrix/extras-web/plugins';
+import { addPlugin } from '@bellatrix/core/infrastructure';
 import { WebServiceHooks } from '@bellatrix/web/services/utilities';
 import { NavigationService } from '@bellatrix/web/services';
 
@@ -17,8 +17,8 @@ export class ProductPurchaseTests extends WebTest {
     override async configure(): Promise<void> {
         await super.configure();
         ExtraWebHooks.addComponentBDDLogging();
-        PluginExecutionEngine.addPlugin(LogLifecyclePlugin);
-        PluginExecutionEngine.addPlugin(ScreenshotOnFailPlugin);
+        addPlugin(LogLifecyclePlugin);
+        addPlugin(ScreenshotOnFailPlugin);
         WebServiceHooks.addListenerTo(NavigationService).before('navigate', url => console.log(`navigating to ${url}`));
     }
 

@@ -1,7 +1,28 @@
 import { WebComponentHooks } from '@bellatrix/web/components/utilities';
-import { Anchor, Button, CheckBox, ColorInput, DateInput, DateTimeInput, EmailField, FileInput, MonthInput, NumberInput, PasswordField, PhoneField, RangeInput, SearchField, Select, TextArea, TextField, TimeInput, UrlField, WebComponent, WeekInput } from '@bellatrix/web/components';
+import {
+    Anchor,
+    Button,
+    CheckBox,
+    ColorInput,
+    DateInput,
+    DateTimeInput,
+    EmailField,
+    FileInput,
+    MonthInput,
+    NumberInput,
+    PasswordField,
+    PhoneField,
+    RangeInput,
+    SearchField,
+    Select,
+    TextArea,
+    TextField,
+    TimeInput,
+    UrlField,
+    WebComponent,
+    WeekInput
+} from '@bellatrix/web/components';
 
-// TODO: maybe decouple it in different web-extras plugin so extras does not import @bellatrix/web too?
 export class ExtraWebHooks {
     static addComponentBDDLogging(): void {
         const locale = Intl.DateTimeFormat().resolvedOptions().locale; // TODO: add locale option in the config

@@ -1,4 +1,6 @@
-import { SuiteMetadata, TestMetadata } from '@bellatrix/core/types';
+import { registerSingleton } from '@bellatrix/core/utilities';
+
+import type { InstanceOrParameterlessCtor, SuiteMetadata, TestMetadata } from '@bellatrix/core/types';
 
 export abstract class Plugin {
     async preBeforeSuite(suiteMetadata: SuiteMetadata): Promise<void> {}
@@ -13,4 +15,8 @@ export abstract class Plugin {
     async preAfterSuite(suiteMetadata: SuiteMetadata): Promise<void> {}
     async postAfterSuite(suiteMetadata: SuiteMetadata): Promise<void> {}
     async onAfterSuiteError(suiteMetadata: SuiteMetadata, afterSuiteFailedReason: Error): Promise<void> {}
+}
+
+export function addPlugin<T extends Plugin>(plugin: InstanceOrParameterlessCtor<T>): void {
+    registerSingleton(Plugin, plugin instanceof Plugin ? plugin : new plugin);
 }

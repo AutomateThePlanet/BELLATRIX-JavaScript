@@ -1,7 +1,7 @@
 import { BrowserController, SearchContext, WebElement } from '@bellatrix/web/infrastructure/browsercontroller/core';
 import { ShadowRootContext, WebComponent } from '@bellatrix/web/components';
 import { WebComponentListener } from '@bellatrix/web/components/utilities';
-import { ServiceLocator } from '@bellatrix/core/utilities';
+import { resolveAll, resolve } from '@bellatrix/core/utilities';
 import { Ctor } from '@bellatrix/core/types';
 
 export function BellatrixWebComponent<
@@ -17,10 +17,10 @@ export function BellatrixWebComponent<
 
             if (isAsync) {
                 target.prototype[method] = async function (this: typeof target.prototype, ...args: never) {
-                    const searchContext: SearchContext = this['_parentComponent'] ? await resolveParentElement(this['_parentComponent']) : ServiceLocator.resolve(BrowserController);
+                    const searchContext: SearchContext = this['_parentComponent'] ? await resolveParentElement(this['_parentComponent']) : resolve(BrowserController);
                     this['_cachedElement'] ??= await searchContext.findElement(this.findStrategy.convert());
 
-                    const beforeMethodListeners = ServiceLocator.resolveAll(WebComponentListener, `before|${String(method)}`);
+                    const beforeMethodListeners = resolveAll(WebComponentListener, `before|${String(method)}`);
                     for (const beforeMethodListener of beforeMethodListeners) {
                         if (beforeMethodListener.component !== this.constructor) {
                             continue;
@@ -34,7 +34,7 @@ export function BellatrixWebComponent<
                         try {
                             const result = await originalMethod.apply(this, args);
 
-                            const afterMethodListeners = ServiceLocator.resolveAll(WebComponentListener, `after|${String(method)}`);
+                            const afterMethodListeners = resolveAll(WebComponentListener, `after|${String(method)}`);
                             for (const afterMethodListener of afterMethodListeners) {
                                 if (afterMethodListener.component !== this.constructor) {
                                     continue;
@@ -51,7 +51,7 @@ export function BellatrixWebComponent<
                                 continue;
                             }
 
-                            const onErrorMethodListeners = ServiceLocator.resolveAll(WebComponentListener, `onError|${String(method)}`);
+                            const onErrorMethodListeners = resolveAll(WebComponentListener, `onError|${String(method)}`);
                             for (const onErrorMethodListener of onErrorMethodListeners) {
                                 if (onErrorMethodListener.component !== this.constructor) {
                                     continue;
@@ -77,7 +77,7 @@ export async function resolveParentElement(parentComponent: WebComponent | Shado
     }
 
     const parentOfParentComponent = (parentComponent as WebComponent)['_parentComponent'];
-    const searchContext: SearchContext = parentOfParentComponent ? await resolveParentElement(parentOfParentComponent as (WebComponent | ShadowRootContext)) : ServiceLocator.resolve(BrowserController);
+    const searchContext: SearchContext = parentOfParentComponent ? await resolveParentElement(parentOfParentComponent as (WebComponent | ShadowRootContext)) : resolve(BrowserController);
     (parentComponent as WebComponent)['_cachedElement'] ??= await searchContext.findElement((parentComponent as WebComponent)['_findStrategy'].convert());
     return parentComponent.wrappedElement;
 }

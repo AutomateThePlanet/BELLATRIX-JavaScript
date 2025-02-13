@@ -1,6 +1,6 @@
 import { BellatrixTest } from '@bellatrix/core/infrastructure';
 import { CurrentTest, Method, Result, SuiteMetadata, TestMetadata } from '@bellatrix/core/types';
-import { DecoratorUtilities } from '@bellatrix/core/utilities';
+import { getMetadataFor } from '@bellatrix/core/utilities';
 
 const beforeAll = Symbol('bellatrix:beforeAll');
 const beforeEach = Symbol('bellatrix:beforeEach');
@@ -13,8 +13,13 @@ const shouldSkip = Symbol('bellatrix:shouldSkip');
 const testCaseArgs = Symbol('bellatrix:testCaseArgs');
 const only = Symbol('bellatrix:only');
 const hasTestDecorator = Symbol('bellatrix:isTest');
+const singletons = Symbol('bellatrix:singletons');
+const services = Symbol('bellatrix:services');
+const namedServices = Symbol('bellatrix:namedServices');
+const types = Symbol('bellatrix:types');
+const namedTypes = Symbol('bellatrix:namedTypes');
 
-export const BellatrixSymbol = {
+export const Internal = {
     beforeAll,
     beforeEach,
     afterEach,
@@ -26,6 +31,11 @@ export const BellatrixSymbol = {
     testCaseArgs,
     only,
     hasTestDecorator,
+    singletons,
+    services,
+    namedServices,
+    types,
+    namedTypes,
 } as const;
 
 const testFilters: {
@@ -34,9 +44,9 @@ const testFilters: {
 } & Record<string, string | string[]> = JSON.parse(process.env.BELLATRIX_TEST_FILTER ?? '{}');
 
 type MetadataTypes = {
-    [BellatrixSymbol.testMetadata]: TestMetadata,
-    [BellatrixSymbol.suiteMetadata]: SuiteMetadata,
-    [BellatrixSymbol.currentTest]: CurrentTest,
+    [Internal.testMetadata]: TestMetadata,
+    [Internal.suiteMetadata]: SuiteMetadata,
+    [Internal.currentTest]: CurrentTest,
 }
 
 export const suiteMetadataStore: WeakMap<typeof BellatrixTest, SuiteMetadata> = new WeakMap;
@@ -45,24 +55,24 @@ export const currentTestStore: WeakMap<typeof BellatrixTest, CurrentTest> = new 
 
 export function initMetadata<Type extends keyof MetadataTypes>(type: Type, source: Function): MetadataTypes[Type] {
     switch (type) {
-        case BellatrixSymbol.testMetadata:
+        case Internal.testMetadata:
             return {
                 testName: source.name,
                 testMethod: source as (...args: never[]) => Result<void>,
                 customData: new Map,
-                [BellatrixSymbol.shouldSkip]: false,
-                [BellatrixSymbol.only]: false,
-                [BellatrixSymbol.hasTestDecorator]: false,
-                [BellatrixSymbol.testCaseArgs]: [] as unknown[][],
+                [Internal.shouldSkip]: false,
+                [Internal.only]: false,
+                [Internal.hasTestDecorator]: false,
+                [Internal.testCaseArgs]: [] as unknown[][],
                 // we purposefully omit suiteName and suiteClass here
                 // they MUST be set in the test framework's beforeTest
             } as MetadataTypes[Type];
-        case BellatrixSymbol.suiteMetadata:
+        case Internal.suiteMetadata:
             return {
                 suiteName: source.name,
                 suiteClass: source as typeof BellatrixTest,
             } as MetadataTypes[Type];
-        case BellatrixSymbol.currentTest:
+        case Internal.currentTest:
             return {
                 name: null,
                 method: null,
@@ -72,15 +82,15 @@ export function initMetadata<Type extends keyof MetadataTypes>(type: Type, sourc
     }
 }
 
-export function getFilteredTestsList(testClassInstance: BellatrixTest): Map<string, Method<BellatrixTest>> {
+export function getFilteredTestsList<T extends BellatrixTest>(testClassInstance: T): Map<string, Method<BellatrixTest>> {
     const testClass = testClassInstance.constructor.prototype;
     const testMethodsNames = Object.getOwnPropertyNames(testClass)
         .filter(method => typeof testClass[method] === 'function' &&
-            DecoratorUtilities.getMetadata(testClass[method])?.[BellatrixSymbol.hasTestDecorator]);
+            getMetadataFor(testClass[method])?.[Internal.hasTestDecorator]);
 
     const tests: Map<string, Method<BellatrixTest>> = new Map;
     for (const testMethodName of testMethodsNames) {
-        const testMethod = testClass[testMethodName];
+        const testMethod = testClass[testMethodName] as keyof Method<BellatrixTest>;
         const testMetadata = testMetadataStore.get(testMethod)!;
 
         for (const [filterKey, filterValue] of Object.entries(testFilters)) {
@@ -96,12 +106,12 @@ export function getFilteredTestsList(testClassInstance: BellatrixTest): Map<stri
                         }
 
                         if (!filterPattern.test(testMetadata[filterKey])) {
-                            testMetadata[BellatrixSymbol.shouldSkip] = true;
+                            testMetadata[Internal.shouldSkip] = true;
                         }
                         break;
                     case 'testName':
                         if (!filterPattern.test(testMetadata[filterKey])) {
-                            testMetadata[BellatrixSymbol.shouldSkip] = true;
+                            testMetadata[Internal.shouldSkip] = true;
                         }
                         break;
                     default:
@@ -112,12 +122,12 @@ export function getFilteredTestsList(testClassInstance: BellatrixTest): Map<stri
                                 typeof entry !== 'bigint' &&
                                 typeof entry !== 'boolean'
                             )) {
-                                testMetadata[BellatrixSymbol.shouldSkip] = true;
+                                testMetadata[Internal.shouldSkip] = true;
                                 break;
                             }
 
                             if (!filterPattern.test(String(testMetadata.customData.get(filterKey)))) {
-                                testMetadata[BellatrixSymbol.shouldSkip] = true;
+                                testMetadata[Internal.shouldSkip] = true;
                             }
                             break;
 
@@ -127,10 +137,10 @@ export function getFilteredTestsList(testClassInstance: BellatrixTest): Map<stri
                             typeof testMetadata.customData.get(filterKey) !== 'bigint' &&
                             typeof testMetadata.customData.get(filterKey) !== 'boolean'
                         ) {
-                            testMetadata[BellatrixSymbol.shouldSkip] = true;
+                            testMetadata[Internal.shouldSkip] = true;
                             break;
                         } else if (!(testMetadata.customData.get(filterKey) as unknown[]).every(entry => filterPattern.test(String(entry)))) {
-                            testMetadata[BellatrixSymbol.shouldSkip] = true;
+                            testMetadata[Internal.shouldSkip] = true;
                         }
                         break;
                 }
@@ -162,14 +172,14 @@ export function getFilteredTestsList(testClassInstance: BellatrixTest): Map<stri
                     });
 
                     if (remainingMatches > 0) {
-                        testMetadata[BellatrixSymbol.shouldSkip] = true;
+                        testMetadata[Internal.shouldSkip] = true;
                         break;
                     }
                 }
             }
         }
 
-        const currentTest = async ({ }: object, ...args: unknown[]) => {
+        const currentTest = (async ({ }: object, ...args: unknown[]) => {
             try {
                 await (testMethod as Function).apply(testClassInstance, args);
             } catch (error) {
@@ -179,7 +189,7 @@ export function getFilteredTestsList(testClassInstance: BellatrixTest): Map<stri
 
                 throw error;
             }
-        };
+        }) as keyof Method<BellatrixTest>;
 
         Object.defineProperty(currentTest, 'name', { value: testMethodName });
         testMetadataStore.set(currentTest, testMetadataStore.get(testMethod)!);

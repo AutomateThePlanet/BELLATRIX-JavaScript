@@ -1,6 +1,6 @@
 import { BellatrixTest } from '@bellatrix/core/infrastructure';
-import { DecoratorUtilities } from '@bellatrix/core/utilities';
-import { BellatrixSymbol } from '../test/_common';
+import { getMetadataFor } from '@bellatrix/core/utilities';
+import { Internal } from '../test/_common';
 
 function TestCase<
     ClassMethod extends (this: This, ...args: never) => void,
@@ -9,10 +9,10 @@ function TestCase<
     return function(testMethodOrClass: ClassMethod, context: ClassMethodDecoratorContext) {
         if (context.kind === 'method') {
             const testMethod = testMethodOrClass as ClassMethod;
-            const testMetadata = DecoratorUtilities.getMetadata(testMethod);
+            const testMetadata = getMetadataFor(testMethod);
 
-            testMetadata[BellatrixSymbol.hasTestDecorator] = true;
-            testMetadata[BellatrixSymbol.testCaseArgs].push(args);
+            testMetadata[Internal.hasTestDecorator] = true;
+            testMetadata[Internal.testCaseArgs].push(args);
             return;
         }
     };

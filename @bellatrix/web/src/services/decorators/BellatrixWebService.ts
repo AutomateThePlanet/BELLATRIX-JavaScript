@@ -1,4 +1,4 @@
-import { ServiceLocator } from '@bellatrix/core/utilities';
+import { resolveAll } from '@bellatrix/core/utilities';
 import { WebService } from '@bellatrix/web/services';
 import { WebServiceListener } from '@bellatrix/web/services/utilities';
 
@@ -17,7 +17,7 @@ export function BellatrixWebService<
 
             if (isAsync) {
                 target.prototype[method] = async function (this: typeof target.prototype, ...args: never) {
-                    const beforeMethodListeners = ServiceLocator.resolveAll(WebServiceListener, `before|${method}`);
+                    const beforeMethodListeners = resolveAll(WebServiceListener, `before|${method}`);
                     for (const beforeMethodListener of beforeMethodListeners) {
                         if (beforeMethodListener.service !== this.constructor) {
                             continue;
@@ -30,7 +30,7 @@ export function BellatrixWebService<
                     try {
                         result = await originalMethod.apply(this, args);
                     } catch (e) {
-                        const onErrorMethodListeners = ServiceLocator.resolveAll(WebServiceListener, `onError|${method}`);
+                        const onErrorMethodListeners = resolveAll(WebServiceListener, `onError|${method}`);
                         for (const onErrorMethodListener of onErrorMethodListeners) {
                             if (onErrorMethodListener.service !== this.constructor) {
                                 continue;
@@ -42,7 +42,7 @@ export function BellatrixWebService<
                         throw e;
                     }
 
-                    const afterMethodListeners = ServiceLocator.resolveAll(WebServiceListener, `after|${method}`);
+                    const afterMethodListeners = resolveAll(WebServiceListener, `after|${method}`);
                     for (const afterMethodListener of afterMethodListeners) {
                         if (afterMethodListener.service !== this.constructor) {
                             continue;
@@ -55,7 +55,7 @@ export function BellatrixWebService<
                 };
             } else {
                 target.prototype[method] = function (this: typeof target.prototype, ...args: never) {
-                    const beforeMethodListeners = ServiceLocator.resolveAll(WebServiceListener, `before|${method}`);
+                    const beforeMethodListeners = resolveAll(WebServiceListener, `before|${method}`);
                     for (const beforeMethodListener of beforeMethodListeners) {
                         if (beforeMethodListener.service !== this.constructor) {
                             continue;
@@ -68,7 +68,7 @@ export function BellatrixWebService<
                     try {
                         result = originalMethod.apply(this, args);
                     } catch (e) {
-                        const onErrorMethodListeners = ServiceLocator.resolveAll(WebServiceListener, `onError|${method}`);
+                        const onErrorMethodListeners = resolveAll(WebServiceListener, `onError|${method}`);
                         for (const onErrorMethodListener of onErrorMethodListeners) {
                             if (onErrorMethodListener.service !== this.constructor) {
                                 continue;
@@ -80,7 +80,7 @@ export function BellatrixWebService<
                         throw e;
                     }
 
-                    const afterMethodListeners = ServiceLocator.resolveAll(WebServiceListener, `after|${method}`);
+                    const afterMethodListeners = resolveAll(WebServiceListener, `after|${method}`);
                     for (const afterMethodListener of afterMethodListeners) {
                         if (afterMethodListener.service !== this.constructor) {
                             continue;

@@ -1,7 +1,7 @@
 import { BellatrixTest } from '@bellatrix/core/infrastructure';
 import { Method, ParameterlessCtor } from '@bellatrix/core/types';
-import { DecoratorUtilities } from '@bellatrix/core/utilities';
-import { BellatrixSymbol } from '../test/_common';
+import { getMetadataFor } from '@bellatrix/core/utilities';
+import { Internal } from '../test/_common';
 
 const categoryKeyword = 'category';
 
@@ -15,10 +15,10 @@ function Category<
             const testClass = testMethodOrClass as Class;
             const testMethods = Object.getOwnPropertyNames(testClass.prototype)
                 .filter(method => typeof testClass.prototype[method] === 'function' &&
-                    DecoratorUtilities.getMetadata(testClass.prototype[method])?.[BellatrixSymbol.hasTestDecorator]);
+                    getMetadataFor(testClass.prototype[method])?.[Internal.hasTestDecorator]);
 
             for (const testMethod of testMethods) {
-                const testMetadata = DecoratorUtilities.getMetadata(testClass.prototype[testMethod]);
+                const testMetadata = getMetadataFor(testClass.prototype[testMethod]);
 
                 if (!testMetadata.customData.has(categoryKeyword)) {
                     testMetadata.customData.set(categoryKeyword, []);
@@ -37,7 +37,7 @@ function Category<
 
         if (context.kind === 'method') {
             const testMethod = testMethodOrClass as ClassMethod;
-            const testMetadata = DecoratorUtilities.getMetadata(testMethod);
+            const testMetadata = getMetadataFor(testMethod);
 
             if (!testMetadata.customData.has(categoryKeyword)) {
                 testMetadata.customData.set(categoryKeyword, []);

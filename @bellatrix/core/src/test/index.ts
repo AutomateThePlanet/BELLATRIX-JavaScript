@@ -1,10 +1,10 @@
 import { BellatrixTest } from '@bellatrix/core/infrastructure';
 import { BellatrixSettings } from '@bellatrix/core/settings';
-import { ServiceLocator } from '@bellatrix/core/utilities';
+import { registerType } from '@bellatrix/core/utilities';
 
 import type { BellatrixTestMethods } from '@bellatrix/core/types';
 
-ServiceLocator.registerType(BellatrixTest);
+registerType(BellatrixTest);
 
 let testFramework;
 

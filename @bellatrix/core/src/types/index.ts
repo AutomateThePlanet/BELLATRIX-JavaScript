@@ -4,3 +4,4 @@ export type * from './config';
 export type * from './http';
 export type * from './number';
 export type * from './metadata';
+export type * from './services';
