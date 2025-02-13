@@ -19,6 +19,7 @@ import {
     currentTestStore,
     getFilteredTestsList,
     initMetadata,
+    testMetadataStore,
 } from './_common';
 
 const testSettings = BellatrixSettings.get().frameworkSettings.testSettings;
@@ -54,8 +55,11 @@ export function SuiteDecorator<
             }
 
             const currentTest = currentTestStore.get(target)!;
+            const testCaseRegex = /[\w]+(?=\()/;
             currentTest.name = testInfo.title;
-            currentTest.method = testClassInstance[testInfo.title as keyof This] as (...args: never[]) => Result<void>;
+            const methodNameMatch = testInfo.title.match(testCaseRegex);
+            const methodName = methodNameMatch ? methodNameMatch[0] : testInfo.title;
+            currentTest.method = testClassInstance[methodName as keyof This] as (...args: never[]) => Result<void>;
 
             const testMetadata = DecoratorUtilities.getMetadata(currentTest.method);
             testMetadata.suiteName = title;
@@ -79,12 +83,32 @@ export function SuiteDecorator<
 
         testMethods.forEach((testFunction, testName) => {
             const testMetadata = DecoratorUtilities.getMetadata(testFunction);
-            if (testMetadata.shouldSkip) {
-                nativeLibrary.test.skip(testName, testFunction as never);
-            } else if (testMetadata.only) {
-                nativeLibrary.test.only(testName, testFunction as never);
+
+            if (testMetadata[BellatrixSymbol.testCaseArgs].length > 0) {
+                let index = 1;
+                nativeLibrary.test.describe(testName, () => {
+                    for (const args of testMetadata[BellatrixSymbol.testCaseArgs].toReversed()) {
+                        const parametrizedTestFunction = (testFunction as Function).bind(null, { }, ...args);
+                        testMetadataStore.set(parametrizedTestFunction, testMetadata);
+
+                        if (testMetadata[BellatrixSymbol.shouldSkip]) {
+                            nativeLibrary.test.skip(`${index}. ${testName}(${args.join(', ')})`, parametrizedTestFunction);
+                        } else if (testMetadata[BellatrixSymbol.only]) {
+                            nativeLibrary.test.only(`${index}. ${testName}(${args.join(', ')})`, parametrizedTestFunction);
+                        } else {
+                            nativeLibrary.test(`${index}. ${testName}(${args.join(', ')})`, parametrizedTestFunction);
+                        }
+                        index++;
+                    }
+                });
             } else {
-                nativeLibrary.test(testName, testFunction as never);
+                if (testMetadata[BellatrixSymbol.shouldSkip]) {
+                    nativeLibrary.test.skip(testName, testFunction as never);
+                } else if (testMetadata[BellatrixSymbol.only]) {
+                    nativeLibrary.test.only(testName, testFunction as never);
+                } else {
+                    nativeLibrary.test(testName, testFunction as never);
+                }
             }
         });
     });

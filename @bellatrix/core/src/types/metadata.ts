@@ -22,10 +22,11 @@ export type TestMetadata = {
     suiteName: string;
     testMethod: (...args: never[]) => Result<void>;
     suiteClass: typeof BellatrixTest;
-    shouldSkip: boolean,
-    only: boolean,
     customData: Map<string, unknown>;
     error?: Error;
+    [BellatrixSymbol.testCaseArgs]: unknown[][],
+    [BellatrixSymbol.shouldSkip]: boolean,
+    [BellatrixSymbol.only]: boolean,
     [BellatrixSymbol.hasTestDecorator]: boolean;
 }
 

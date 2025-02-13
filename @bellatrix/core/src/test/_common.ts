@@ -9,6 +9,9 @@ const afterAll = Symbol('bellatrix:afterAll');
 const testMetadata = Symbol('bellatrix:testMetadata');
 const suiteMetadata = Symbol('bellatrix:suiteMetadata');
 const currentTest = Symbol('bellatrix:currentTest');
+const shouldSkip = Symbol('bellatrix:shouldSkip');
+const testCaseArgs = Symbol('bellatrix:testCaseArgs');
+const only = Symbol('bellatrix:only');
 const hasTestDecorator = Symbol('bellatrix:isTest');
 
 export const BellatrixSymbol = {
@@ -19,6 +22,9 @@ export const BellatrixSymbol = {
     testMetadata,
     suiteMetadata,
     currentTest,
+    shouldSkip,
+    testCaseArgs,
+    only,
     hasTestDecorator,
 } as const;
 
@@ -43,10 +49,11 @@ export function initMetadata<Type extends keyof MetadataTypes>(type: Type, sourc
             return {
                 testName: source.name,
                 testMethod: source as (...args: never[]) => Result<void>,
-                shouldSkip: false,
-                only: false,
                 customData: new Map,
+                [BellatrixSymbol.shouldSkip]: false,
+                [BellatrixSymbol.only]: false,
                 [BellatrixSymbol.hasTestDecorator]: false,
+                [BellatrixSymbol.testCaseArgs]: [] as unknown[][],
                 // we purposefully omit suiteName and suiteClass here
                 // they MUST be set in the test framework's beforeTest
             } as MetadataTypes[Type];
@@ -89,12 +96,12 @@ export function getFilteredTestsList(testClassInstance: BellatrixTest): Map<stri
                         }
 
                         if (!filterPattern.test(testMetadata[filterKey])) {
-                            testMetadata.shouldSkip = true;
+                            testMetadata[BellatrixSymbol.shouldSkip] = true;
                         }
                         break;
                     case 'testName':
                         if (!filterPattern.test(testMetadata[filterKey])) {
-                            testMetadata.shouldSkip = true;
+                            testMetadata[BellatrixSymbol.shouldSkip] = true;
                         }
                         break;
                     default:
@@ -105,12 +112,12 @@ export function getFilteredTestsList(testClassInstance: BellatrixTest): Map<stri
                                 typeof entry !== 'bigint' &&
                                 typeof entry !== 'boolean'
                             )) {
-                                testMetadata.shouldSkip = true;
+                                testMetadata[BellatrixSymbol.shouldSkip] = true;
                                 break;
                             }
 
                             if (!filterPattern.test(String(testMetadata.customData.get(filterKey)))) {
-                                testMetadata.shouldSkip = true;
+                                testMetadata[BellatrixSymbol.shouldSkip] = true;
                             }
                             break;
 
@@ -120,10 +127,10 @@ export function getFilteredTestsList(testClassInstance: BellatrixTest): Map<stri
                             typeof testMetadata.customData.get(filterKey) !== 'bigint' &&
                             typeof testMetadata.customData.get(filterKey) !== 'boolean'
                         ) {
-                            testMetadata.shouldSkip = true;
+                            testMetadata[BellatrixSymbol.shouldSkip] = true;
                             break;
                         } else if (!(testMetadata.customData.get(filterKey) as unknown[]).every(entry => filterPattern.test(String(entry)))) {
-                            testMetadata.shouldSkip = true;
+                            testMetadata[BellatrixSymbol.shouldSkip] = true;
                         }
                         break;
                 }
@@ -155,16 +162,16 @@ export function getFilteredTestsList(testClassInstance: BellatrixTest): Map<stri
                     });
 
                     if (remainingMatches > 0) {
-                        testMetadata.shouldSkip = true;
+                        testMetadata[BellatrixSymbol.shouldSkip] = true;
                         break;
                     }
                 }
             }
         }
 
-        const currentTest = async () => {
+        const currentTest = async ({ }: object, ...args: unknown[]) => {
             try {
-                await (testMethod as Function).apply(testClassInstance);
+                await (testMethod as Function).apply(testClassInstance, args);
             } catch (error) {
                 if (error instanceof Error) {
                     testMetadata.error = error;

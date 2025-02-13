@@ -4,9 +4,9 @@ import { DecoratorUtilities } from '@bellatrix/core/utilities';
 import { BellatrixSymbol } from '../test/_common';
 
 function Ignore<
+    ClassMethod extends (this: This, ...args: never) => void,
     This extends BellatrixTest = BellatrixTest,
     Class extends ParameterlessCtor<This> = ParameterlessCtor<This>,
-    ClassMethod extends Method<This> = Method<This>
 >(testMethodOrClass: Class | ClassMethod, context: ClassMethodDecoratorContext | ClassDecoratorContext) {
     if (context.kind === 'class') {
         const testClass = testMethodOrClass as Class;
@@ -17,7 +17,7 @@ function Ignore<
         for (const testMethod of testMethods) {
             const testMetadata = DecoratorUtilities.getMetadata(testClass.prototype[testMethod]);
 
-            testMetadata.shouldSkip = true;
+            testMetadata[BellatrixSymbol.shouldSkip] = true;
             return;
         }
     }
@@ -26,7 +26,7 @@ function Ignore<
         const testMethod = testMethodOrClass as ClassMethod;
         const testMetadata = DecoratorUtilities.getMetadata(testMethod);
 
-        testMetadata.shouldSkip = true;
+        testMetadata[BellatrixSymbol.shouldSkip] = true;
         return;
     }
 

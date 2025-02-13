@@ -1,14 +1,14 @@
 import { BellatrixTest } from '@bellatrix/core/infrastructure';
-import { Method, Result } from '@bellatrix/core/types';
+import { Result } from '@bellatrix/core/types';
 import { DecoratorUtilities } from '@bellatrix/core/utilities';
+import { BellatrixSymbol } from '../test/_common';
 
 function Only<
+    ClassMethod extends (this: This, ...args: never) => void,
     This extends BellatrixTest = BellatrixTest,
-    Args extends unknown[] = unknown[],
-    ClassMethod extends (this: This, ...args: Args) => void = (this: This, ...args: Args) => Result<void>
->(target: ClassMethod, _context: ClassMethodDecoratorContext<This, ClassMethod>): void {
+>(target: ClassMethod, _context: ClassMethodDecoratorContext): void {
     const testMetadata = DecoratorUtilities.getMetadata(target as () => Result<void>);
-    testMetadata.only = true;
+    testMetadata[BellatrixSymbol.only] = true;
 }
 
 export {
