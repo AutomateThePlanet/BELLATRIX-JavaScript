@@ -1,4 +1,4 @@
-import { SingletonFactory } from '@bellatrix/core/utilities';
+import { getSingletonInstance } from '@bellatrix/core/utilities';
 import { WebPageAsserts, WebPageMap, WebPage } from '..';
 
 import type { ParameterlessCtor } from '@bellatrix/core/types';
@@ -8,7 +8,7 @@ export function Page<TMap extends WebPageMap | null, TAsserts extends WebPageAss
         if (map) {
             Object.defineProperty(target.prototype, 'map', {
                 get: function () {
-                    return SingletonFactory.getInstance(map as ParameterlessCtor<object>);
+                    return getSingletonInstance(map as ParameterlessCtor<object>);
                 }
             });
         }
@@ -16,14 +16,14 @@ export function Page<TMap extends WebPageMap | null, TAsserts extends WebPageAss
         if (asserts) {
             Object.defineProperty(target.prototype, 'asserts', {
                 get: function () {
-                    return SingletonFactory.getInstance(asserts as ParameterlessCtor<object>);
+                    return getSingletonInstance(asserts as ParameterlessCtor<object>);
                 }
             });
 
             if (map) {
                 Object.defineProperty(asserts.prototype, 'map', {
                     get: function () {
-                        return SingletonFactory.getInstance(map as ParameterlessCtor<object>);
+                        return getSingletonInstance(map as ParameterlessCtor<object>);
                     }
                 });
             }

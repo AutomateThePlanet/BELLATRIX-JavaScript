@@ -1,7 +1,7 @@
 import { BrowserController } from '@bellatrix/web/infrastructure/browsercontroller/core';
 import { resolveParentElement } from '@bellatrix/web/components/decorators';
 import { FindStrategy } from '@bellatrix/web/findstrategies';
-import { ServiceLocator } from '@bellatrix/core/utilities';
+import { resolve } from '@bellatrix/core/utilities';
 import { ShadowRootContext, WebComponent } from '.';
 
 import type { Ctor } from '@bellatrix/core/types';
@@ -31,7 +31,7 @@ export class ComponentsList<T extends WebComponent> {
     async get(index: number): Promise<T>;
     async get(index?: number): Promise<T | T[]> {
         if (index === undefined && !this._foundAll) {
-            const searchContext = this._parentComponent ? await resolveParentElement(this._parentComponent) : ServiceLocator.resolve(BrowserController);
+            const searchContext = this._parentComponent ? await resolveParentElement(this._parentComponent) : resolve(BrowserController);
             const elements = await searchContext.findElements(this._findStrategy.convert());
             const components = elements.map((element, index) => {
                 const findStrategy = this.cloneFindStrategyWithUpdatedIndex(this._findStrategy, index);

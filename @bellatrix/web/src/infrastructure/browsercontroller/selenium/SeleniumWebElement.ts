@@ -140,7 +140,7 @@ export class SeleniumWebElement extends WebElement {
 
     override async isPresent(): Promise<boolean> {
         try {
-            return await this._element.getId() != null;
+            return await this._element.getId() !== null; // TODO: check if not found elements return null or undefined
         } catch {
             return false;
         }
