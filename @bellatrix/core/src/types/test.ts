@@ -1,16 +1,11 @@
-import { PluginExecutionEngine, BellatrixTest } from '@bellatrix/core/infrastructure';
+import { BellatrixTest } from '@bellatrix/core/infrastructure';
 export type TestResult = 'success' | 'failure' | 'unknown';
 export type TestFramework = 'vitest' | 'playwright';
 export type TestReporter = 'console-only' | 'json' | 'junit' | 'tap';
 
-import type { ParameterlessCtor, Result, StaticMethod } from '.';
+import type { ParameterlessCtor, Result } from '.';
 
 export type TestFunction<TestProps, R = unknown> = (props: TestProps) => Result<R>;
-export type ConfigureFunction = (props: ConfigureProps) => Result<void>;
-
-export type ConfigureProps = {
-    addPlugin: StaticMethod<typeof PluginExecutionEngine.addPlugin>;
-}
 
 export type TestDecorator<
     This extends BellatrixTest = BellatrixTest,

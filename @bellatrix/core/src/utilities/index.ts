@@ -1,4 +1,2 @@
-export * from './ServiceLocator';
-export * from './SingletonFactory';
-export * from './Utilities';
-export * from './DecoratorUtilities';
+export * from './services';
+export * from './helpers';

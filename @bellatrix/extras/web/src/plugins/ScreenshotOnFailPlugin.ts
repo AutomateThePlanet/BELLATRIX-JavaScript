@@ -1,11 +1,12 @@
 import { Plugin } from '@bellatrix/core/infrastructure';
-import { TestMetadata } from '@bellatrix/core/test/metadata';
-import { ServiceLocator } from '@bellatrix/core/utilities';
+import { resolve } from '@bellatrix/core/utilities';
 import { Image } from '@bellatrix/core/image';
 import { App } from '@bellatrix/web/infrastructure';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import { dirname, extname, join } from 'path';
 import { BellatrixSettings } from '@bellatrix/core/settings';
+
+import type { TestMetadata } from '@bellatrix/core/types';
 
 export class ScreenshotOnFailPlugin extends Plugin {
     override async preAfterTest(metadata: TestMetadata): Promise<void> {
@@ -19,7 +20,7 @@ export class ScreenshotOnFailPlugin extends Plugin {
             return;
         }
 
-        const app = ServiceLocator.resolve(App);
+        const app = resolve(App);
         const screenshotImage = await app.browser.takeScreenshot();
 
         const outputPath = pluginSettings?.outputPath;

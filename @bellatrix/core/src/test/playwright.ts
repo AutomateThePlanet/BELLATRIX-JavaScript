@@ -10,25 +10,26 @@ import * as nativeLibrary from '@playwright/test';
 
 import { BellatrixSettings } from '@bellatrix/core/settings';
 import { BellatrixTest } from '@bellatrix/core/infrastructure';
-import { DecoratorUtilities } from '@bellatrix/core/utilities';
+import { getMetadataFor } from '@bellatrix/core/utilities';
 
 import type { Method, ParameterlessCtor, Result } from '@bellatrix/core/types';
 
 import {
-    BellatrixSymbol,
+    Internal,
     currentTestStore,
     getFilteredTestsList,
     initMetadata,
+    testMetadataStore,
 } from './_common';
 
 const testSettings = BellatrixSettings.get().frameworkSettings.testSettings;
 
 function getSymbolMethods<T extends BellatrixTest>(type: ParameterlessCtor<T>) {
     return {
-        beforeEach: type.prototype[BellatrixSymbol.beforeEach] as Method<BellatrixTest, typeof BellatrixSymbol.beforeEach>,
-        beforeAll: type.prototype[BellatrixSymbol.beforeAll] as Method<BellatrixTest, typeof BellatrixSymbol.beforeAll>,
-        afterAll: type.prototype[BellatrixSymbol.afterAll] as Method<BellatrixTest, typeof BellatrixSymbol.afterAll>,
-        afterEach: type.prototype[BellatrixSymbol.afterEach] as Method<BellatrixTest, typeof BellatrixSymbol.afterEach>,
+        beforeEach: type.prototype[Internal.beforeEach] as Method<BellatrixTest, typeof Internal.beforeEach>,
+        beforeAll: type.prototype[Internal.beforeAll] as Method<BellatrixTest, typeof Internal.beforeAll>,
+        afterAll: type.prototype[Internal.afterAll] as Method<BellatrixTest, typeof Internal.afterAll>,
+        afterEach: type.prototype[Internal.afterEach] as Method<BellatrixTest, typeof Internal.afterEach>,
     } as const;
 }
 
@@ -36,7 +37,7 @@ export function SuiteDecorator<
     This extends BellatrixTest,
     Class extends ParameterlessCtor<This> = ParameterlessCtor<This>
 >(target: Class, context: ClassDecoratorContext<Class>): void {
-    DecoratorUtilities.getMetadata(target); // init
+    getMetadataFor(target); // init
 
     const testClassInstance = new (target.prototype.constructor as ParameterlessCtor<This>);
     const testClassSymbolMethods = getSymbolMethods(target);
@@ -50,14 +51,17 @@ export function SuiteDecorator<
 
         nativeLibrary.test.beforeEach(async ({ }, testInfo) => {
             if (!currentTestStore.has(target)) {
-                currentTestStore.set(target, initMetadata(BellatrixSymbol.currentTest, target));
+                currentTestStore.set(target, initMetadata(Internal.currentTest, target));
             }
 
             const currentTest = currentTestStore.get(target)!;
+            const testCaseRegex = /[\w]+(?=\()/;
             currentTest.name = testInfo.title;
-            currentTest.method = testClassInstance[testInfo.title as keyof This] as (...args: never[]) => Result<void>;
+            const methodNameMatch = testInfo.title.match(testCaseRegex);
+            const methodName = methodNameMatch ? methodNameMatch[0] : testInfo.title;
+            currentTest.method = testClassInstance[methodName as keyof This] as (...args: never[]) => Result<void>;
 
-            const testMetadata = DecoratorUtilities.getMetadata(currentTest.method);
+            const testMetadata = getMetadataFor(currentTest.method);
             testMetadata.suiteName = title;
             testMetadata.suiteClass = target;
 
@@ -67,7 +71,7 @@ export function SuiteDecorator<
         nativeLibrary.test.afterEach(async ({ }, _) => {
             await testClassSymbolMethods.afterEach.apply(testClassInstance);
             if (!currentTestStore.has(target)) {
-                currentTestStore.set(target, initMetadata(BellatrixSymbol.currentTest, target));
+                currentTestStore.set(target, initMetadata(Internal.currentTest, target));
             }
 
             const currentTest = currentTestStore.get(target)!;
@@ -78,13 +82,33 @@ export function SuiteDecorator<
         nativeLibrary.test.afterAll(async () => await testClassSymbolMethods.afterAll.apply(testClassInstance));
 
         testMethods.forEach((testFunction, testName) => {
-            const testMetadata = DecoratorUtilities.getMetadata(testFunction);
-            if (testMetadata.shouldSkip) {
-                nativeLibrary.test.skip(testName, testFunction as never);
-            } else if (testMetadata.only) {
-                nativeLibrary.test.only(testName, testFunction as never);
+            const testMetadata = getMetadataFor(testFunction);
+
+            if (testMetadata[Internal.testCaseArgs].length > 0) {
+                let index = 1;
+                nativeLibrary.test.describe(testName, () => {
+                    for (const args of testMetadata[Internal.testCaseArgs].toReversed()) {
+                        const parametrizedTestFunction = (testFunction as Function).bind(null, { }, ...args);
+                        testMetadataStore.set(parametrizedTestFunction, testMetadata);
+
+                        if (testMetadata[Internal.shouldSkip]) {
+                            nativeLibrary.test.skip(`${index}. ${testName}(${args.join(', ')})`, parametrizedTestFunction);
+                        } else if (testMetadata[Internal.only]) {
+                            nativeLibrary.test.only(`${index}. ${testName}(${args.join(', ')})`, parametrizedTestFunction);
+                        } else {
+                            nativeLibrary.test(`${index}. ${testName}(${args.join(', ')})`, parametrizedTestFunction);
+                        }
+                        index++;
+                    }
+                });
             } else {
-                nativeLibrary.test(testName, testFunction as never);
+                if (testMetadata[Internal.shouldSkip]) {
+                    nativeLibrary.test.skip(testName, testFunction as never);
+                } else if (testMetadata[Internal.only]) {
+                    nativeLibrary.test.only(testName, testFunction as never);
+                } else {
+                    nativeLibrary.test(testName, testFunction as never);
+                }
             }
         });
     });
@@ -94,8 +118,8 @@ function TestDecorator<
     This extends BellatrixTest = BellatrixTest,
     ClassMethod extends Method<This> = Method<This>
 >(target: ClassMethod, _context: ClassMethodDecoratorContext<This, ClassMethod>): void {
-    const testMetadata = DecoratorUtilities.getMetadata(target);
-    testMetadata[BellatrixSymbol.hasTestDecorator] = true;
+    const testMetadata = getMetadataFor(target);
+    testMetadata[Internal.hasTestDecorator] = true;
 
     return;
 }

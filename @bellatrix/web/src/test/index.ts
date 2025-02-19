@@ -1,12 +1,12 @@
-import { ServiceLocator } from '@bellatrix/core/utilities';
-import { BellatrixTest, TestProps } from '@bellatrix/core/infrastructure';
-import { App, WebTest } from '@bellatrix/web/infrastructure';
+import { registerType } from '@bellatrix/core/utilities';
+import { BellatrixTest } from '@bellatrix/core/infrastructure';
+import { WebTest } from '@bellatrix/web/infrastructure';
 
 import type { BellatrixTestMethods, ubyte } from '@bellatrix/core/types';
 
 import type { BrowserControllerType, BrowserType, ExecutionType } from '@bellatrix/web/types';
 
-ServiceLocator.registerType(BellatrixTest, WebTest);
+registerType(BellatrixTest, WebTest);
 
 import * as bellatrixTest from '@bellatrix/core/test';
 

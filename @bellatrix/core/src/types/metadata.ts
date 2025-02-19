@@ -1,6 +1,6 @@
 import { BellatrixTest } from '@bellatrix/core/infrastructure';
 
-import { BellatrixSymbol } from '../test/_common';
+import { Internal } from '../test/_common';
 
 import type {
     TestDecorator,
@@ -22,11 +22,12 @@ export type TestMetadata = {
     suiteName: string;
     testMethod: (...args: never[]) => Result<void>;
     suiteClass: typeof BellatrixTest;
-    shouldSkip: boolean,
-    only: boolean,
     customData: Map<string, unknown>;
     error?: Error;
-    [BellatrixSymbol.hasTestDecorator]: boolean;
+    [Internal.testCaseArgs]: unknown[][],
+    [Internal.shouldSkip]: boolean,
+    [Internal.only]: boolean,
+    [Internal.hasTestDecorator]: boolean;
 }
 
 export type SuiteMetadata = {

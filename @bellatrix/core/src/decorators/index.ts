@@ -1,3 +1,4 @@
 export * from './Category';
-export * from './Debug';
+export * from './Only';
 export * from './Ignore';
+export * from './TestCase';
