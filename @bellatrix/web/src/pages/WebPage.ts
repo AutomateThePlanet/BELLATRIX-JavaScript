@@ -1,4 +1,4 @@
-import { ServiceLocator } from '@bellatrix/core/utilities';
+import { resolve } from '@bellatrix/core/utilities';
 import { WebPageMap, WebPageAsserts } from '.';
 import { App } from '@bellatrix/web/infrastructure';
 
@@ -16,7 +16,7 @@ export abstract class WebPage<TMap extends WebPageMap | null = null, TAsserts ex
     };
 
     get app(): App {
-        return ServiceLocator.resolve(App);
+        return resolve(App);
     }
 
     async open(): Promise<void> {

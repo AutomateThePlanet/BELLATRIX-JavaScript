@@ -1,4 +1,4 @@
-import { Locator as NativeLocator, ElementHandle as NativeElementHandle } from '@playwright/test';
+import { Locator as NativeLocator } from '@playwright/test';
 
 import { Locator, WebElement } from '@bellatrix/web/infrastructure/browsercontroller/core';
 import { BellatrixSettings } from '@bellatrix/core/settings';
@@ -141,7 +141,7 @@ export class PlaywrightWebElement extends WebElement {
         }
 
         try {
-            return await this._locator.elementHandle() != null;
+            return await this._locator.elementHandle() !== null;
         } catch {
             return false;
         }

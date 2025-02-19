@@ -1,12 +1,10 @@
 import { BellatrixTest } from '@bellatrix/core/infrastructure';
 import { BellatrixSettings } from '@bellatrix/core/settings';
-import { ServiceLocator } from '@bellatrix/core/utilities';
-import { TestProps } from '@bellatrix/core/test/props';
+import { registerType } from '@bellatrix/core/utilities';
 
-import type { BellatrixTestMethods } from '@bellatrix/core/test/props';
+import type { BellatrixTestMethods } from '@bellatrix/core/types';
 
-ServiceLocator.registerType(BellatrixTest);
-ServiceLocator.registerTransient(TestProps, class extends TestProps { static override get name() { return 'TestProps'; }});
+registerType(BellatrixTest);
 
 let testFramework;
 
@@ -16,6 +14,6 @@ try {
     testFramework = await import('./' + BellatrixSettings.get().frameworkSettings.testSettings.testFramework) + '.js';
 }
 
-const { configure, describe, beforeAll, beforeEach, afterAll, afterEach, test, it, Suite, suite, TestClass, Test }: BellatrixTestMethods<TestProps, BellatrixTest> = testFramework;
+const { Test, test, Suite, suite, TestClass, testClass }: BellatrixTestMethods<BellatrixTest> = testFramework;
 
-export { configure, describe, beforeAll, beforeEach, afterAll, afterEach, test, it, Suite, suite, TestClass, Test };
+export { Test, test, Suite, suite, TestClass, testClass };
