@@ -1,21 +1,25 @@
 import { Test, TestClass } from '@bellatrix/web/test';
+import { Category } from '@bellatrix/core/decorators';
 import { WebTest } from '@bellatrix/web/infrastructure';
 import { Button } from '@bellatrix/web/components';
-import { ExtraWebHooks } from '@bellatrix/extras/hooks';
-import { LogLifecyclePlugin, ScreenshotOnFailPlugin } from '@bellatrix/extras/plugins';
-import { MainPage, CartPage, CheckoutPage, PurchaseInfo } from '../src/pages';
-import { PluginExecutionEngine } from '@bellatrix/core/infrastructure';
+import { ExtraWebHooks } from '@bellatrix/extras-web/hooks';
+import { LogLifecyclePlugin, ScreenshotOnFailPlugin } from '@bellatrix/extras-web/plugins';
+import { addPlugin } from '@bellatrix/core/infrastructure';
 import { WebServiceHooks } from '@bellatrix/web/services/utilities';
 import { NavigationService } from '@bellatrix/web/services';
 
+import { Categories } from '../src/Categories';
+import { MainPage, CartPage, CheckoutPage, PurchaseInfo } from '../src/pages';
+
 @TestClass
+@Category(Categories.CI)
 export class ProductPurchaseTests extends WebTest {
     override async configure(): Promise<void> {
         await super.configure();
         ExtraWebHooks.addComponentBDDLogging();
-        PluginExecutionEngine.addPlugin(LogLifecyclePlugin);
-        PluginExecutionEngine.addPlugin(ScreenshotOnFailPlugin);
-        WebServiceHooks.addListenerTo(NavigationService).before('navigate', (_, url) => console.log(`navigating to ${url}`));
+        addPlugin(LogLifecyclePlugin);
+        addPlugin(ScreenshotOnFailPlugin);
+        WebServiceHooks.addListenerTo(NavigationService).before('navigate', url => console.log(`navigating to ${url}`));
     }
 
     override async afterEach() {
@@ -26,11 +30,8 @@ export class ProductPurchaseTests extends WebTest {
     async completePurchaseSuccessfully_first() {
         await this.app.navigation.navigate('https://demos.bellatrix.solutions/');
         const addToCartFalcon9 = this.app.create(Button).byCss('[data-product_id*="28"]');
-        const blogLink = this.app.create(Button).byInnerTextContaining('Blog');
 
-        // await addToCartFalcon9.click();
-        await this.app.create(Button).byCss('[data-product_id*="28"]').click();
-        // blogLink.above(addToCartFalcon9).validate(); // layout assert
+        await addToCartFalcon9.click();
         await new MainPage().asserts.productBoxLink('Falcon 9', 'https://demos.bellatrix.solutions/product/falcon-9/');
     }
 

@@ -3,15 +3,15 @@
   "version": "0.0.1",
   "dependencies": {
     "@bellatrix/core": "file:../@bellatrix/core",
-    "@bellatrix/extras": "file:../@bellatrix/extras",
+    "@bellatrix/extras-web": "file:../@bellatrix/extras/web",
     "@bellatrix/web": "file:../@bellatrix/web",
     "@bellatrix/runner": "file:../@bellatrix/runner"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.7.3"
   },
   "scripts": {
-    "test": "bellatrix ./tests"
+    "test": "bellatrix ./tests filter --category CI"
   },
   "type": "module"
 }

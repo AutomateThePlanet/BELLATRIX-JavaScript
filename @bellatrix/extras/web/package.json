@@ -1,5 +1,5 @@
 {
-  "name": "@bellatrix/extras",
+  "name": "@bellatrix/extras-web",
   "version": "0.0.1",
   "type": "module",
   "exports": {
@@ -7,10 +7,10 @@
     "./plugins": "./src/plugins/index.ts"
   },
   "dependencies": {
-    "@bellatrix/core": "file:../core",
-    "@bellatrix/web": "file:../web"
+    "@bellatrix/core": "file:../../core",
+    "@bellatrix/web": "file:../../web"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.7.3"
   }
 }

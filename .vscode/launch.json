@@ -4,7 +4,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Run Tests",
+            "name": "example: debug main process",
             "runtimeExecutable": "npm",
             "runtimeArgs": [
                 "run",
@@ -15,7 +15,35 @@
             ],
             "cwd": "${workspaceFolder}/example",
             "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen"
+            "internalConsoleOptions": "neverOpen",
+            "presentation": {
+                "hidden": true
+            },
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "try debug child process",
+            "port": 12016,
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "timeout": 5000,
+            "restart": false,
+            "presentation": {
+                "hidden": true
+            },
+        },
+    ],
+    "compounds": [
+        {
+            "name": "(example) debug tests",
+            "configurations": ["example: debug main process", "try debug child process"],
+            "presentation": {
+                "hidden": false,
+                "group": "",
+                "order": 1
+            },
         }
     ]
 }

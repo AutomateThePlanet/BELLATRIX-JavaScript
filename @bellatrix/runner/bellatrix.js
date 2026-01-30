@@ -3,27 +3,43 @@
 console.log('DEBUG: starting bellatrix'); // DEBUG
 
 const nodeVersion = process.versions.node.split('.');
-if (parseInt(nodeVersion[0].replace()) < 20 || (parseInt(nodeVersion[0]) == 20 && parseInt(nodeVersion[1]) < 9)) {
+if (parseInt(nodeVersion[0].replace()) < 20 || (parseInt(nodeVersion[0]) === 20 && parseInt(nodeVersion[1]) < 9)) {
     throw Error(`You need Node runtime version 20.9.0 minimum. Current version: ${process.versions.node}`);
 }
 
-import { spawnSync } from 'child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync, unlinkSync } from 'fs';
-import { join, dirname, isAbsolute, relative } from 'path';
+import { fork } from 'child_process';
+import { existsSync, readFileSync, writeFileSync, unlinkSync } from 'fs';
+import { join, dirname, isAbsolute, win32 } from 'path';
 import { pathToFileURL } from 'url';
-import { tmpdir } from 'os';
+import { tmpdir, platform } from 'os';
 import ts from 'typescript';
-import minimist from 'minimist';
+import yargs from 'yargs/yargs';
+import { hideBin } from 'yargs/helpers';
 
-const argv = minimist(process.argv.slice(2));
+const argvArray = hideBin(process.argv);
 
-const testsDirectory = argv._[0];
+const Keywords = Object.freeze({
+    Filter: 'filter',
+});
 
-try {
-    process.chdir(testsDirectory ?? '.');
-} catch {
-    throw Error(`No such directory: ${isAbsolute(testsDirectory) ? testsDirectory : join(process.cwd(), testsDirectory)}`);
+const filterIndex = argvArray.lastIndexOf(Keywords.Filter);
+let filterArgs = {};
+if (filterIndex !== -1) {
+    filterArgs = yargs(argvArray.slice(filterIndex + 1)).argv;
+    if (filterArgs._[0]){
+        const nextArgIndex = argvArray.indexOf(filterArgs._[0]);
+        filterArgs = yargs(argvArray.slice(filterIndex + 1, nextArgIndex)).argv;
+    }
+
+    const cliFilters = Object.entries(filterArgs)
+        .filter(([key]) => key !== '_' && key !== '$0') // Ignore positional args and script name
+        .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
+
+    process.env.BELLATRIX_TEST_FILTER = JSON.stringify(cliFilters);
 }
+
+const argv = yargs(argvArray).argv;
+const testsDirectory = argv._.find(arg => !Object.values(Keywords).includes(arg)) ?? '.';
 
 async function getTypescriptConfig(filePath) {
     const fileContents = readFileSync(filePath instanceof URL ? filePath : new URL(filePath), 'utf-8');
@@ -81,25 +97,25 @@ const configs = [
     '.bellatrix.json',
 ];
 
-const configFilePath = findFilePath(configs);
-const configFileURL = pathToFileURL(configFilePath);
-process.env.BELLATRIX_CONFIGURAITON_ROOT = dirname(configFilePath);
+const configFileURI = pathToFileURL(findFilePath(configs));
+const debugPort = 12016;
+
 let config;
 
-if (configFileURL.href.endsWith('.ts') || configFileURL.href.endsWith('.mts')) {
-    const configImport = await getTypescriptConfig(configFileURL);
+if (configFileURI.href.endsWith('.ts') || configFileURI.href.endsWith('.mts')) {
+    const configImport = await getTypescriptConfig(configFileURI);
     config = configImport.default;
     process.env.BELLATRIX_CONFIGURAITON = JSON.stringify(config);
 }
 
-if (configFileURL.href.endsWith('.js') || configFileURL.href.endsWith('.mjs') || configFileURL.href.endsWith('.cjs')) {
-    const configImport = await import(configFileURL);
+if (configFileURI.href.endsWith('.js') || configFileURI.href.endsWith('.mjs') || configFileURI.href.endsWith('.cjs')) {
+    const configImport = await import(configFileURI);
     config = configImport.default;
     process.env.BELLATRIX_CONFIGURAITON = JSON.stringify(config);
 }
 
-if (configFileURL.href.endsWith('.json')) {
-    config = readJsonConfigFile(configFileURL);
+if (configFileURI.href.endsWith('.json')) {
+    config = readJsonConfigFile(configFileURI);
     process.env.BELLATRIX_CONFIGURAITON = JSON.stringify(config);
 }
 
@@ -122,16 +138,20 @@ if ((!reportDirectory || !reportName) && reporter !== 'console-only') {
     throw new Error(`Properties testReportDirectory and testReportName should be specified unless testReporter is 'console-only'.`);
 }
 
-const reportPath = reporter !== 'console-only'
-    ? isAbsolute(reportDirectory) ? reportDirectory : join(dirname(configFileURL.pathname), reportDirectory)
+let reportPath = reporter !== 'console-only'
+    ? isAbsolute(reportDirectory) ? reportDirectory : join(dirname(configFileURI.pathname), reportDirectory)
     : null;
+
+if (platform() === 'win32') {
+    reportPath = win32.normalize(reportPath);
+}
 
 switch (config.frameworkSettings.testSettings.testFramework) {
     case 'vitest': {
         const { createVitest } = await import('vitest/node');
 
         const config = {
-            include: [ '**/*.test.ts' ],
+            include: [ join(testsDirectory, '**/*.test.ts') ],
             config: false,
             watch: false,
             passWithNoTests: true,
@@ -155,9 +175,6 @@ switch (config.frameworkSettings.testSettings.testFramework) {
                 };
                 break;
             }
-            case 'trx': throw new Error('Vitest does not have TRX reporter');
-            case 'nunit': throw new Error('Vitest does not have NUnit reporter');
-            case 'xunit': throw new Error('Vitest does not have xUnit reporter');
             case 'tap': {
                 config.reporters.push('tap');
                 config.outputFile = {
@@ -177,7 +194,7 @@ switch (config.frameworkSettings.testSettings.testFramework) {
         const tsPathsEsmLoaderPath = new URL(import.meta.resolve('ts-paths-esm-loader')).pathname;
         const cliPath = findFilePath([ 'node_modules/playwright/cli.js' ]);
 
-        const cliArgs = [ cliPath, 'test' ];
+        const cliArgs = [ 'test', testsDirectory ];
 
         switch (reporter) {
             case 'json': {
@@ -190,168 +207,30 @@ switch (config.frameworkSettings.testSettings.testFramework) {
                 process.env.PLAYWRIGHT_JUNIT_OUTPUT_NAME = join(reportPath, reportName.endsWith('.xml') ? reportName : `${reportName}.xml`);
                 break;
             }
-            case 'trx': {
-                process.env.PLAYWRIGHT_TRX_OUTPUT_NAME = join(reportPath, reportName.endsWith('.trx') ? reportName : `${reportName}.trx`);
-                const trxReporter = new URL(import.meta.resolve('./playwright/trxReporter.js')).pathname;
-                cliArgs.push(`--reporter=${trxReporter}`);
-                break;
-            }
-            case 'nunit': throw new Error('Playwright does not have NUnit reporter');
-            case 'xunit': throw new Error('Playwright does not have xUnit reporter');
+            case 'tap': throw new Error('Playwright does not have tap reporter implemented');
         }
 
         // cliArgs.push('--ui'); // TODO: make it an option
 
-        spawnSync('node', cliArgs, {
+        const execArgv = [];
+        const inspector = await import('inspector');
+
+        if (inspector.url() !== undefined) {
+            execArgv.push(`--inspect=${debugPort}`);
+        }
+
+        const child = fork(cliPath, cliArgs, {
             stdio: 'inherit',
             env: {
                 ...process.env,
                 NODE_OPTIONS: `--loader=${tsPathsEsmLoaderPath} --experimental-specifier-resolution=node --no-warnings`,
-            }
+            },
+            execArgv,
         });
 
-        break;
-    }
-    case 'jasmine': {
-        const tsPathsEsmLoaderPath = new URL(import.meta.resolve('ts-paths-esm-loader')).pathname;
-        const cliPath = findFilePath([ 'node_modules/jasmine/bin/jasmine.js' ]);
-        const jasmineConfigPath = new URL(import.meta.resolve('./jasmine/config.json')).pathname;
-        const cliArgs = [ cliPath, `--config=${jasmineConfigPath}` ];
-
-        switch (reporter) {
-            case 'json': throw new Error('Jasmine does not have default JSON reporter');
-            case 'junit': {
-                process.env.JASMINE_JUNIT_OUTPUT_DIR = reportPath;
-                process.env.JASMINE_JUNIT_OUTPUT_NAME = reportName;
-                const junitReporter = new URL(import.meta.resolve('./jasmine/junitReporter.js')).pathname;
-                cliArgs.push(`--helper=${junitReporter}`);
-                break;
-            }
-            case 'trx': {
-                process.env.JASMINE_TRX_OUTPUT_DIR = reportPath;
-                process.env.JASMINE_TRX_OUTPUT_NAME = reportName.endsWith('.trx') ? reportName : `${reportName}.trx`;
-                const trxReporter = new URL(import.meta.resolve('./jasmine/trxReporter.js')).pathname;
-                cliArgs.push(`--helper=${trxReporter}`);
-                break;
-            }
-            case 'nunit': {
-                process.env.JASMINE_NUNIT_OUTPUT_DIR = reportPath;
-                process.env.JASMINE_NUNIT_OUTPUT_NAME = reportName.endsWith('.xml') ? reportName : `${reportName}.xml`;
-                const nunitReporter = new URL(import.meta.resolve('./jasmine/nunitReporter.js')).pathname;
-                cliArgs.push(`--helper=${nunitReporter}`);
-                break;
-            }
-            case 'xunit': throw new Error('Jasmine does not have xUnit reporter');
-        }
-
-        spawnSync('node', cliArgs, {
-            stdio: 'inherit',
-            env: {
-                ...process.env,
-                NODE_OPTIONS: `--loader=${tsPathsEsmLoaderPath} --experimental-specifier-resolution=node --no-warnings`,
-            }
-        });
-
-        break;
-    }
-    case 'mocha': {
-        const tsPathsEsmLoaderPath = new URL(import.meta.resolve('ts-paths-esm-loader')).pathname;
-        const cliPath = findFilePath([ 'node_modules/mocha/bin/mocha.js' ]);
-        const cliArgs = [ cliPath, '**/*.test.?(m){ts,js}' ];
-
-        switch (reporter) {
-            case 'json': {
-                const jsonReporter = new URL(import.meta.resolve('mocha-json-output-reporter')).pathname;
-                cliArgs.push('--reporter', jsonReporter, '--reporter-options', `output=${join(reportPath, reportName.endsWith('.json') ? reportName : `${reportName}.json`)}`);
-                break;
-            }
-            case 'junit': {
-                const junitReporter = new URL(import.meta.resolve('mocha-junit-reporter')).pathname;
-                cliArgs.push('--reporter', junitReporter, '--reporter-options', `mochaFile=${join(reportPath, reportName.endsWith('.xml') ? reportName : `${reportName}.xml`)}`);
-                break;
-            }
-            case 'trx': {
-                const trxReporter = new URL(import.meta.resolve('mocha-trx-reporter')).pathname;
-                const outputFolderPath = relative(process.cwd(), reportPath);
-                mkdirSync(outputFolderPath, { recursive: true });
-                const outputFilePath = join(outputFolderPath, reportName.endsWith('.trx') ? reportName : `${reportName}.trx`);
-                cliArgs.push('--reporter', trxReporter, '--reporter-options', `output=${outputFilePath}`);
-                break;
-            }
-            case 'nunit': throw new Error('Mocha does not have NUnit reporter');
-            case 'xunit': {
-                const xunitReporter = new URL(import.meta.resolve('mocha-xunit-reporter')).pathname;
-                cliArgs.push('--reporter', xunitReporter, '--reporter-options', `mochaFile=${join(reportPath, reportName.endsWith('.xml') ? reportName : `${reportName}.xml`)}`);
-                break;
-            }
-        }
-
-        spawnSync('node', cliArgs, {
-            stdio: 'inherit',
-            env: {
-                ...process.env,
-                NODE_OPTIONS: `--loader=${tsPathsEsmLoaderPath} --experimental-specifier-resolution=node --no-warnings`,
-            }
-        });
-
-        break;
-    }
-    case 'jest': {
-        const defaultEsm = new URL(import.meta.resolve('ts-jest/presets/default-esm')).pathname;
-        const tsPathsEsmLoaderPath = new URL(import.meta.resolve('ts-paths-esm-loader')).pathname;
-        const cliPath = join(new URL(import.meta.resolve('jest-cli')).pathname, '..', '..', 'bin', 'jest.js');
-        const testMatch = '\\.test\\.(ts|js)';
-        const cliArgs = [ cliPath ];
-
-        switch (reporter) {
-            case 'json': throw new Error('Jest does not have default JSON reporter');
-            case 'junit': {
-                const junitReporter = new URL(import.meta.resolve('jest-junit')).pathname;
-                process.env.JEST_JUNIT_OUTPUT_DIR = reportPath;
-                process.env.JEST_JUNIT_OUTPUT_NAME = reportName.endsWith('.xml') ? reportName : `${reportName}.xml`;
-                cliArgs.push(`--reporters=${junitReporter}`, `--preset=${defaultEsm}`, `${testMatch}$`);
-                break;
-            }
-            case 'trx': {
-                const trxReporterConfig = new URL(import.meta.resolve('./jest/trxReporterConfig.js')).pathname;
-                process.env.JEST_TRX_PRESET_DIR = defaultEsm;
-                process.env.JEST_TRX_TEST_MATCH = '**/*' + testMatch.replace(/\\/g, '');
-                process.env.JEST_TRX_ROOT_DIR = process.cwd();
-                process.env.JEST_TRX_OUTPUT_NAME = join(reportPath, reportName.endsWith('.trx') ? reportName : `${reportName}.trx`);
-                cliArgs.push(`--config=${trxReporterConfig}`);
-                break;
-            }
-            case 'nunit': {
-                const nunitReporterConfig = new URL(import.meta.resolve('./jest/nunitReporterConfig.js')).pathname;
-                process.env.JEST_NUNIT_PRESET_DIR = defaultEsm;
-                process.env.JEST_NUNIT_TEST_MATCH = '**/*' + testMatch.replace(/\\/g, '');
-                process.env.JEST_NUNIT_ROOT_DIR = process.cwd();
-                process.env.JEST_NUNIT_OUTPUT_DIR = reportPath;
-                process.env.JEST_NUNIT_OUTPUT_NAME = reportName.endsWith('.xml') ? reportName : `${reportName}.xml`;
-                cliArgs.push(`--config=${nunitReporterConfig}`);
-                break;
-            }
-            case 'xunit': {
-                const xunitReporterConfig = new URL(import.meta.resolve('./jest/xunitReporterConfig.js')).pathname;
-                process.env.JEST_XUNIT_PRESET_DIR = defaultEsm;
-                process.env.JEST_XUNIT_TEST_MATCH = '**/*' + testMatch.replace(/\\/g, '');
-                process.env.JEST_XUNIT_ROOT_DIR = process.cwd();
-                process.env.JEST_XUNIT_OUTPUT_DIR = reportPath;
-                process.env.JEST_XUNIT_OUTPUT_NAME = reportName.endsWith('.xml') ? reportName : `${reportName}.xml`;
-                cliArgs.push(`--config=${xunitReporterConfig}`);
-                break;
-            }
-            default: {
-                cliArgs.push(`--preset=${defaultEsm}`, `${testMatch}$`);
-            }
-        }
-
-        spawnSync('node', cliArgs, {
-            stdio: 'inherit',
-            env: {
-                ...process.env,
-                NODE_OPTIONS: `--loader=${tsPathsEsmLoaderPath} --experimental-vm-modules --no-warnings`,
-            }
+        // Handle child process events (optional)
+        child.on('exit', (code) => {
+            console.log(`Child process exited with code ${code}`);
         });
 
         break;
@@ -360,13 +239,3 @@ switch (config.frameworkSettings.testSettings.testFramework) {
         throw Error(`Test framework not implemented: ${config.frameworkSettings.testSettings.testFramework}`);
     }
 }
-
-// ### MOCHA ###
-// node --loader=ts-paths-esm-loader --experimental-specifier-resolution=node --loader=ts-node/esm/transpile-only --no-warnings ../node_modules/mocha/bin/mocha.js **/*.test.ts // from tests folder bc local page
-
-// import * as jest from 'jest-cli';
-
-// jest.yargsOptions
-// await jest.run(undefined, '.') // does not work but the line below does with external config
-
-// node --loader=ts-paths-esm-loader --experimental-specifier-resolution=node --loader=ts-node/esm/transpile-only --experimental-vm-modules --no-warnings ../node_modules/jest-cli/bin/jest.js
