@@ -22,6 +22,12 @@ export class BrowserService extends WebService {
         return await this.driver.getPageSource();
     }
 
+    async clearLocalStorage(): Promise<void> {
+            await this.driver.executeJavascript(() => {
+            localStorage.clear();
+        });
+    }
+
     async takeScreenshot(): Promise<Image> {
         const base64image = (await this.driver.takeScreenshot()).base64;
         return Image.fromBase64(base64image);
