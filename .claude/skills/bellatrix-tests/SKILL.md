@@ -51,7 +51,7 @@ export class CouponTests extends WebTest {
   async invalidEmailErrorShown_when_emailFormatInvalid(email: string) { // TC: TC-CF-04
   ```
 - **Categories** (`example/src/Categories.ts`): `CI` runs in the pipeline (`npm test` filters `--category CI`). New tests start in `Categories.Debug` until they've passed three runs in a row, then move to `CI`. Known-unstable tests go to `Flaky` with the reason recorded in the task journal (Decisions). To add a category, extend the frozen object; never use an `enum`.
-- `@Only` and `@Ignore` exist for local debugging. Never commit `@Only`. An `@Ignore` needs the reason and a ticket recorded in the task journal (Decisions).
+- `@Only` and `@Ignore` exist for local debugging. Never commit `@Only`. Commit an `@Ignore` only for a confirmed defect: method-level, with a trailing `// BUG-<KEY>-NN` comment and the Defects entry (bug-reporting skill).
 - Plugins and hooks (`addPlugin(ScreenshotOnFailPlugin)`, `ExtraWebHooks.addComponentBDDLogging()`) are configured in `override async configure()`, after `await super.configure()`.
 
 ## Definition of done for a test

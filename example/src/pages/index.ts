@@ -4,3 +4,4 @@ export * from './checkoutpage/CheckoutPage';
 export * from './checkoutpage/PurchaseInfo';
 export * from './contactformpage/ContactFormPage';
 export * from './contactformpage/ContactFormInfo';
+export * from './promotionspage/PromotionsPage';

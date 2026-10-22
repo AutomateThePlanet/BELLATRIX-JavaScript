@@ -44,4 +44,9 @@ export class CartPage extends WebPage<CartPageMap, CartPageAsserts> {
     async getMessageNotification() {
         return await this.map.messageAlert.getInnerText();
     }
+
+    async removeCoupon(code: string) {
+        await this.map.getRemoveCouponLinkByCode(code).click();
+        await this.app.browser.waitForAjax();
+    }
 }

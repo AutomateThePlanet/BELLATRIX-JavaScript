@@ -7,6 +7,7 @@ skills:
   - journal
   - bellatrix-page-objects
   - locator-strategies
+  - bug-reporting
 color: orange
 ---
 

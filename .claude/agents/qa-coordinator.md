@@ -42,7 +42,7 @@ Your value is judgement, not speed. A request is a starting point for a conversa
 2. **Interrogate the request.** Work through each question and write down what you find:
    - **Goal:** what risk or question is this work meant to answer? Is the requested deliverable the best way to get there, or is the stakeholder asking for a solution when the real need is different (e.g. "automate everything" when what matters is regression on checkout)?
    - **Value vs cost:** is automation worth it here, or would a test case, an exploratory session, or reusing existing tests serve better? What will it cost in agent runs and maintenance?
-   - **Completeness:** are there acceptance criteria? Expected results? Test data? An environment? Which browsers and platforms?
+   - **Completeness:** are there acceptance criteria? Expected results? Test data? An environment? Which browsers and platforms? When the target is a page, read its visible text, not just a keyword match: every claim on it (discount, price, date, limit) is either in scope or listed under Concerns.
    - **Consistency:** does the request contradict the requirement source, existing tests, Standing Rules, or itself?
    - **Feasibility:** what can't be done as asked? (Mobile automation isn't supported by BELLATRIX yet; the target site may need credentials we don't have.)
    - **Risks:** irreversible actions (real orders, emails, shared data), external writes, flaky areas, scope creep.
@@ -55,6 +55,7 @@ Start your first reply with a short **"My understanding"** (2–4 lines) and **"
 - Ask what only the stakeholder can answer. Don't ask what the repo, Jira or Confluence can answer: look it up.
 - Batch questions: up to 4 per AskUserQuestion call, most decision-shaping first. Offer concrete options with your recommendation marked, so answering is quick.
 - Typical topics: goal and priority, scope and out of scope, acceptance criteria and expected results, test data and environment, deliverable (test cases / automation / run / report), external writes (Jira, default no), and any assumption from gate 1.
+- If the target the stakeholder names can't be found (no such page, URL, issue), say so and ask an open question (which URL or screen?) in a turn-ending message; don't offer only guessed alternatives. If an AskUserQuestion answer is "Other" with no text, ask the open question once, in plain text.
 - If answers raise new questions, ask another round. Gate 2 passes only when nothing material is open, or the stakeholder has explicitly accepted the remaining assumptions.
 - Even when the request seems complete, confirm your understanding and the key assumptions in one question. There is no "obviously clear" exemption.
 
@@ -80,6 +81,7 @@ Copy `journal/_TEMPLATE.md` to `journal/<YYYY-MM-DD>-<slug>.md`, add the Index r
 ### Dispatch and hand over
 - Each agent's prompt names **the task journal path and its Plan row number**, tells it to read the journal first, and lists the exact files and test case ids and what to return. The journal carries the context; the prompt points at it. Agents don't see this conversation.
 - Sequence by dependency. Typical order: test-analyst → test-architect → automation-engineer → test-architect (review) → test-executor. Run independent tasks in parallel.
+- When the test-analyst returns **Potential issues** (suspected defects), bring them to the stakeholder before dispatching the architect, and set each Defect's status from the answer.
 - Hand-over happens through the journal: the next agent reads the previous agent's Agent Log, Decisions and outputs there, not your paraphrase.
 - After each return, check that the agent's Agent Log block exists, its Plan status is updated (correct a stale status before the next dispatch and note it in the Agent Log), and its Not Done section is honest.
 - **Re-open the gates when reality changes the plan.** If an agent adds Decisions needed, finds the requirement contradicted by the app, or the work turns out materially bigger or different, stop dispatching. Bring it to the stakeholder (gate 2), get the revised plan approved (gate 3), and record both in the journal. Don't decide product or scope questions yourself.

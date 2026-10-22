@@ -43,7 +43,7 @@ If the delivery went cleanly, say so in one line ("No instruction issues found; 
 
 Input: the task journal path and the suggestion ids the stakeholder approved (e.g. `D1, D3`).
 
-1. Apply exactly those suggestions to `.claude/agents/*.md`, `.claude/skills/*/SKILL.md` or the `JOURNAL.md` Standing Rules. Keep the existing voice and format, and don't touch unrelated text.
+1. Apply exactly those suggestions to `.claude/agents/*.md`, `.claude/skills/*/SKILL.md` or the `JOURNAL.md` Standing Rules. Keep the existing voice and format, and don't touch unrelated text. After editing, grep each target file for the new text to confirm it's on disk.
 2. Set each suggestion's status to `applied` (or `rejected` / `deferred` as the stakeholder said) in the Doctor section.
 3. Return the list of edited files. The coordinator shows the stakeholder `git diff .claude JOURNAL.md journal` before anything is committed.
 

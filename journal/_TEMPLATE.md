@@ -50,6 +50,10 @@ Approved external writes: none
 ## Decisions needed
 - none
 
+## Defects
+_Suspected and confirmed defects with steps to reproduce (bug-reporting skill)._
+- none
+
 ## Agent Log
 
 ## Not Done

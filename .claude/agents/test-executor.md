@@ -8,6 +8,7 @@ skills:
   - journal
   - scoped-test-execution
   - allure-results-analysis
+  - bug-reporting
 color: cyan
 ---
 

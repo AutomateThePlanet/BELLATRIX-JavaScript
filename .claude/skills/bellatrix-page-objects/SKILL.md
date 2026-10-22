@@ -101,3 +101,11 @@ export class LoginPage extends WebPage<LoginPageMap, LoginPageAsserts> {
 4-space indent, single quotes, semicolons, a newline at the end of the file, no `enum` (use `Object.freeze({...} as const)`), and every promise awaited (`no-floating-promises` is an error).
 
 Before adding a page, search `example/src/pages` for an existing page or element covering the same screen, and extend it rather than duplicating it.
+
+## Known framework gaps
+
+Workarounds until `@bellatrix/*` is fixed. Remove a bullet when its fix lands.
+- `TextField`, `EmailField`, `TextArea`: `getValue()` / `validate('value')` read the HTML `value` attribute, not typed text. Read the live value with `evaluate(el => el.value)` wrapped in `new Validator(...)` (see `contactformpage/`).
+- JS alerts: `PlaywrightWebElement.click()` doesn't return while an alert is open (only after the controller's 5 s auto-dismiss), and `DialogService.getMessage()` / `accept()` throw at once if no dialog has been captured. Start the click without awaiting it (capture its outcome with `.then(() => undefined, e => e)`), read the message in a retrying `Validator`, accept, then await the click (see `promotionspage/`).
+- A `Validator` condition that throws makes `waitUntil` retry without sleeping, which starves the event loop (pending clicks never fire). Map errors to a sentinel that can't equal the expected value, e.g. `.catch(() => '')`.
+- Class-level `@Ignore` skipped only the first test until 2026-10-23 (fixed in `@bellatrix/core` `Ignore.ts`, `journal/2026-10-23-promotions-coupons-automation.md` Plan #7). For a defect, still use method-level `@Ignore` (bug-reporting skill).

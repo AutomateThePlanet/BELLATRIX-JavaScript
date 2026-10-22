@@ -41,6 +41,7 @@ The journal is the **source of truth** for the task. When it and your prompt dis
 | Plan | numbered tasks: agent, inputs, expected output, status (`todo` / `in progress` / `done` / `blocked`), approved external writes | coordinator (agents update only the status of their own task) |
 | Decisions | decisions taken during the task: what, by whom, why, alternatives rejected | any agent, for choices within its remit |
 | Decisions needed | open questions only the user or the architect can answer; work that depends on them is `blocked` | any agent |
+| Defects | suspected and confirmed defects with steps to reproduce, status and test handling (bug-reporting skill) | any agent; status set by the coordinator from the stakeholder's answer |
 | Agent Log | one block per agent per task, appended | each agent |
 | Not Done | everything skipped, deferred or impossible, with the reason | any agent |
 | Results | run summaries and the final outcome against each Acceptance Criterion | test-executor, coordinator |

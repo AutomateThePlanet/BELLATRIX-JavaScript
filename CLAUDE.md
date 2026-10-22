@@ -47,7 +47,7 @@ Start QA work with **`claude --agent qa-coordinator`**. The coordinator thinks c
 
 If the user asks for the coordinator in a normal session, don't dispatch `qa-coordinator` as a subagent (it stops after gate 1). Suggest `claude --agent qa-coordinator`, or read `.claude/agents/qa-coordinator.md` and follow it inline, gates and journal included.
 
-Skills (`.claude/skills/`): `journal`, `bellatrix-page-objects`, `bellatrix-tests`, `locator-strategies`, `test-case-design`, `playwright-mcp`, `appium-mcp`, `atlassian-jira`, `scoped-test-execution`, `allure-results-analysis`, `task-cost`.
+Skills (`.claude/skills/`): `journal`, `bellatrix-page-objects`, `bellatrix-tests`, `locator-strategies`, `test-case-design`, `playwright-mcp`, `appium-mcp`, `atlassian-jira`, `scoped-test-execution`, `allure-results-analysis`, `bug-reporting`, `task-cost`.
 
 MCP servers (`.mcp.json`): `playwright` (`@playwright/mcp`), `appium` (`appium-mcp`; configure `qa/appium-capabilities.json` and `ANDROID_HOME`), `atlassian` (official remote server; authenticate via `/mcp`).
 

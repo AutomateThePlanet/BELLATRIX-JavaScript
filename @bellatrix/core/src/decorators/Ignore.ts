@@ -18,8 +18,9 @@ function Ignore<
             const testMetadata = getMetadataFor(testClass.prototype[testMethod]);
 
             testMetadata[Internal.shouldSkip] = true;
-            return;
         }
+
+        return;
     }
 
     if (context.kind === 'method') {

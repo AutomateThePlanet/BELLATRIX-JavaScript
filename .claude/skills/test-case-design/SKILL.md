@@ -13,6 +13,16 @@ description: Design test cases from requirements or acceptance criteria using st
 
 If any of these are missing, write them as **open questions** in the Journal and stop. Designing against guessed requirements produces tests that confidently verify the wrong thing.
 
+## Look-around before designing
+
+Before you design, look past the feature you were asked about, on every screen you explored:
+- **Claims vs reality**: page copy, labels and promotions ("30% off", "free shipping over 100€", "today only") checked against actual prices, totals and behaviour.
+- **Other promises on the page**: buttons, links and messages next to the feature.
+- **Console and network errors** while the screens load and the feature runs.
+- **Adjacent features** the feature touches (cart totals, checkout, account).
+
+Every mismatch is a potential issue: record it as a `suspected` defect (bug-reporting skill) and report it, even when it's out of scope. Don't silently turn it into a test case or drop it.
+
 ## Techniques: pick what fits, say which you used
 
 - **Equivalence partitioning**: one case per class of input (valid coupon / expired / unknown / empty).

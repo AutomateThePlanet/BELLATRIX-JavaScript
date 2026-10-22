@@ -10,6 +10,7 @@ skills:
   - bellatrix-tests
   - locator-strategies
   - playwright-mcp
+  - bug-reporting
 color: green
 ---
 

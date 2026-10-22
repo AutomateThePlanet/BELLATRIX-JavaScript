@@ -28,4 +28,5 @@ Newest first. Small single-agent tasks have no journal and aren't listed.
 
 | Date | Journal | Title | Status |
 |---|---|---|---|
+| 2026-10-23 | [2026-10-23-promotions-coupons-automation](journal/2026-10-23-promotions-coupons-automation.md) | Promotions page and coupon automation | done |
 | 2026-10-22 | [2026-10-22-contact-form-automation](journal/2026-10-22-contact-form-automation.md) | Contact Form automation | done |
