@@ -5,3 +5,7 @@ npm-debug.log
 .nyc
 .env
 .DS_Store
+
+# agentic QA framework: local MCP artifacts
+.playwright-mcp
+qa/.appium-artifacts

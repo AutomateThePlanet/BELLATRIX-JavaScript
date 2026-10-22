@@ -41,12 +41,13 @@ export function SuiteDecorator<
 
     const testClassInstance = new (target.prototype.constructor as ParameterlessCtor<This>);
     const testClassSymbolMethods = getSymbolMethods(target);
-    const testMethods = getFilteredTestsList(testClassInstance);
-
-    nativeLibrary.defineConfig({ timeout: testSettings.testTimeout });
-
     const title = context.name ?? target.name;
+    const testMethods = getFilteredTestsList(testClassInstance, title);
+
     nativeLibrary.test.describe(title, () => {
+        // defineConfig() only builds a config object; describe.configure() actually applies the timeout to this suite's tests.
+        nativeLibrary.test.describe.configure({ timeout: testSettings.testTimeout });
+
         nativeLibrary.test.beforeAll(async () => await testClassSymbolMethods.beforeAll.apply(testClassInstance));
 
         nativeLibrary.test.beforeEach(async ({ }, testInfo) => {
@@ -83,6 +84,9 @@ export function SuiteDecorator<
 
         testMethods.forEach((testFunction, testName) => {
             const testMetadata = getMetadataFor(testFunction);
+            // BELLATRIX categories become Playwright tags (@CI, @Debug, ...) so reporters such as Allure can show and filter them.
+            const categories = testMetadata.customData.get('category');
+            const testDetails = { tag: Array.isArray(categories) ? categories.map(category => `@${String(category)}`) : [] };
 
             if (testMetadata[Internal.testCaseArgs].length > 0) {
                 let index = 1;
@@ -92,22 +96,22 @@ export function SuiteDecorator<
                         testMetadataStore.set(parametrizedTestFunction, testMetadata);
 
                         if (testMetadata[Internal.shouldSkip]) {
-                            nativeLibrary.test.skip(`${index}. ${testName}(${args.join(', ')})`, parametrizedTestFunction);
+                            nativeLibrary.test.skip(`${index}. ${testName}(${args.join(', ')})`, testDetails, parametrizedTestFunction);
                         } else if (testMetadata[Internal.only]) {
-                            nativeLibrary.test.only(`${index}. ${testName}(${args.join(', ')})`, parametrizedTestFunction);
+                            nativeLibrary.test.only(`${index}. ${testName}(${args.join(', ')})`, testDetails, parametrizedTestFunction);
                         } else {
-                            nativeLibrary.test(`${index}. ${testName}(${args.join(', ')})`, parametrizedTestFunction);
+                            nativeLibrary.test(`${index}. ${testName}(${args.join(', ')})`, testDetails, parametrizedTestFunction);
                         }
                         index++;
                     }
                 });
             } else {
                 if (testMetadata[Internal.shouldSkip]) {
-                    nativeLibrary.test.skip(testName, testFunction as never);
+                    nativeLibrary.test.skip(testName, testDetails, testFunction as never);
                 } else if (testMetadata[Internal.only]) {
-                    nativeLibrary.test.only(testName, testFunction as never);
+                    nativeLibrary.test.only(testName, testDetails, testFunction as never);
                 } else {
-                    nativeLibrary.test(testName, testFunction as never);
+                    nativeLibrary.test(testName, testDetails, testFunction as never);
                 }
             }
         });

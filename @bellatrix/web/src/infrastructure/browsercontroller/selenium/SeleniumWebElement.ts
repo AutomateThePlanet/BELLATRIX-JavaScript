@@ -43,6 +43,10 @@ export class SeleniumWebElement extends WebElement {
         return await this._element.getAttribute(name);
     }
 
+    override async getInputValue(): Promise<string> {
+        return await this.evaluate<string>('el => el.value') ?? '';
+    }
+
     override async getInnerText(): Promise<string> {
         return (await this._element.getText()).trim();
     }

@@ -6,6 +6,7 @@
     "bellatrix": "./bellatrix.js"
   },
   "dependencies": {
+    "allure-playwright": "3.3.2",
     "playwright": "^1.41.0",
     "ts-node": "^10.9.2",
     "ts-paths-esm-loader": "^1.4.3",

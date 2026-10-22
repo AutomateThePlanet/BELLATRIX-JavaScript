@@ -1,0 +1,31 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@0.0.83",
+        "--isolated",
+        "--browser", "chrome",
+        "--viewport-size", "1920,1080",
+        "--output-dir", "${CLAUDE_PROJECT_DIR:-.}/.playwright-mcp"
+      ]
+    },
+    "appium": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "appium-mcp@1.97.1"],
+      "env": {
+        "ANDROID_HOME": "${ANDROID_HOME:-}",
+        "CAPABILITIES_CONFIG": "${CLAUDE_PROJECT_DIR:-.}/qa/appium-capabilities.json",
+        "SCREENSHOTS_DIR": "${CLAUDE_PROJECT_DIR:-.}/qa/.appium-artifacts",
+        "NO_UI": "1"
+      }
+    },
+    "atlassian": {
+      "type": "http",
+      "url": "https://mcp.atlassian.com/v1/mcp"
+    }
+  }
+}

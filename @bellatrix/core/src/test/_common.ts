@@ -82,7 +82,7 @@ export function initMetadata<Type extends keyof MetadataTypes>(type: Type, sourc
     }
 }
 
-export function getFilteredTestsList<T extends BellatrixTest>(testClassInstance: T): Map<string, Method<BellatrixTest>> {
+export function getFilteredTestsList<T extends BellatrixTest>(testClassInstance: T, suiteName: string): Map<string, Method<BellatrixTest>> {
     const testClass = testClassInstance.constructor.prototype;
     const testMethodsNames = Object.getOwnPropertyNames(testClass)
         .filter(method => typeof testClass[method] === 'function' &&
@@ -92,6 +92,7 @@ export function getFilteredTestsList<T extends BellatrixTest>(testClassInstance:
     for (const testMethodName of testMethodsNames) {
         const testMethod = testClass[testMethodName] as keyof Method<BellatrixTest>;
         const testMetadata = testMetadataStore.get(testMethod)!;
+        testMetadata.suiteName = suiteName; // needed by the suiteName filter below, before any hook has run
 
         for (const [filterKey, filterValue] of Object.entries(testFilters)) {
             if (!Array.isArray(filterValue)) {

@@ -1,0 +1,14 @@
+{
+  "android": {
+    "appium:app": "/absolute/path/to/your-app.apk",
+    "appium:deviceName": "Android Emulator",
+    "appium:automationName": "UiAutomator2",
+    "appium:noReset": false
+  },
+  "ios": {
+    "appium:app": "/absolute/path/to/YourApp.app",
+    "appium:deviceName": "iPhone 15",
+    "appium:platformVersion": "17.0",
+    "appium:automationName": "XCUITest"
+  }
+}

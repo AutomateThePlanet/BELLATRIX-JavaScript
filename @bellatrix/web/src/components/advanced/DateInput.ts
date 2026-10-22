@@ -42,6 +42,6 @@ export class DateInput extends WebComponent<HTMLInputElement> {
     }
 
     async getValue(): Promise<string> {
-        return await this.getAttribute('value');
+        return await this.wrappedElement.getInputValue();
     }
 }
