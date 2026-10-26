@@ -34,9 +34,9 @@ export class CouponTests extends WebTest {
     async couponAlertShown_when_couponButtonClicked() { // TC: TC-PC-02
         const promotionsPage = await this.app.goTo(PromotionsPage);
 
-        await promotionsPage.openCouponAlert();
+        promotionsPage.clickCouponButton();
         await promotionsPage.asserts.couponAlertMessageIs('Try the coupon- happybirthday');
-        await promotionsPage.acceptAlert();
+        await promotionsPage.acceptCouponAlert();
 
         await promotionsPage.asserts.couponButtonShown('Do you want 5% off for your BD?');
     }
@@ -83,19 +83,20 @@ export class CouponTests extends WebTest {
         await cartPage.applyCoupon('happybirthday');
         await cartPage.asserts.couponAppliedSuccessfully();
         await cartPage.asserts.couponDiscountRowCountIs(1);
-        const totalAfterFirstApply = await cartPage.getTotal();
+        await cartPage.asserts.totalIsLessThan(60);
+        const totalsAfterFirstApply = await cartPage.getTotals();
 
         await cartPage.applyCoupon('happybirthday');
 
         await cartPage.asserts.couponAlreadyApplied();
         await cartPage.asserts.couponDiscountRowCountIs(1);
-        await cartPage.asserts.totalIs(totalAfterFirstApply);
+        await cartPage.asserts.totalsAre(totalsAfterFirstApply);
     }
 
     @Test
     async totalsRestored_when_couponRemoved() { // TC: TC-PC-07
         const cartPage = await this.openCartWithFalcon9();
-        const totalBeforeApply = await cartPage.getTotal();
+        const totalsBeforeApply = await cartPage.getTotals();
         await cartPage.applyCoupon('happybirthday');
         await cartPage.asserts.couponAppliedSuccessfully();
 
@@ -103,9 +104,7 @@ export class CouponTests extends WebTest {
 
         await cartPage.asserts.couponRemovedSuccessfully();
         await cartPage.asserts.couponDiscountRowCountIs(0);
-        await cartPage.asserts.totalIs(totalBeforeApply);
-        await cartPage.asserts.subtotalIs('50.00');
-        await cartPage.asserts.vatIs('10.00');
+        await cartPage.asserts.totalsAre(totalsBeforeApply);
     }
 
     private async openCartWithFalcon9() {

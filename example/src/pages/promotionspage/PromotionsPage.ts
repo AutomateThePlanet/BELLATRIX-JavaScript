@@ -5,7 +5,7 @@ import { PromotionsPageAsserts } from './PromotionsPageAsserts';
 
 @Page(PromotionsPageMap, PromotionsPageAsserts)
 export class PromotionsPage extends WebPage<PromotionsPageMap, PromotionsPageAsserts> {
-    private pendingAlertClick: Promise<unknown> | undefined;
+    private pendingCouponClick?: Promise<unknown>;
 
     protected override get url() {
         return 'https://demos.bellatrix.solutions/welcome/';
@@ -15,19 +15,19 @@ export class PromotionsPage extends WebPage<PromotionsPageMap, PromotionsPageAss
         await this.map.couponButton.wait.toExist();
     }
 
-    // click() does not return while the alert is open (it resolves only after the controller's 5 s
-    // auto-dismiss), so the click is left pending here and awaited in acceptAlert().
-    async openCouponAlert() {
-        // The outcome is captured here so a failed alert assert cannot leave an unhandled rejection.
-        this.pendingAlertClick = this.map.couponButton.click().then(() => undefined, (e: unknown) => e);
+    // click() does not return while the alert is open, so it is started without awaiting;
+    // acceptCouponAlert() awaits it later. Call asserts.couponAlertMessageIs() first: it waits until the
+    // dialog is captured, and dialog.accept() throws at once when none has been.
+    clickCouponButton() {
+        this.pendingCouponClick = this.map.couponButton.click().then(() => undefined, (e: unknown) => e);
     }
 
-    async acceptAlert() {
+    async acceptCouponAlert() {
         await this.app.dialog.accept();
-        const clickError = await this.pendingAlertClick;
-        this.pendingAlertClick = undefined;
-        if (clickError) {
-            throw clickError;
+        const outcome = await this.pendingCouponClick;
+        this.pendingCouponClick = undefined;
+        if (outcome instanceof Error) {
+            throw outcome;
         }
     }
 }

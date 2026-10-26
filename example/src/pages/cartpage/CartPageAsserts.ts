@@ -1,6 +1,7 @@
 import { WebPageAsserts } from '@bellatrix/web/pages';
 import { Validator } from '@bellatrix/web/validators';
 import { CartPageMap } from './CartPageMap';
+import { CartTotals } from './CartTotals';
 
 export class CartPageAsserts extends WebPageAsserts<CartPageMap> {
     async couponAppliedSuccessfully() {
@@ -48,8 +49,21 @@ export class CartPageAsserts extends WebPageAsserts<CartPageMap> {
         await this.map.vatSpan.validate('innerText').is(`${expected}€`);
     }
 
-    async totalIs(expected: string) {
-        await this.map.totalSpan.validate('innerText').is(expected);
+    async totalsAre(expected: CartTotals) {
+        await this.subtotalIs(expected.subtotal);
+        await this.vatIs(expected.vat);
+        await this.totalPrice(expected.total);
+    }
+
+    async totalIsLessThan(max: number) {
+        await new Validator(async () => {
+            const text = await this.map.totalSpan.getInnerText().catch(() => '');
+            return Number.parseFloat(text.replace('€', '').replace(/,/g, ''));
+        }, 'cart total').isLessThan(max);
+    }
+
+    async removeCouponLinkShown(code: string) {
+        await this.map.getRemoveCouponLinkByCode(code).validateIs('visible');
     }
 
     async couponDiscountRowCountIs(expected: number) {

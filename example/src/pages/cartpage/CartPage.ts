@@ -2,6 +2,7 @@ import { WebPage } from '@bellatrix/web/pages';
 import { Page } from '@bellatrix/web/pages/decorators';
 import { CartPageMap } from './CartPageMap';
 import { CartPageAsserts } from './CartPageAsserts';
+import { CartTotals } from './CartTotals';
 
 @Page(CartPageMap, CartPageAsserts)
 export class CartPage extends WebPage<CartPageMap, CartPageAsserts> {
@@ -39,6 +40,15 @@ export class CartPage extends WebPage<CartPageMap, CartPageAsserts> {
 
     async getTotal() {
         return await this.map.totalSpan.getInnerText();
+    }
+
+    async getTotals(): Promise<CartTotals> {
+        const amount = async (text: Promise<string>) => (await text).replace('€', '');
+        return {
+            subtotal: await amount(this.map.subtotalSpan.getInnerText()),
+            vat: await amount(this.map.vatSpan.getInnerText()),
+            total: await amount(this.map.totalSpan.getInnerText()),
+        };
     }
 
     async getMessageNotification() {

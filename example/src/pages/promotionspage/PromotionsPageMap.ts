@@ -1,4 +1,4 @@
-import { Button, Heading } from '@bellatrix/web/components';
+import { Button, Heading, Span } from '@bellatrix/web/components';
 import { WebPageMap } from '@bellatrix/web/pages';
 
 export class PromotionsPageMap extends WebPageMap {
@@ -8,5 +8,9 @@ export class PromotionsPageMap extends WebPageMap {
 
     get couponButton() {
         return this.create(Button).byId('couponBtn');
+    }
+
+    get headerCartCount() {
+        return this.create(Span).byCss('.site-header-cart .count');
     }
 }

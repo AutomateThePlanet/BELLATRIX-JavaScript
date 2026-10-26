@@ -1,5 +1,6 @@
 export * from './mainpage/MainPage';
 export * from './cartpage/CartPage';
+export * from './cartpage/CartTotals';
 export * from './checkoutpage/CheckoutPage';
 export * from './checkoutpage/PurchaseInfo';
 export * from './contactformpage/ContactFormPage';
