@@ -2,4 +2,6 @@ export const Categories = Object.freeze({
     CI: 'CI',
     Flaky: 'Flaky',
     Debug: 'Debug',
+    ContactForm: 'ContactForm',
+    Coupons: 'Coupons',
 } as const);

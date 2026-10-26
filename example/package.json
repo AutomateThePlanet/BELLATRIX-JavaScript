@@ -11,7 +11,12 @@
     "typescript": "^5.7.3"
   },
   "scripts": {
-    "test": "bellatrix ./tests filter --category CI"
+    "test": "bellatrix ./tests filter --category CI",
+    "allure:generate": "allure generate ./allure-results --output ./allure-report",
+    "allure:open": "allure open ./allure-report"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "allure": "3.20.1"
+  }
 }

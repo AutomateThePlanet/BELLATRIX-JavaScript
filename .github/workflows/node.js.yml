@@ -39,3 +39,18 @@ jobs:
         name: results
         path: './example/reports/result.xml'
         reporter: java-junit
+
+    - name: Generate Allure report
+      if: always()
+      run: npm run allure:generate
+      working-directory: ./example
+
+    - name: Upload Allure results and report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: allure
+        path: |
+          ./example/allure-results
+          ./example/allure-report
+        retention-days: 14

@@ -42,7 +42,7 @@ export class MonthInput extends WebComponent<HTMLInputElement> {
     }
 
     async getValue(): Promise<string> {
-        return await this.getAttribute('value');
+        return await this.wrappedElement.getInputValue();
     }
 
     private async [defaultSetMonth](year: number, month: number): Promise<void> {

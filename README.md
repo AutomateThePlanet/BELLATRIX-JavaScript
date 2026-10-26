@@ -27,9 +27,92 @@ To execute your tests via command line in Continues Integration (CI), you can us
 
     bellatrix <path>
 
-where path is an optional argument for a path to the tests folder, either relative or absolute.
+where path is an optional argument for a path to the tests folder or a single test file, either relative or absolute.
 
-Filters and other more advanced configurations will be supported in a future version.
+To run a subset of the tests, add `filter` followed by one or more filters. Values are regular expressions, and multiple filters combine with AND:
+
+    bellatrix ./tests filter --suiteName ProductPurchaseTests
+    bellatrix ./tests filter --testName "purchase.*"
+    bellatrix ./tests filter --category CI
+
+Tests that don't match are reported as skipped.
+
+## Allure Reports
+
+When the test framework is Playwright, every run can also write Allure results next to the configured JUnit/JSON report. Enable it in `bellatrix.config.ts`:
+
+    frameworkSettings: {
+        testSettings: {
+            // ...
+            allureSettings: {
+                isEnabled: true,
+                resultsDirectory: './allure-results', // relative to the config file
+                cleanResultsDirectory: true,         // start each run with an empty results folder
+            },
+        },
+    },
+
+BELLATRIX categories (`@Category`) appear as Allure tags. In the example project:
+
+- `npm test` writes `allure-results/`.
+- `npm run allure:generate` builds the HTML report in `allure-report/`.
+- `npm run allure:open` serves the report locally.
+
+The CI workflow uploads both folders as the `allure` build artifact.
+
+## Agentic QA Framework (Claude Code)
+
+The repository includes a set of [Claude Code](https://claude.com/claude-code) agents and skills that design, implement, run and analyse BELLATRIX tests together, with a human stakeholder approving the plan.
+
+### Getting started
+
+- Install Claude Code and run `npm ci` in the root of the project.
+- Open a terminal in the root of the project and start the coordinator:
+
+    claude --agent qa-coordinator
+
+- Describe what you need, e.g. "Create regression tests for the coupon flow in story ABC-123".
+- On the first run, approve the project's MCP servers and authenticate the Atlassian server with `/mcp`.
+
+### How it works
+
+The **qa-coordinator** never starts work on a request as given. It goes through three gates first:
+
+1. **Critical thinking**: it researches the repository, Jira and earlier journals (read-only) and challenges the request: goal, value, missing information, risks and assumptions.
+2. **Clarification**: it asks the stakeholder its questions and pushes back where the request looks misdirected.
+3. **Plan approval**: it presents acceptance criteria and a plan, and waits for explicit approval.
+
+Only then does it hand the work to the specialist agents:
+
+| Agent | Role |
+|---|---|
+| test-analyst | Turns requirements (Jira, Confluence or the request) into test cases with acceptance-criteria coverage in `qa/test-cases/` |
+| test-architect | Decides what to reuse and where new page objects and tests go; reviews the engineer's changes |
+| automation-engineer | Writes BELLATRIX page objects (Map / Asserts / Page) and tests, verifying the flows and locators with the Playwright and Appium MCP servers |
+| test-executor | Runs only the tests that matter and classifies failures using the Allure results |
+| agent-doctor | After every delivery, reviews how the agents worked and proposes improvements to their instructions; applies only the approved ones |
+
+### The Journal
+
+- **Task journals:** every task that needs planning or a hand-over between agents gets a task journal, `journal/<date>-<slug>.md`, created from `journal/_TEMPLATE.md`. It holds the request, context, clarifications, scope, acceptance criteria, plan, decisions, agent logs, what was not done, results, and the stakeholder's comments. Agents read it before acting and record their work in it, so every hand-over goes through the journal.
+- **`JOURNAL.md`:** contains the Standing Rules every agent obeys, an index of the task journals, and a feedback inbox for comments on small tasks.
+- **Improving the agents:** the coordinator records every issue or improvement comment the stakeholder makes, word for word. The agent-doctor uses these to improve the agents over time.
+
+### Layout
+
+| Path | Contents |
+|---|---|
+| `.claude/agents/` | Agent definitions (model, tools, preloaded skills, instructions) |
+| `.claude/skills/` | Skills: BELLATRIX page objects and tests, locator strategies, test case design, Playwright MCP, Appium MCP, Atlassian (Jira/Confluence), scoped test execution, Allure results analysis, journal protocol |
+| `.claude/settings.json` | Project permissions for the agents' routine commands |
+| `.mcp.json` | MCP servers: `playwright` (`@playwright/mcp`), `appium` (`appium-mcp`), `atlassian` (Atlassian's remote MCP server) |
+| `CLAUDE.md` | Project context loaded by every agent |
+| `JOURNAL.md`, `journal/` | Standing Rules, index, feedback inbox and task journals |
+| `qa/` | Test cases, mobile locator inventories, Appium capabilities |
+
+### Mobile testing
+
+The `appium` MCP server needs `ANDROID_HOME` (for Android) and the app and device presets in `qa/appium-capabilities.json`. BELLATRIX's Appium package currently provides drivers only, so the agents use the Appium MCP server for exploration, test design and locator inventories rather than automated mobile tests.
 
 Our project uses Semantic Versioning (SemVer) for clear and predictable version management. Each release is tagged with a unique version number that reflects the nature of the changes made.
 

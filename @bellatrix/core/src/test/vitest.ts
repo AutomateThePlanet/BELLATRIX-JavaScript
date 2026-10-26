@@ -33,9 +33,8 @@ export function SuiteDecorator<
 
     const testClassInstance = new (target.prototype.constructor as ParameterlessCtor<This>);
     const testClassSymbolMethods = getSymbolMethods(target);
-    const testMethods = getFilteredTestsList(testClassInstance);
-
     const title = context.name ?? target.name;
+    const testMethods = getFilteredTestsList(testClassInstance, title);
 
     nativeLibrary.describe(title, () => {
         nativeLibrary.beforeAll(async () => await testClassSymbolMethods.beforeAll.apply(testClassInstance), 0);

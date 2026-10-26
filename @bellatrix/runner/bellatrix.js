@@ -8,9 +8,9 @@ if (parseInt(nodeVersion[0].replace()) < 20 || (parseInt(nodeVersion[0]) === 20 
 }
 
 import { fork } from 'child_process';
-import { existsSync, readFileSync, writeFileSync, unlinkSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync, unlinkSync, rmSync } from 'fs';
 import { join, dirname, isAbsolute, win32 } from 'path';
-import { pathToFileURL } from 'url';
+import { pathToFileURL, fileURLToPath } from 'url';
 import { tmpdir, platform } from 'os';
 import ts from 'typescript';
 import yargs from 'yargs/yargs';
@@ -146,6 +146,23 @@ if (platform() === 'win32') {
     reportPath = win32.normalize(reportPath);
 }
 
+const allureSettings = config.frameworkSettings.testSettings.allureSettings;
+let allureResultsPath = null;
+
+if (allureSettings?.isEnabled) {
+    const resultsDirectory = allureSettings.resultsDirectory ?? './allure-results';
+    allureResultsPath = isAbsolute(resultsDirectory) ? resultsDirectory : join(dirname(fileURLToPath(configFileURI)), resultsDirectory);
+
+    if (allureSettings.cleanResultsDirectory ?? true) {
+        rmSync(allureResultsPath, { recursive: true, force: true });
+    }
+
+    if (config.frameworkSettings.testSettings.testFramework !== 'playwright') {
+        console.warn(`Allure results are only produced with testFramework 'playwright'; allureSettings is ignored for '${config.frameworkSettings.testSettings.testFramework}'.`);
+        allureResultsPath = null;
+    }
+}
+
 switch (config.frameworkSettings.testSettings.testFramework) {
     case 'vitest': {
         const { createVitest } = await import('vitest/node');
@@ -208,6 +225,19 @@ switch (config.frameworkSettings.testSettings.testFramework) {
                 break;
             }
             case 'tap': throw new Error('Playwright does not have tap reporter implemented');
+        }
+
+        if (allureResultsPath) {
+            const allureReporterPath = fileURLToPath(new URL('./reporters/allure.js', import.meta.url));
+            const reporterArgIndex = cliArgs.findIndex(arg => arg.startsWith('--reporter='));
+
+            if (reporterArgIndex === -1) {
+                cliArgs.push(`--reporter=list,${allureReporterPath}`); // keep console output next to Allure
+            } else {
+                cliArgs[reporterArgIndex] += `,${allureReporterPath}`;
+            }
+
+            process.env.BELLATRIX_ALLURE_RESULTS_DIR = allureResultsPath;
         }
 
         // cliArgs.push('--ui'); // TODO: make it an option

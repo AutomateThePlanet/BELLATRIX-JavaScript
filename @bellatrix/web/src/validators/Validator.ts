@@ -110,7 +110,7 @@ export class Validator implements StringValidator, NumberValidator, BooleanValid
                 }
             }, validationTimeout, sleepInterval);
         } catch {
-            Assert.areNotEqual(expected, result, `Validating ${this._attribute}.`);
+            Assert.stringContains(String(expected), String(result), `Validating ${this._attribute}.`);
         }
     }
 

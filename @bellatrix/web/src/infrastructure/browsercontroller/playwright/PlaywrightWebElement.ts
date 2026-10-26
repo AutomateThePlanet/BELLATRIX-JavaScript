@@ -47,6 +47,10 @@ export class PlaywrightWebElement extends WebElement {
         return await this._locator.getAttribute(name) ?? '';
     }
 
+    override async getInputValue(): Promise<string> {
+        return await this._locator.inputValue();
+    }
+
     override async getInnerText(): Promise<string> {
         return (await this._locator.innerText()).trim();
     }

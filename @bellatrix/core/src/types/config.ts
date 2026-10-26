@@ -21,6 +21,13 @@ export interface TestSettings {
     testReportDirectory?: string;
     testReportName?: string;
     parallelExecution: boolean;
+    allureSettings?: AllureSettings;
+}
+
+export interface AllureSettings {
+    isEnabled: boolean;
+    resultsDirectory?: string; // relative to the config file; default './allure-results'
+    cleanResultsDirectory?: boolean; // delete previous results before the run; default true
 }
 
 export type BellatrixConfigurationOverride = BellatrixConfiguration

@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm test)",
+      "Bash(npx bellatrix:*)",
+      "Bash(npm run allure:generate)",
+      "Bash(node .claude/skills/:*)",
+      "Bash(npx eslint:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)"
+    ],
+    "deny": [
+      "mcp__playwright__browser_run_code_unsafe"
+    ]
+  }
+}

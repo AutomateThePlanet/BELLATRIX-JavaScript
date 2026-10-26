@@ -9,6 +9,11 @@ const config: BellatrixConfigurationOverride = {
             testReportDirectory: './reports',
             testReportName: `result`,
             parallelExecution: false, // not functional yet
+            allureSettings: {
+                isEnabled: true, // playwright testFramework only
+                resultsDirectory: './allure-results',
+                cleanResultsDirectory: true,
+            },
         },
         parallelExecutionSettings: {
 
@@ -28,10 +33,10 @@ const config: BellatrixConfigurationOverride = {
         },
         executionSettings: {
             browserController: 'playwright', // playwright, selenium
-            browser: 'edge', // chrome, firefox, safari, edge
-            viewport: { width: 1920, height: 1080 },
-            startMaximized: false,
-            headless: true,
+            browser: 'chrome', // chrome, firefox, safari, edge
+            // viewport: { width: 1920, height: 1080 },
+            startMaximized: true,
+            headless: false,
             executionType: 'local', // remote
             baseUrl: 'https://demos.bellatrix.solutions/'
         },
